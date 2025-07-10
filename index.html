@@ -8,7 +8,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #1a0e2d;
+      background-color: #120c1f;
       color: #fff;
       overflow-x: hidden;
     }
@@ -16,8 +16,8 @@
     header {
       position: relative;
       background: url('banner.png') center/cover no-repeat;
-      max-height: 400px;
-      padding: 80px 20px 40px;
+      height: 300px;
+      padding: 60px 20px 20px;
       text-align: center;
       overflow: hidden;
     }
@@ -29,7 +29,7 @@
       left: 0;
       height: 100%;
       width: 100%;
-      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(26, 14, 45, 0.9));
+      background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(18,12,31,0.95));
       z-index: 1;
     }
 
@@ -43,27 +43,24 @@
       font-size: 3.2em;
       color: #ffe06b;
       text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
-      animation: fadeIn 1s ease-out;
     }
 
     header p {
-      font-size: 1.4em;
-      margin-top: 12px;
-      color: #ffffffd9;
+      font-size: 1.3em;
+      margin-top: 10px;
+      color: #ffffffdd;
     }
 
     .section {
       padding: 60px 20px;
       max-width: 900px;
       margin: auto;
-      animation: fadeInUp 1.2s ease;
     }
 
     .section h2 {
       font-size: 2.2em;
       color: #FFDE6A;
       text-align: center;
-      text-shadow: 1px 1px 4px #00000080;
     }
 
     .about p, .lore p {
@@ -76,11 +73,10 @@
     .quote {
       margin-top: 30px;
       padding: 20px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255,255,255,0.08);
       border-radius: 10px;
       font-style: italic;
       text-align: center;
-      box-shadow: 0 0 12px #00000030;
     }
 
     .cta {
@@ -93,13 +89,6 @@
       padding: 14px 28px;
       border-radius: 25px;
       text-decoration: none;
-      box-shadow: 0 4px 12px rgba(255, 79, 216, 0.3);
-      transition: transform 0.2s ease-in-out, box-shadow 0.2s;
-    }
-
-    .cta:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 16px rgba(255, 79, 216, 0.5);
     }
 
     .tokenomics img {
@@ -107,25 +96,17 @@
       margin: 30px auto 20px;
       width: 180px;
       border-radius: 50%;
-      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08);
-      transition: transform 0.3s ease;
-    }
-
-    .tokenomics img:hover {
-      transform: scale(1.05);
     }
 
     .bottom-banner {
-      margin-top: 80px;
+      margin-top: 60px;
       text-align: center;
     }
 
     .bottom-banner img {
-      width: 100%;
-      max-width: 1200px;
-      border-radius: 10px;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
-      opacity: 0.98;
+      width: 90%;
+      max-width: 1000px;
+      border-radius: 12px;
     }
 
     ul {
@@ -139,28 +120,37 @@
       font-size: 1.1em;
     }
 
+    .x-link {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 30px;
+    }
+
+    .x-link img {
+      width: 30px;
+      height: 30px;
+      margin-right: 10px;
+    }
+
+    .x-link a {
+      color: #ffffffdd;
+      font-weight: bold;
+      text-decoration: none;
+      font-size: 1.1em;
+    }
+
     footer {
       text-align: center;
       padding: 30px;
       color: #aaa;
       font-size: 0.9em;
-      opacity: 0.7;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(40px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     @media (max-width: 768px) {
       header {
-        max-height: 250px;
-        padding: 60px 15px 30px;
+        height: 220px;
+        padding: 40px 15px 20px;
       }
 
       header h1 {
@@ -168,11 +158,7 @@
       }
 
       header p {
-        font-size: 1.1em;
-      }
-
-      .tokenomics img {
-        width: 140px;
+        font-size: 1em;
       }
 
       .section {
@@ -180,11 +166,11 @@
       }
 
       .section h2 {
-        font-size: 1.7em;
+        font-size: 1.6em;
       }
 
-      .about p, .lore p, li {
-        font-size: 1em;
+      .tokenomics img {
+        width: 140px;
       }
     }
   </style>
@@ -211,9 +197,23 @@
   <section class="section lore">
     <h2>🧬 Lore</h2>
     <p>
-      Forged from chart tears and bottom buys, $WAGMIK was born in the depths of Solana Twitter and raised on nothing but hopium and memes.
-      Some say it carries the spirit of every moon that never happened… and every rug that did.<br><br>
+      Forged from chart tears and bottom buys, $WAGMIK was born in the depths of Solana Twitter and raised on nothing but hopium and memes. Some say it carries the spirit of every moon that never happened… and every rug that did.
+      <br><br>
       You’re not just buying a token. You’re minting belief.
+    </p>
+  </section>
+
+  <section class="section lore">
+    <h2>💭 The AI-Generated Backstory</h2>
+    <p>
+      In the shadow of Bonk’s meteoric rise, forgotten in the trenches of the Solana memeverse, sat his emotionally unstable cousin: <strong>$WAGMIK</strong>.<br><br>
+      Born with the same bark, but none of the bounce, WAGMIK watched from the sidelines as Bonk made it to billboards and billion-dollar pumps.<br><br>
+      💀 Broke. 📉 Still holding his launch bag from 2021...<br><br>
+      One day, WAGMIK did what every hopeless degen does:<br>
+      <em>“Hey AI... what the f*** do I do?”</em><br><br>
+      And the AI answered: <strong>“Launch. Meme. Hope.”</strong><br><br>
+      Armed with nothing but a poorly drawn logo and too much time on Twitter, WAGMIK pressed <em>deploy</em>...<br>
+      Now he’s back. Not to make it. But to <strong>vibe until something happens</strong>.
     </p>
   </section>
 
@@ -228,8 +228,13 @@
     </ul>
   </section>
 
+  <div class="x-link">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/X_logo_2023.svg" alt="X Logo" />
+    <a href="https://x.com/wagmikdotsol?s=21" target="_blank">@wagmikdotsol</a>
+  </div>
+
   <div class="bottom-banner">
-    <img src="bottom-banner.png" alt="Crypto Influencers Holding WAGMIK Coins" />
+    <img src="bottom-banner.png" alt="WAGMIK Bottom Banner" />
   </div>
 
   <footer>
