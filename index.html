@@ -3,68 +3,113 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>$WAGMIK - We’re All Gonna Make It… Kinda</title>
+  <title>$WAGMIK – We’re All Gonna Make It… Kinda</title>
   <style>
     body {
       margin: 0;
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      background: linear-gradient(135deg, #121212, #1f1f1f);
-      color: #f2f2f2;
-      text-align: center;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1a0e2d;
+      color: #fff;
+      overflow-x: hidden;
     }
 
     header {
-      padding: 5rem 1rem;
-      background: #ff00aa;
-      color: #fff;
+      background: url('banner.png') center/cover no-repeat;
+      text-align: center;
+      padding: 140px 20px 60px;
+      animation: fadeIn 1.2s ease-in-out;
     }
 
     header h1 {
-      font-size: 3rem;
-      margin-bottom: 0.5rem;
+      font-size: 3.2em;
+      margin: 0;
+      color: #ffffff;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
     }
 
     header p {
-      font-size: 1.5rem;
-      opacity: 0.9;
+      font-size: 1.4em;
+      margin-top: 12px;
+      color: #ffe6f0;
     }
 
-    section {
-      padding: 3rem 1rem;
-      max-width: 800px;
-      margin: 0 auto;
+    .section {
+      padding: 60px 20px;
+      max-width: 900px;
+      margin: auto;
+      animation: fadeInUp 1.2s ease;
     }
 
-    .meme {
-      font-size: 1.2rem;
-      margin-top: 2rem;
-      background: #222;
-      padding: 1rem;
-      border-radius: 8px;
-      border: 1px solid #ff00aa;
+    .section h2 {
+      font-size: 2.2em;
+      color: #FFDE6A;
+      text-align: center;
     }
 
-    .btn {
-      margin-top: 2rem;
-      display: inline-block;
-      padding: 1rem 2rem;
-      background: #00ffcc;
+    .about p, .lore p {
+      font-size: 1.1em;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .quote {
+      margin-top: 30px;
+      padding: 20px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 10px;
+      font-style: italic;
+      text-align: center;
+    }
+
+    .cta {
+      display: block;
+      width: fit-content;
+      margin: 30px auto 0;
+      background-color: #ff4fd8;
       color: #000;
       font-weight: bold;
-      border-radius: 50px;
+      padding: 14px 28px;
+      border-radius: 25px;
       text-decoration: none;
-      transition: all 0.3s;
+      transition: transform 0.2s ease-in-out;
     }
 
-    .btn:hover {
-      background: #00c3a0;
+    .cta:hover {
+      transform: scale(1.06);
+    }
+
+    .tokenomics img {
+      display: block;
+      margin: 30px auto 20px;
+      width: 180px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      text-align: center;
+    }
+
+    li {
+      margin: 12px 0;
+      font-size: 1.1em;
     }
 
     footer {
-      margin-top: 5rem;
-      padding: 2rem;
-      font-size: 0.9rem;
-      color: #777;
+      text-align: center;
+      padding: 30px;
+      color: #aaa;
+      font-size: 0.9em;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -75,47 +120,51 @@
     <p>We’re All Gonna Make It… Kinda</p>
   </header>
 
-  <section>
+  <section class="section about">
     <h2>🚀 About</h2>
-    <p>$WAGMIK is the coin for every Solana degen who bought the top, paper-handed the bottom, and still thinks memes are a valid investment strategy.</p>
-
-    <div class="meme">
-      <p>"This coin has no utility, and that’s the utility."</p>
-      <p>— A true degen prophet</p>
+    <p>
+      $WAGMIK is the coin for every Solana degen who bought the top, paper-handed the bottom, and still thinks memes are a valid investment strategy.
+    </p>
+    <div class="quote">
+      “This coin has no utility, and that’s the utility.”<br>
+      <span>– A true degen prophet</span>
     </div>
-
-    <a class="btn" href="#">Pump it on https://letsbonk.fun/</a>
+    <a href="https://letsbonk.fun" target="_blank" class="cta">Buy on Bonk Launchpad</a>
   </section>
 
-  <section>
+  <section class="section lore">
+    <h2>🧬 Lore</h2>
+    <p>
+      Born in the ashes of rugged dreams and late-night Solana spaces, $WAGMIK is a spiritual successor to every meme that mooned — and every one that didn’t.
+      <br><br>
+      Some say it was forged in the same chaotic energy that launched BONK, fueled by copium, and carried by the degenerates who refused to log off.
+      <br><br>
+      It’s not just a token — it’s a timestamp of the moment you decided to believe again.
+      <br><br>
+      Will $WAGMIK be the next legend? That’s not up to us. It’s up to you.
+    </p>
+  </section>
+
+  <section class="section tokenomics">
     <h2>📊 Tokenomics</h2>
-    <ul style="text-align: left; display: inline-block;">
-      <li>🔥 Total Supply: 1,000,000,000 $WAGMIK</li>
-      <li>🧠 Tax: 0%</li>
-      <li>👐 100% Community-owned</li>
-      <li>🧃 Utility: Memes, Copium, Vibes</li>
+    <img src="coin.png" alt="WAGMIK Coin Logo" />
+    <ul>
+      <li><strong>Total Supply:</strong> 1,000,000,000</li>
+      <li><strong>Tax:</strong> 0%</li>
+      <li><strong>Chain:</strong> Solana</li>
+      <li><strong>Utility:</strong> Memes and Copium</li>
     </ul>
-  </section>
-
-  <section>
-    <h2>📢 Roadmap</h2>
-    <ul style="text-align: left; display: inline-block;">
-      <li>Q1: Launch on Bonk Launchpad</li>
-      <li>Q2: Accidentally go viral</li>
-      <li>Q3: Merch, memes, maybe regret</li>
-      <li>Q4: $WAGMIK The Movie (Directed by AI)</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>🫂 Join the Cult</h2>
-    <p>Follow us on Twitter, yell “WAGMIK” in public, or stare into the charts until enlightenment.</p>
-    <a class="btn" href="#">Buy Now (Not Financial Advice)</a>
   </section>
 
   <footer>
-    <p⚠️ $WAGMIK is 100% memes. Launching on Solana via Bonk Launchpad. Cope responsibly.</p>
+    Made with memes, madness, and moon math ✨<br>
+    &copy; 2025 $WAGMIK. No rights reserved.<br>
+    <small>Buy the top. Exit liquidity never looked so good.</small>
   </footer>
+
+</body>
+</html>
+
 
 </body>
 </html>
