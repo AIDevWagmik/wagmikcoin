@@ -175,7 +175,7 @@
 .lore-chapter {
  opacity: 0;
  transform: translateY(30px);
- transition: all 0.8s ease-out;
+ transition: all 0.6s ease-out;
  color: #ffde6a;
  font-size: 0.9em;
  text-shadow: 1px 1px 2px #00000080;
@@ -387,6 +387,28 @@
 
   window.addEventListener('scroll', handleScroll);
   window.addEventListener('load', handleScroll); // trigger on load too
+</script>
+
+<script>
+  const options = {
+    root: null, // viewport
+    rootMargin: '0px',
+    threshold: 0.2 // Trigger when 20% visible
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      } else {
+        entry.target.classList.remove('visible');
+      }
+    });
+  }, options);
+
+  document.querySelectorAll('.lore-chapter').forEach(chapter => {
+    observer.observe(chapter);
+  });
 </script>
 
 </body>
