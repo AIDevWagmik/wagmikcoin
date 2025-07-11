@@ -207,7 +207,7 @@ header h1, .section h2 {
   z-index: 10;
 }
 
-lore-chapter {
+.lore-chapter {
   opacity: 0;
   transform: translateY(30px);
   transition: opacity 0.7s ease, transform 0.7s ease;
@@ -253,6 +253,19 @@ lore-chapter {
       0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
       100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
     }
+
+.tokenomics {
+  background: url('tokenomics-bg.png') center center no-repeat;
+  background-size: cover;
+  background-attachment: scroll;
+  padding: 100px 20px;
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  text-align: center;
+  box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.45);
+  border-radius: 15px;
+}
 
     footer {
       text-align: center;
@@ -359,7 +372,7 @@ lore-chapter {
 <section class="section tokenomics">
   <h2>📊 Tokenomics</h2>
   <img src="coin.png" alt="WAGMIK Coin Logo" />
-  <ul style="list-style:none; padding:0; text-align:center;">
+  <ul>
     <li><strong>Total Supply:</strong> 1,000,000,000</li>
     <li><strong>Tax:</strong> 0%</li>
     <li><strong>Chain:</strong> Solana</li>
