@@ -160,24 +160,20 @@
   100% { transform: translateX(-50%); }
 }
 
-.lore-timeline {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  padding: 60px 20px;
-  max-width: 900px;
-  margin: auto;
+.lore-scroll {
+  max-width: 800px;
+  margin: 100px auto;
+  padding: 20px;
+  text-align: right;
 }
 
 .lore-chapter {
   opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.8s ease-out;
-  color: #ffde6a;
-  font-size: 1em;
-  margin-bottom: 40px;
-  text-align: right;
-  max-width: 60%;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  margin: 40px 0;
+  font-size: 1.2em;
+  line-height: 1.6;
 }
 
 .lore-chapter.visible {
@@ -227,7 +223,14 @@
 </head>
 <body>
 
-<div class="lore-timeline">
+<div class="coin-fall" id="coin-fall"></div>
+
+<header>
+  <h1>$WAGMIK</h1>
+  <p>We’re All Gonna Make It… Kinda</p>
+</header>
+
+<section class="lore-scroll">
   <div class="lore-chapter">In the deep shadows of Solana memecoin culture...</div>
   <div class="lore-chapter">While BONK soared to memetic greatness, $WAGMIK sat quietly in the trenches...</div>
   <div class="lore-chapter">He wasn’t the fastest dog. He wasn’t airdropped to influencers...</div>
@@ -235,15 +238,8 @@
   <div class="lore-chapter">But instead of giving up, he asked ChatGPT for advice...</div>
   <div class="lore-chapter">Born from regret and refined by copium, $WAGMIK clawed into existence...</div>
   <div class="lore-chapter">Now, $WAGMIK isn’t here to change the world...</div>
-  <div class="lore-chapter">He’s not just a token. He’s a story. A meme. A movement...</div>
-</div>
-
-<div class="coin-fall" id="coin-fall"></div>
-
-<header>
-  <h1>$WAGMIK</h1>
-  <p>We’re All Gonna Make It… Kinda</p>
-</header>
+  <div class="lore-chapter">He’s not just a token. He’s a story. A meme. A movement.</div>
+</section>
 
 <section class="section about">
   <h2>🚀 About</h2>
@@ -388,6 +384,12 @@
 </script>
 
 <script>
+  const options = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.2
+  };
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -396,12 +398,10 @@
         entry.target.classList.remove('visible');
       }
     });
-  }, {
-    threshold: 0.2
-  });
+  }, options);
 
-  document.querySelectorAll('.lore-chapter').forEach(chap => {
-    observer.observe(chap);
+  document.querySelectorAll('.lore-chapter').forEach(chapter => {
+    observer.observe(chapter);
   });
 </script>
 
