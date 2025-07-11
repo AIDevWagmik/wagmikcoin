@@ -160,6 +160,40 @@
   100% { transform: translateX(-50%); }
 }
 
+.lore-sidebar {
+ position: fixed;
+ top: 120px;
+ right: 20px;
+ width: 280px;
+ z-index: 10;
+ display: flex;
+ flex-direction: column;
+ gap: 16px;
+ pointer-events: none;
+}
+
+.lore-chapter {
+ opacity: 0;
+ transform: translateY(30px);
+ transition: all 0.8s ease-out;
+ color: #ffde6a;
+ font-size: 0.9em;
+ text-shadow: 1px 1px 2px #00000080;
+ max-width: 100%;
+}
+
+.lore-chapter.visible {
+ opacity: 1;
+ transform: translateY(0);
+}
+
+/* Hide on mobile */
+@media (max-width: 768px) {
+ .lore-sidebar {
+   display: none;
+ }
+}
+
 
     .coin-fall {
       position: fixed;
@@ -194,6 +228,17 @@
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
 </head>
 <body>
+
+<div class="lore-sidebar">
+ <div class="lore-chapter" style="--delay: 0;">In the deep shadows of Solana memecoin culture...</div>
+ <div class="lore-chapter" style="--delay: 1;">While BONK soared to memetic greatness, $WAGMIK sat quietly in the trenches...</div>
+ <div class="lore-chapter" style="--delay: 2;">He wasn’t the fastest dog. He wasn’t airdropped to influencers...</div>
+ <div class="lore-chapter" style="--delay: 3;">He was BONK’s underdog cousin...</div>
+ <div class="lore-chapter" style="--delay: 4;">But instead of giving up, he asked ChatGPT for advice...</div>
+ <div class="lore-chapter" style="--delay: 5;">Born from regret and refined by copium, $WAGMIK clawed into existence...</div>
+ <div class="lore-chapter" style="--delay: 6;">Now, $WAGMIK isn’t here to change the world...</div>
+ <div class="lore-chapter" style="--delay: 7;">He’s not just a token. He’s a story. A meme. A movement...</div>
+</div>
 
 <div class="coin-fall" id="coin-fall"></div>
 
@@ -322,6 +367,20 @@
   lightbox.addEventListener("click", () => {
     lightbox.style.display = "none";
   });
+</script>
+  
+<script>
+ const chapters = document.querySelectorAll('.lore-chapter');
+
+ window.addEventListener('scroll', () => {
+   const scrollY = window.scrollY;
+   chapters.forEach((chapter, i) => {
+     const trigger = (i + 1) * 400; // adjust for pace
+     if (scrollY > trigger) {
+       chapter.classList.add('visible');
+     }
+   });
+ });
 </script>
 
 </body>
