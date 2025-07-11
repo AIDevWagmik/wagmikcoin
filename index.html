@@ -254,34 +254,24 @@ header h1, .section h2 {
       100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
     }
 
-.tokenomics {
-  background: url('tokenomics-bg.png') center center no-repeat;
-  background-size: cover;
-  background-attachment: scroll;
-  padding: 100px 20px;
-  position: relative;
-  z-index: 2;
-  color: #fff;
-  text-align: center;
-  box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.45);
-  border-radius: 15px;
-}
-
 .tokenomics-section {
   position: relative;
   overflow: hidden;
+  z-index: 1;
+  padding: 60px 20px;
 }
 
-.tokenomics-background {
-  background-image: url('tokenomics-bg.png');
-  background-size: cover;
-  background-position: center;
-  opacity: 0.1; /* adjust as needed */
+.tokenomics-bg {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  background-image: url('tokenomics-bg.png'); /* your custom meme image */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.2;
   z-index: 0;
 }
 
@@ -290,12 +280,10 @@ header h1, .section h2 {
   z-index: 1;
 }
 
-    footer {
-      text-align: center;
-      padding: 30px;
-      color: #aaa;
-      font-size: 0.9em;
-    }
+.token-icon {
+  width: 120px;
+  margin: 20px 0;
+}
   </style>
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
 </head>
@@ -392,10 +380,10 @@ header h1, .section h2 {
 </section>
 
 <section class="section tokenomics-section">
-  <div class="tokenomics-background"></div>
+  <div class="tokenomics-bg"></div>
 
   <h2>📊 Tokenomics</h2>
-  <img src="coin.png" alt="WAGMIK Coin Logo" />
+  <img src="coin.png" alt="WAGMIK Coin Logo" class="token-icon" />
   <ul>
     <li><strong>Total Supply:</strong> 1,000,000,000</li>
     <li><strong>Tax:</strong> 0%</li>
