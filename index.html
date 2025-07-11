@@ -110,19 +110,19 @@ header h1, .section h2 {
     }
 
     .bottom-banner {
-      margin-top: 80px;
-      text-align: center;
-      padding-bottom: 120px; /* give extra space below */
-      background-color: rgba(26, 14, 45, 0.95); /* smooth blend */
-      backdrop-filter: blur(2px);
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: url('bottom-banner.png') no-repeat center center;
+  background-size: cover;
+  background-attachment: scroll;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
   .bottom-banner img {
-      width: 100%;
-      max-width: 1200px;
-      border-radius: 10px;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
-      opacity: 0.98;
+  display: none; /* hide the tag, now it's background-image */
 }
 
   .background-fade {
