@@ -315,15 +315,22 @@ footer {
   color: #fff;
   margin: 0 auto;
 }
-
-.section-fade {
-  position: relative;
+    
+.section-fade-bottom,
+.section-fade-top {
   width: 100%;
-  height: 120px;
-  margin-top: -120px;
-  z-index: 3;
+  height: 60px;
   pointer-events: none;
+  z-index: 1;
+  position: relative;
+}
+
+.section-fade-bottom {
   background: linear-gradient(to bottom, rgba(26, 14, 45, 0) 0%, rgba(26, 14, 45, 1) 100%);
+}
+
+.section-fade-top {
+  background: linear-gradient(to top, rgba(26, 14, 45, 0) 0%, rgba(26, 14, 45, 1) 100%);
 }
 
   </style>
@@ -338,7 +345,8 @@ footer {
   <p>We’re All Gonna Make It… Kinda</p>
 </header>
 
-<div class="section-fade"></div>
+<div class="section-fade-bottom"></div>
+<div class="section-fade-top"></div>
 
 <section class="section about">
   <h2>🚀 About</h2>
@@ -422,7 +430,10 @@ footer {
     </iframe>
   </div>
 </section>
-<div class="section-fade"></div>
+
+<div class="section-fade-bottom"></div>
+<div class="section-fade-top"></div>
+  
 <section class="tokenomics-section">
   <div class="tokenomics-content">
     <h2>📊 Tokenomics</h2>
@@ -440,7 +451,10 @@ footer {
     </div>
   </div>
 </section>
-<div class="section-fade"></div>
+
+<div class="section-fade-bottom"></div>
+<div class="section-fade-top"></div>
+
 <div class="bottom-banner">
   <img src="bottom-banner.png" alt="Crypto Influencers Holding WAGMIK Coins" />
 </div>
