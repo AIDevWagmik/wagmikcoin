@@ -18,10 +18,7 @@
       background: url('banner.png') center/cover no-repeat;
       max-height: 400px;
       padding: 80px 20px 40px;
-      background-position: center;
-      background-size: cover;
       text-align: center;
-      overflow: hidden;
     }
 
     header::before {
@@ -38,7 +35,6 @@
     header h1, header p {
       position: relative;
       z-index: 2;
-      margin: 0;
     }
 
     header h1 {
@@ -63,14 +59,12 @@
       font-size: 2.2em;
       color: #FFDE6A;
       text-align: center;
-      text-shadow: 1px 1px 4px #00000080;
     }
 
     .about p, .lore p {
       font-size: 1.1em;
       line-height: 1.6;
       text-align: center;
-      opacity: 0.95;
     }
 
     .quote {
@@ -80,41 +74,25 @@
       border-radius: 10px;
       font-style: italic;
       text-align: center;
-      box-shadow: 0 0 12px #00000030;
     }
 
     .cta {
       display: block;
       width: fit-content;
-      margin: 30px auto 0;
+      margin: 30px auto;
       background-color: #ff4fd8;
       color: #000;
       font-weight: bold;
       padding: 14px 28px;
       border-radius: 25px;
       text-decoration: none;
-      box-shadow: 0 4px 12px rgba(255, 79, 216, 0.3);
-    }
-
-    .memes-scroll {
-      display: flex;
-      overflow-x: auto;
-      gap: 20px;
-      padding: 20px 10px;
-    }
-
-    .memes-scroll img {
-      height: 240px;
-      border-radius: 10px;
-      box-shadow: 0 0 12px #00000030;
     }
 
     .tokenomics img {
       display: block;
-      margin: 30px auto 20px;
+      margin: 30px auto;
       width: 180px;
       border-radius: 50%;
-      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08);
     }
 
     .bottom-banner {
@@ -126,7 +104,41 @@
       width: 100%;
       max-width: 1200px;
       border-radius: 10px;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .memes-scroll {
+      display: flex;
+      overflow-x: auto;
+      gap: 16px;
+      padding: 20px;
+    }
+
+    .memes-scroll img {
+      height: 220px;
+      border-radius: 10px;
+    }
+
+    .coin-fall {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .coin {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      background: url('circle.png') center/cover no-repeat;
+      animation: fall 6s linear infinite;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
     }
 
     footer {
@@ -134,145 +146,108 @@
       padding: 30px;
       color: #aaa;
       font-size: 0.9em;
-      opacity: 0.7;
-    }
-
-    @keyframes fall {
-      0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-    }
-
-    .coin-fall {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .coin {
-      position: absolute;
-      width: 32px;
-      height: 32px;
-      background: url('coin.png') center/cover no-repeat;
-      animation: fall 6s linear infinite;
     }
   </style>
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
 </head>
 <body>
 
-  <div class="coin-fall" id="coin-fall"></div>
+<div class="coin-fall" id="coin-fall"></div>
 
-  <header>
-    <h1>$WAGMIK</h1>
-    <p>We’re All Gonna Make It… Kinda</p>
-  </header>
+<header>
+  <h1>$WAGMIK</h1>
+  <p>We’re All Gonna Make It… Kinda</p>
+</header>
 
-  <section class="section about">
-    <h2>🚀 About</h2>
-    <p>
-      $WAGMIK is the coin for every Solana degen who bought the top, paper-handed the bottom, and still thinks memes are a valid investment strategy.
-    </p>
-    <div class="quote">
-      “This coin has no utility, and that’s the utility.”<br>
-      <span>– A true degen prophet</span>
-    </div>
-    <a href="https://letsbonk.fun" target="_blank" class="cta">Buy on Bonk Launchpad</a>
-  </section>
+<section class="section about">
+  <h2>🚀 About</h2>
+  <p>$WAGMIK is the coin for every Solana degen who bought the top, paper-handed the bottom, and still thinks memes are a valid investment strategy.</p>
+  <div class="quote">“This coin has no utility, and that’s the utility.”<br>– A true degen prophet</div>
+  <a href="https://letsbonk.fun" class="cta" target="_blank">Buy on Bonk Launchpad</a>
+</section>
 
-  <section class="section lore">
-    <h2>🧬 Lore</h2>
-    <p>
-      Forged from chart tears and bottom buys, $WAGMIK was born in the depths of Solana Twitter and raised on hopium. Bonk was the cousin who made it. WAGMIK was left behind. Until now.
-    </p>
-  </section>
+<section class="section lore">
+  <h2>🧬 Lore</h2>
+  <p>Forged from chart tears and bottom buys, $WAGMIK was born in the depths of Solana Twitter and raised on hopium. Bonk was the cousin who made it. WAGMIK was left behind. Until now.</p>
+</section>
 
-  <section class="section">
-    <h2>🔥 The Bonk Tribute</h2>
-    <iframe
-      src="https://dexscreener.com/solana/bonk1usdt-xDXkNRW8yN3aVmD8vUwTwKcr38qXr1fMwN3KvhEHn6e?embed=1"
-      frameborder="0"
-      style="width:100%; height:500px; border:none; border-radius:12px;"
-      allowfullscreen
-    ></iframe>
-  </section>
+<section class="section">
+  <h2>🔥 The Bonk Tribute</h2>
+  <iframe
+    src="https://dexscreener.com/solana/bonk1usdt-xDXkNRW8yN3aVmD8vUwTwKcr38qXr1fMwN3KvhEHn6e?embed=1"
+    frameborder="0"
+    style="width:100%; height:500px; border:none; border-radius:12px;"
+    allowfullscreen
+  ></iframe>
+</section>
 
-  <section class="section">
-    <h2>😂 Memes</h2>
-    <div class="memes-scroll">
-      <img src="meme1.png" alt="meme 1" />
-      <img src="meme2.png" alt="meme 2" />
-      <img src="meme3.png" alt="meme 3" />
-    </div>
-  </section>
-
-  <section class="section">
-    <h2>🛒 Swap $WAGMIK</h2>
-    <p style="text-align:center; max-width:700px; margin:auto;">
-      Instantly swap SOL for $WAGMIK with Jupiter — Phantom-ready and degen-approved.
-    </p>
-    <div id="jupiter-terminal" style="width:100%; max-width:600px; margin:40px auto;"></div>
-  </section>
-
-  <section class="section tokenomics">
-    <h2>📊 Tokenomics</h2>
-    <img src="coin.png" alt="WAGMIK Coin Logo" />
-    <ul style="list-style: none; text-align: center; padding: 0;">
-      <li><strong>Total Supply:</strong> 1,000,000,000</li>
-      <li><strong>Tax:</strong> 0%</li>
-      <li><strong>Chain:</strong> Solana</li>
-      <li><strong>Utility:</strong> Vibes, Lore & Copium</li>
-    </ul>
-  </section>
-
-  <div class="bottom-banner">
-    <img src="bottom-banner.png" alt="Crypto Influencers Holding WAGMIK Coins" />
+<section class="section">
+  <h2>😂 Memes</h2>
+  <div class="memes-scroll">
+    <img src="meme1.png" alt="meme 1" />
+    <img src="meme2.png" alt="meme 2" />
+    <img src="meme3.png" alt="meme 3" />
   </div>
+</section>
 
-  <div style="text-align: center; margin: 40px auto;">
-    <a href="https://x.com/wagmikdotsol" target="_blank">
-      <img src="x_image.png" alt="Twitter/X" style="width: 42px; height: 42px;" />
-    </a>
-  </div>
+<section class="section">
+  <h2>🛒 Swap $WAGMIK</h2>
+  <div id="jupiter-terminal" style="width:100%; max-width:600px; margin:0 auto;"></div>
+</section>
 
-  <footer>
-    Made with memes, madness, and moon math ✨<br>
-    &copy; 2025 $WAGMIK. No rights reserved.<br>
-    <small>Buy the top. Exit liquidity never looked so good.</small>
-  </footer>
+<section class="section tokenomics">
+  <h2>📊 Tokenomics</h2>
+  <img src="coin.png" alt="WAGMIK Coin Logo" />
+  <ul style="list-style:none; padding:0; text-align:center;">
+    <li><strong>Total Supply:</strong> 1,000,000,000</li>
+    <li><strong>Tax:</strong> 0%</li>
+    <li><strong>Chain:</strong> Solana</li>
+    <li><strong>Utility:</strong> Vibes, Lore & Copium</li>
+  </ul>
+</section>
 
-  <!-- Falling coins script -->
-  <script>
-    function createCoin() {
-      const coin = document.createElement("div");
-      coin.classList.add("coin");
-      coin.style.left = Math.random() * 100 + "vw";
-      coin.style.animationDuration = (Math.random() * 3 + 3) + "s";
-      document.getElementById("coin-fall").appendChild(coin);
-      setTimeout(() => coin.remove(), 7000);
+<div class="bottom-banner">
+  <img src="bottom-banner.png" alt="Crypto Influencers Holding WAGMIK Coins" />
+</div>
+
+<div style="text-align:center; margin:20px;">
+  <a href="https://x.com/wagmikdotsol" target="_blank">
+    <img src="x_image.png" alt="Twitter/X" style="width:42px; height:42px;" />
+  </a>
+</div>
+
+<footer>
+  Made with memes, madness, and moon math ✨<br>
+  &copy; 2025 $WAGMIK. No rights reserved.
+</footer>
+
+<script>
+  function createCoin() {
+    const coin = document.createElement("div");
+    coin.classList.add("coin");
+    coin.style.left = Math.random() * 100 + "vw";
+    coin.style.animationDuration = (Math.random() * 3 + 3) + "s";
+    document.getElementById("coin-fall").appendChild(coin);
+    setTimeout(() => coin.remove(), 7000);
+  }
+  setInterval(createCoin, 400);
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    if (window.Jupiter) {
+      window.Jupiter.init({
+        displayMode: "integrated",
+        containerId: "jupiter-terminal",
+        endpoint: "https://api.mainnet-beta.solana.com",
+        formProps: {
+          initialInputMint: "So11111111111111111111111111111111111111112",
+          initialOutputMint: "YOUR_WAGMIK_MINT_ADDRESS_HERE"
+        }
+      });
     }
-    setInterval(createCoin, 400);
-  </script>
-
-  <!-- Jupiter init -->
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      if (window.Jupiter) {
-        window.Jupiter.init({
-          displayMode: "integrated",
-          containerId: "jupiter-terminal",
-          endpoint: "https://api.mainnet-beta.solana.com",
-          formProps: {
-            initialInputMint: "So11111111111111111111111111111111111111112",
-            initialOutputMint: "YOUR_WAGMIK_MINT_ADDRESS_HERE"
-          }
-        });
-      }
-    });
-  </script>
+  });
+</script>
 
 </body>
 </html>
