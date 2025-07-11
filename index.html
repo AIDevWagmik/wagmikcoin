@@ -256,32 +256,33 @@ header h1, .section h2 {
 
 .tokenomics-section {
   position: relative;
-  background: url('assets/background-tokenomics.png') no-repeat center center;
+  width: 100%;
+  min-height: 100vh;
+  background: url('assets/tokenomics-bg.png') no-repeat center center;
   background-size: cover;
-  padding: 100px 20px;
-  text-align: center;
-  color: #fff; /* Restore white text */
+  background-attachment: scroll;
   display: flex;
+  align-items: center;
   justify-content: center;
+  padding: 80px 20px;
+  box-sizing: border-box;
 }
 
 .tokenomics-content {
-  background: rgba(0, 0, 0, 0.4); /* Optional subtle shading to help with text contrast */
-  padding: 40px;
-  border-radius: 20px;
   max-width: 800px;
-  width: 100%;
+  text-align: center;
+  color: #fff;
 }
 
-.token-image {
+.token-logo {
   width: 120px;
-  height: auto;
-  margin: 20px 0;
+  margin: 20px auto;
+  display: block;
 }
 
 .tokenomics-content h2 {
+  font-size: 2em;
   margin-bottom: 20px;
-  color: #fff;
 }
 
 .tokenomics-content ul {
@@ -291,9 +292,10 @@ header h1, .section h2 {
 }
 
 .tokenomics-content li {
-  font-size: 1.1em;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  font-size: 1.2em;
 }
+
   </style>
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
 </head>
@@ -390,14 +392,16 @@ header h1, .section h2 {
 </section>
 
 <section class="tokenomics-section">
-  <h2>📊 Tokenomics</h2>
-  <img src="wagmik-logo.png" alt="$WAGMIK Logo" class="token-image" />
-  <ul>
-    <li><strong>Total Supply:</strong> 1,000,000,000</li>
-    <li><strong>Tax:</strong> 0%</li>
-    <li><strong>Chain:</strong> Solana</li>
-    <li><strong>Utility:</strong> Vibes, Lore & Copium</li>
-  </ul>
+  <div class="tokenomics-content">
+    <h2>📊 Tokenomics</h2>
+    <img src="assets/coin.png" alt="$WAGMIK Coin" class="token-logo" />
+    <ul>
+      <li><strong>Total Supply:</strong> 1,000,000,000</li>
+      <li><strong>Tax:</strong> 0%</li>
+      <li><strong>Chain:</strong> Solana</li>
+      <li><strong>Utility:</strong> Vibes, Lore & Copium</li>
+    </ul>
+  </div>
 </section>
 
   <div style="text-align:center; margin:20px;">
