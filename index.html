@@ -377,22 +377,19 @@
 <script>
   const chapters = document.querySelectorAll('.lore-chapter');
 
-  const observerOptions = {
-    threshold: 0.1
-  };
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
+    chapters.forEach((chapter, index) => {
+      // Reveal each chapter after a certain scroll depth
+      const triggerPoint = 500 + index * 200;
+
+      if (scrollY > triggerPoint) {
+        chapter.classList.add('visible');
       } else {
-        entry.target.classList.remove('visible');
+        chapter.classList.remove('visible');
       }
     });
-  }, observerOptions);
-
-  chapters.forEach(chapter => {
-    observer.observe(chapter);
   });
 </script>
 
