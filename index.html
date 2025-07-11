@@ -160,38 +160,42 @@
   100% { transform: translateX(-50%); }
 }
 
-.lore-scroll {
-  position: relative;
-  width: 100%;
-  padding: 100px 20px 50px;
+.about-lore-wrapper {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 80px 5%;
+  gap: 60px;
+  flex-wrap: wrap;
 }
 
-.lore-column {
+.about-column {
+  flex: 1;
+  min-width: 300px;
+}
+
+.lore-column-scroll {
+  flex: 1;
   max-width: 400px;
-  margin-right: 60px;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 60px;
 }
 
 .lore-chapter {
   opacity: 0;
   transform: translateY(30px);
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
   color: #FFDE6A;
-  font-size: 1.1em;
+  font-size: 1em;
   line-height: 1.6;
-  text-align: right;
-  font-weight: 400;
+  text-align: left;
 }
 
 .lore-chapter.visible {
   opacity: 1;
   transform: translateY(0);
 }
-
 
 .coin-fall {
   position: fixed;
@@ -234,8 +238,20 @@
   <p>We’re All Gonna Make It… Kinda</p>
 </header>
 
-<section class="lore-scroll">
-  <div class="lore-column">
+<section class="about-lore-wrapper">
+  <div class="about-column">
+    <h2>🚀 About</h2>
+    <p>
+      $WAGMIK is the coin for every Solana degen who bought the top, paper-handed the bottom, and still thinks memes are a valid investment strategy.
+    </p>
+    <div class="quote">
+      “This coin has no utility, and that’s the utility.”<br>
+      <span>– A true degen prophet</span>
+    </div>
+    <a href="https://letsbonk.fun" target="_blank" class="cta">Buy on Bonk Launchpad</a>
+  </div>
+
+  <div class="lore-column-scroll">
     <div class="lore-chapter">In the deep shadows of Solana memecoin culture...</div>
     <div class="lore-chapter">While BONK soared to memetic greatness, $WAGMIK sat quietly in the trenches...</div>
     <div class="lore-chapter">He wasn’t the fastest dog. He wasn’t airdropped to influencers...</div>
@@ -245,13 +261,6 @@
     <div class="lore-chapter">Now, $WAGMIK isn’t here to change the world...</div>
     <div class="lore-chapter">He’s not just a token. He’s a story. A meme. A movement.</div>
   </div>
-</section>
-
-<section class="section about">
-  <h2>🚀 About</h2>
-  <p>$WAGMIK is the coin for every Solana degen who bought the top, paper-handed the bottom, and still thinks memes are a valid investment strategy.</p>
-  <div class="quote">“This coin has no utility, and that’s the utility.”<br>– A true degen prophet</div>
-  <a href="https://letsbonk.fun" class="cta" target="_blank">Buy on Bonk Launchpad</a>
 </section>
 
 <section class="section lore">
