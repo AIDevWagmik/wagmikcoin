@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>$WAGMIK – We’re All Gonna Make It… Kinda</title>
   <style>
-/* Universal text shadow for better readability */
-body, h1, h2, p, li, .lore-chapter {
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+/* Stronger and more noticeable text shadow */
+body, h1, h2, p, li, .lore-chapter, .quote, .cta, footer {
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
 }
 
 /* Optional: extra boost for key headings */
@@ -19,9 +19,10 @@ header h1, .section h2 {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
   background: url('background.png') no-repeat center top;
-  background-size: cover; /* Fits screen without repeat */
-  background-attachment: scroll; /* Scrolls with content */
+  background-size: 110%; /* Zoomed-out look while covering */
+  background-attachment: scroll; /* Moves with scroll */
   background-repeat: no-repeat;
+  background-color: #1a0e2d; /* fallback behind transparent areas */
   color: #fff;
   overflow-x: hidden;
 }
