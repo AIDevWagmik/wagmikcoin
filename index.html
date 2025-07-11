@@ -256,12 +256,13 @@ header h1, .section h2 {
 
 .tokenomics-section {
   position: relative;
-  width: 100%;
+  width: 100vw;
   min-height: 100vh;
-  background-image: url('tokenomics-bg.png'); /* Make sure this is your image file name */
-  background-size: cover;
+  background-image: url('tokenomics-bg.png'); /* Your background image file */
+  background-size: contain; /* 👈 This ensures the full image fits */
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center center;
+  background-color: #1a0033; /* fallback or matching color */
   display: flex;
   justify-content: center;
   align-items: center;
