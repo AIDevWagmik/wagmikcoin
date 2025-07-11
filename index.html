@@ -237,18 +237,24 @@
 <script src="https://terminal.jup.ag/main-v4.js" defer></script>
 <div id="jupiter-terminal" style="width:100%; max-width:700px; margin:0 auto;"></div>
 
+<!-- Jupiter Embed Script -->
+<script src="https://terminal.jup.ag/main-v4.js"></script>
 <script>
-  window.addEventListener('load', () => {
-    if (window.Jupiter) {
+  window.addEventListener("load", () => {
+    const terminal = document.getElementById("jupiter-terminal");
+
+    if (window.Jupiter && terminal) {
       window.Jupiter.init({
-        containerId: "jupiter-terminal",
         displayMode: "integrated",
+        containerId: "jupiter-terminal",
         endpoint: "https://api.mainnet-beta.solana.com",
         formProps: {
           initialInputMint: "So11111111111111111111111111111111111111112", // SOL
-          initialOutputMint: "So11111111111111111111111111111111111111112", // SOL
+          initialOutputMint: "Es9vMFrzaCERBzDJbNUcGMXyQpBwwxXSwrZ4GdVYz5r9"  // ✅ USDC Mint
         }
       });
+    } else {
+      console.warn("Jupiter Terminal failed to load.");
     }
   });
 </script>
