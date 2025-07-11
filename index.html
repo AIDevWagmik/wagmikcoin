@@ -207,15 +207,23 @@ header h1, .section h2 {
   z-index: 10;
 }
 
-.lore-chapter {
+lore-chapter {
   opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
   color: #FFDE6A;
   font-size: 1em;
-  line-height: 1.5;
+  line-height: 1.6;
   text-align: left;
   max-width: 100%;
+  pointer-events: none;
+
+  /* 👇 Black outline effect */
+  text-shadow:
+    -1px -1px 0 #000,
+     1px -1px 0 #000,
+    -1px  1px 0 #000,
+     1px  1px 0 #000;
 }
 
 .lore-chapter.visible {
