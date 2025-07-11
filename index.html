@@ -118,7 +118,7 @@
 .gallery-track {
   display: flex;
   gap: 18px;
-  animation: scrollGallery 30s linear infinite;
+  animation: scrollGallery 20s linear infinite;
   padding: 10px;
 }
 
@@ -370,20 +370,21 @@
   });
 </script>
   
-
 <script>
   const observerOptions = {
     root: null,
     rootMargin: '0px',
-    threshold: 0.3
+    threshold: Array.from({ length: 11 }, (_, i) => i / 10)
+    // triggers more precisely from 0.0 to 1.0
   };
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
+      const el = entry.target;
+      if (entry.intersectionRatio > 0.2) {
+        el.classList.add('visible');
       } else {
-        entry.target.classList.remove('visible');
+        el.classList.remove('visible');
       }
     });
   }, observerOptions);
