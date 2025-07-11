@@ -256,26 +256,39 @@ header h1, .section h2 {
 
 .tokenomics-section {
   position: relative;
-  padding: 60px 20px;
-  background-image: url('tokenomics-bg.png'); /* This should be your uploaded meme image */
+  width: 100%;
+  min-height: 100vh;
+  background-image: url('tokenomics-bg.png'); /* Make sure this is your image file name */
   background-size: cover;
-  background-position: center;
   background-repeat: no-repeat;
-  background-attachment: scroll; /* Keeps it fixed inside the section */
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  box-sizing: border-box;
   z-index: 1;
 }
 
-.tokenomics-section h2,
-.tokenomics-section ul,
-.tokenomics-section img {
+.tokenomics-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35); /* Optional dark overlay to improve readability */
+  z-index: 1;
+}
+
+.tokenomics-content {
   position: relative;
   z-index: 2;
   text-align: center;
+  color: white;
 }
 
 .token-icon {
-  width: 120px;
-  margin: 20px 0;
+  width: 140px;
+  margin: 20px auto;
+  display: block;
 }
   </style>
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
@@ -373,14 +386,16 @@ header h1, .section h2 {
 </section>
 
 <section class="section tokenomics-section">
-  <h2>📊 Tokenomics</h2>
-  <img src="coin.png" alt="WAGMIK Coin Logo" class="token-icon" />
-  <ul>
-    <li><strong>Total Supply:</strong> 1,000,000,000</li>
-    <li><strong>Tax:</strong> 0%</li>
-    <li><strong>Chain:</strong> Solana</li>
-    <li><strong>Utility:</strong> Vibes, Lore & Copium</li>
-  </ul>
+  <div class="tokenomics-content">
+    <h2>📊 Tokenomics</h2>
+    <img src="coin.png" alt="$WAGMIK Coin" class="token-icon" />
+    <ul>
+      <li><strong>Total Supply:</strong> 1,000,000,000</li>
+      <li><strong>Tax:</strong> 0%</li>
+      <li><strong>Chain:</strong> Solana</li>
+      <li><strong>Utility:</strong> Vibes, Lore & Copium</li>
+    </ul>
+  </div>
 </section>
 
   <div style="text-align:center; margin:20px;">
