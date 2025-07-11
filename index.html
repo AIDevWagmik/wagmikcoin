@@ -8,37 +8,20 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #120c1f;
+      background-color: #1a0e2d;
       color: #fff;
       overflow-x: hidden;
-      position: relative;
-    }
-
-    /* Falling Coin Animation */
-    .coin {
-      position: fixed;
-      top: -50px;
-      width: 90px;
-      height: 90px;
-      background: url('circle.png') no-repeat center/contain;
-      animation: fall linear infinite;
-      opacity: 0.7;
-      z-index: 0;
-    }
-
-    @keyframes fall {
-      0% { transform: translateY(-100px) rotate(0deg); }
-      100% { transform: translateY(100vh) rotate(360deg); }
     }
 
     header {
       position: relative;
       background: url('banner.png') center/cover no-repeat;
-      height: 300px;
-      padding: 60px 20px 20px;
+      max-height: 400px;
+      padding: 80px 20px 40px;
+      background-position: center;
+      background-size: cover;
       text-align: center;
       overflow: hidden;
-      z-index: 1;
     }
 
     header::before {
@@ -48,7 +31,7 @@
       left: 0;
       height: 100%;
       width: 100%;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(18,12,31,0.95));
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(26, 14, 45, 0.9));
       z-index: 1;
     }
 
@@ -65,23 +48,22 @@
     }
 
     header p {
-      font-size: 1.3em;
-      margin-top: 10px;
-      color: #ffffffdd;
+      font-size: 1.4em;
+      margin-top: 12px;
+      color: #ffffffd9;
     }
 
     .section {
       padding: 60px 20px;
       max-width: 900px;
       margin: auto;
-      position: relative;
-      z-index: 2;
     }
 
     .section h2 {
       font-size: 2.2em;
       color: #FFDE6A;
       text-align: center;
+      text-shadow: 1px 1px 4px #00000080;
     }
 
     .about p, .lore p {
@@ -94,10 +76,11 @@
     .quote {
       margin-top: 30px;
       padding: 20px;
-      background: rgba(255,255,255,0.08);
+      background: rgba(255, 255, 255, 0.08);
       border-radius: 10px;
       font-style: italic;
       text-align: center;
+      box-shadow: 0 0 12px #00000030;
     }
 
     .cta {
@@ -110,6 +93,20 @@
       padding: 14px 28px;
       border-radius: 25px;
       text-decoration: none;
+      box-shadow: 0 4px 12px rgba(255, 79, 216, 0.3);
+    }
+
+    .memes-scroll {
+      display: flex;
+      overflow-x: auto;
+      gap: 20px;
+      padding: 20px 10px;
+    }
+
+    .memes-scroll img {
+      height: 240px;
+      border-radius: 10px;
+      box-shadow: 0 0 12px #00000030;
     }
 
     .tokenomics img {
@@ -117,64 +114,19 @@
       margin: 30px auto 20px;
       width: 180px;
       border-radius: 50%;
+      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.08);
     }
 
     .bottom-banner {
-      margin-top: 60px;
+      margin-top: 80px;
       text-align: center;
     }
 
     .bottom-banner img {
-      width: 90%;
-      max-width: 1000px;
-      border-radius: 12px;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-      text-align: center;
-    }
-
-    li {
-      margin: 12px 0;
-      font-size: 1.1em;
-    }
-
-    .x-link {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-top: 30px;
-    }
-
-    .x-link img {
-      width: 30px;
-      height: 30px;
-      margin-right: 10px;
-    }
-
-    .x-link a {
-      color: #ffffffdd;
-      font-weight: bold;
-      text-decoration: none;
-      font-size: 1.1em;
-    }
-
-    .meme-gallery {
-      overflow-x: auto;
-      white-space: nowrap;
-      padding: 20px;
-      margin-top: 40px;
-      text-align: center;
-    }
-
-    .meme-gallery img {
-      width: 280px;
-      margin: 0 12px;
-      display: inline-block;
+      width: 100%;
+      max-width: 1200px;
       border-radius: 10px;
-      box-shadow: 0 0 10px #00000066;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
     }
 
     footer {
@@ -182,55 +134,37 @@
       padding: 30px;
       color: #aaa;
       font-size: 0.9em;
+      opacity: 0.7;
     }
 
-    @media (max-width: 768px) {
-      header {
-        height: 220px;
-        padding: 40px 15px 20px;
-      }
+    @keyframes fall {
+      0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
 
-      header h1 {
-        font-size: 2em;
-      }
+    .coin-fall {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-      header p {
-        font-size: 1em;
-      }
-
-      .section {
-        padding: 40px 15px;
-      }
-
-      .section h2 {
-        font-size: 1.6em;
-      }
-
-      .tokenomics img {
-        width: 140px;
-      }
-
-      .meme-gallery img {
-        width: 200px;
-      }
+    .coin {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      background: url('coin.png') center/cover no-repeat;
+      animation: fall 6s linear infinite;
     }
   </style>
-
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
-  
 </head>
 <body>
 
-  <!-- Falling coins -->
-  <script>
-    for (let i = 0; i < 20; i++) {
-      let coin = document.createElement("div");
-      coin.className = "coin";
-      coin.style.left = Math.random() * 100 + "vw";
-      coin.style.animationDuration = 5 + Math.random() * 5 + "s";
-      document.body.appendChild(coin);
-    }
-  </script>
+  <div class="coin-fall" id="coin-fall"></div>
 
   <header>
     <h1>$WAGMIK</h1>
@@ -252,72 +186,56 @@
   <section class="section lore">
     <h2>🧬 Lore</h2>
     <p>
-      Forged from chart tears and bottom buys, $WAGMIK was born in the depths of Solana Twitter and raised on nothing but hopium and memes. Some say it carries the spirit of every moon that never happened… and every rug that did.
-      <br><br>
-      You’re not just buying a token. You’re minting belief.
+      Forged from chart tears and bottom buys, $WAGMIK was born in the depths of Solana Twitter and raised on hopium. Bonk was the cousin who made it. WAGMIK was left behind. Until now.
     </p>
   </section>
 
- <section class="section">
-  <h2>🐶 The Bonk Tribute</h2>
-  <iframe
-    src="https://dexscreener.com/solana/bonk1usdt-xDXkNRW8yN3aVmD8vUwTwKcr38qXr1fMwN3KvhEHn6e?embed=1"
-    frameborder="0"
-    style="width:100%; height:500px; border:none; border-radius:12px;"
-    allowfullscreen
-  ></iframe>
-</section>
+  <section class="section">
+    <h2>🔥 The Bonk Tribute</h2>
+    <iframe
+      src="https://dexscreener.com/solana/bonk1usdt-xDXkNRW8yN3aVmD8vUwTwKcr38qXr1fMwN3KvhEHn6e?embed=1"
+      frameborder="0"
+      style="width:100%; height:500px; border:none; border-radius:12px;"
+      allowfullscreen
+    ></iframe>
+  </section>
 
   <section class="section">
-    <h2>🤣 Meme Feed</h2>
-    <div class="meme-gallery">
-      <img src="meme1.png" alt="Meme 1" />
-      <img src="meme2.png" alt="Meme 2" />
-      <img src="meme3.png" alt="Meme 3" />
-      <img src="meme4.png" alt="Meme 4" />
+    <h2>😂 Memes</h2>
+    <div class="memes-scroll">
+      <img src="meme1.png" alt="meme 1" />
+      <img src="meme2.png" alt="meme 2" />
+      <img src="meme3.png" alt="meme 3" />
     </div>
   </section>
 
-  <section class="section lore">
-    <h2>💭 The AI-Generated Backstory</h2>
-    <p>
-      In the shadow of Bonk’s meteoric rise, forgotten in the trenches of the Solana memeverse, sat his emotionally unstable cousin: <strong>$WAGMIK</strong>.<br><br>
-      Born with the same bark, but none of the bounce, WAGMIK watched from the sidelines as Bonk made it to billboards and billion-dollar pumps.<br><br>
-      💀 Broke. 📉 Still holding his launch bag from 2021...<br><br>
-      One day, WAGMIK did what every hopeless degen does:<br>
-      <em>“Hey AI... what the f*** do I do?”</em><br><br>
-      And the AI answered: <strong>“Launch. Meme. Hope.”</strong><br><br>
-      Armed with nothing but a poorly drawn logo and too much time on Twitter, WAGMIK pressed <em>deploy</em>...<br>
-      Now he’s back. Not to make it. But to <strong>vibe until something happens</strong>.
+  <section class="section">
+    <h2>🛒 Swap $WAGMIK</h2>
+    <p style="text-align:center; max-width:700px; margin:auto;">
+      Instantly swap SOL for $WAGMIK with Jupiter — Phantom-ready and degen-approved.
     </p>
+    <div id="jupiter-terminal" style="width:100%; max-width:600px; margin:40px auto;"></div>
   </section>
 
   <section class="section tokenomics">
     <h2>📊 Tokenomics</h2>
     <img src="coin.png" alt="WAGMIK Coin Logo" />
-    <ul>
+    <ul style="list-style: none; text-align: center; padding: 0;">
       <li><strong>Total Supply:</strong> 1,000,000,000</li>
       <li><strong>Tax:</strong> 0%</li>
       <li><strong>Chain:</strong> Solana</li>
       <li><strong>Utility:</strong> Vibes, Lore & Copium</li>
     </ul>
   </section>
- 
- <section class="section">
-  <h2>🛒 Swap $WAGMIK</h2>
-  <p style="text-align:center; max-width:700px; margin:auto;">
-    Instantly swap SOL for $WAGMIK with Jupiter — Phantom-ready and degen-approved.
-  </p>
-  <div id="jupiter-terminal" style="width:100%; max-width:600px; margin:40px auto;"></div>
-</section>
-
-  <div class="x-link">
-    <img src="x_image.png" alt="X Logo" />
-    <a href="https://x.com/wagmikdotsol?s=21" target="_blank">@wagmikdotsol</a>
-  </div>
 
   <div class="bottom-banner">
-    <img src="bottom-banner.png" alt="WAGMIK Bottom Banner" />
+    <img src="bottom-banner.png" alt="Crypto Influencers Holding WAGMIK Coins" />
+  </div>
+
+  <div style="text-align: center; margin: 40px auto;">
+    <a href="https://x.com/wagmikdotsol" target="_blank">
+      <img src="x_image.png" alt="Twitter/X" style="width: 42px; height: 42px;" />
+    </a>
   </div>
 
   <footer>
@@ -326,19 +244,35 @@
     <small>Buy the top. Exit liquidity never looked so good.</small>
   </footer>
 
+  <!-- Falling coins script -->
   <script>
-  window.addEventListener('DOMContentLoaded', () => {
-    window.Jupiter.init({
-      displayMode: "integrated",
-      containerId: "jupiter-terminal",
-      endpoint: "https://api.mainnet-beta.solana.com",
-      formProps: {
-        initialInputMint: "So11111111111111111111111111111111111111112", // SOL
-        initialOutputMint: "YOUR_WAGMIK_MINT_ADDRESS_HERE",
+    function createCoin() {
+      const coin = document.createElement("div");
+      coin.classList.add("coin");
+      coin.style.left = Math.random() * 100 + "vw";
+      coin.style.animationDuration = (Math.random() * 3 + 3) + "s";
+      document.getElementById("coin-fall").appendChild(coin);
+      setTimeout(() => coin.remove(), 7000);
+    }
+    setInterval(createCoin, 400);
+  </script>
+
+  <!-- Jupiter init -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.Jupiter) {
+        window.Jupiter.init({
+          displayMode: "integrated",
+          containerId: "jupiter-terminal",
+          endpoint: "https://api.mainnet-beta.solana.com",
+          formProps: {
+            initialInputMint: "So11111111111111111111111111111111111111112",
+            initialOutputMint: "YOUR_WAGMIK_MINT_ADDRESS_HERE"
+          }
+        });
       }
     });
-  });
-</script>
+  </script>
 
 </body>
 </html>
