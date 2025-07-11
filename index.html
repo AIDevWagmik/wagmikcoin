@@ -327,20 +327,22 @@ footer {
   pointer-events: none;
 }
 
-.about-top-fade {
+.body-background-fade {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 100px;
+  height: 120px; /* adjust for stronger/softer fade */
   background: linear-gradient(to bottom, rgba(26, 14, 45, 1), rgba(26, 14, 45, 0));
-  position: relative;
-  z-index: 2;
+  z-index: 1;
   pointer-events: none;
-  margin-top: -60px; /* pulls fade up closer */
 }
 
   </style>
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
 </head>
 <body>
+  <div class="body-background-fade"></div>
 
 <div class="coin-fall" id="coin-fall"></div>
 <div class="background-top-fade"></div>
@@ -351,7 +353,6 @@ footer {
   
 </header>
 
-<div class="about-top-fade"></div>
 <section class="section about">
   <h2>🚀 About</h2>
   <p>
