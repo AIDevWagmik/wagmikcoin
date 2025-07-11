@@ -378,6 +378,8 @@
      const trigger = (i + 1) * 400; // adjust for pace
      if (scrollY > trigger) {
        chapter.classList.add('visible');
+      } else {
+       chapter.classList.remove('visible');
      }
    });
  });
