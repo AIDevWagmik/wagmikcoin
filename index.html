@@ -370,19 +370,23 @@
 </script>
   
 <script>
- const chapters = document.querySelectorAll('.lore-chapter');
+  const chapters = document.querySelectorAll('.lore-chapter');
 
- window.addEventListener('scroll', () => {
-   const scrollY = window.scrollY;
-   chapters.forEach((chapter, i) => {
-     const trigger = (i + 1) * 400; // adjust for pace
-     if (scrollY > trigger) {
-       chapter.classList.add('visible');
+  const handleScroll = () => {
+    chapters.forEach((chapter) => {
+      const rect = chapter.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+
+      if (rect.top < windowHeight - 100) {
+        chapter.classList.add('visible');
       } else {
-       chapter.classList.remove('visible');
-     }
-   });
- });
+        chapter.classList.remove('visible');
+      }
+    });
+  };
+
+  window.addEventListener('scroll', handleScroll);
+  window.addEventListener('load', handleScroll); // trigger on load too
 </script>
 
 </body>
