@@ -1,1091 +1,549 @@
-DOCTYPE html>
-
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8" />
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
   <title>$WAGMIK – We’re All Gonna Make It… Kinda</title>
-
   <style>
-
 /* Stronger and more noticeable text shadow */
-
 body, h1, h2, .lore-chapter, .quote, .cta {
-
   text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
-
 }
 
 /* Optional: extra boost for key headings */
-
 header h1, .section h2 {
-
   text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.75);
-
 }
-
-body {
-
+   
+   body {
   position: relative;
-
   margin: 0;
-
   font-family: 'Segoe UI', sans-serif;
-
   background: url('background.png') no-repeat center top;
-
   background-size: 110%; /* Zoomed-out look while covering */
-
   background-attachment: scroll; /* Moves with scroll */
-
   background-repeat: no-repeat;
-
   background-color: #1a0e2d; /* fallback behind transparent areas */
-
   color: #fff;
-
   overflow-x: hidden;
-
 }
 
-header {
-
+    header {
       position: relative;
-
       background: url('banner.png') center/cover no-repeat;
-
       max-height: 400px;
-
       padding: 80px 20px 40px;
-
       text-align: center;
-
     }
-
-
 
    header::before {
-
   content: none;
-
 }
-
-
 
     header h1, header p {
-
       position: relative;
-
       z-index: 2;
-
     }
-
-
 
     header h1 {
-
       font-size: 3.2em;
-
       color: #ffe06b;
-
       text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
-
     }
-
-
 
     header p {
-
       font-size: 1.4em;
-
       margin-top: 12px;
-
       color: #ffffffd9;
-
     }
-
-
 
     .section {
-
       padding: 60px 20px;
-
       max-width: 900px;
-
       margin: auto;
-
     }
-
-
 
     .section h2 {
-
       font-size: 2.2em;
-
       color: #FFDE6A;
-
       text-align: center;
-
     }
-
-
 
     .about p, .lore p {
-
       font-size: 1.4em;
-
       line-height: 1.6;
-
       text-align: center;
-
     }
-
-
 
     .about p, .about .quote {
-
   text-shadow: none;
-
 }
-
-
 
     .quote {
-
       margin-top: 30px;
-
       padding: 20px;
-
       background: rgba(255, 255, 255, 0.08);
-
       border-radius: 10px;
-
       font-style: italic;
-
       text-align: center;
-
     }
-
-
 
     .cta {
-
       display: block;
-
       width: fit-content;
-
       margin: 30px auto;
-
       background-color: #ff4fd8;
-
       color: #000;
-
       font-weight: bold;
-
       padding: 14px 28px;
-
       border-radius: 25px;
-
       text-decoration: none;
-
     }
-
-
 
     .tokenomics img {
-
       display: block;
-
       margin: 30px auto;
-
       width: 180px;
-
       border-radius: 50%;
-
     }
 
-
-
     .bottom-banner {
-
   position: relative;
-
   width: 100%;
-
   min-height: 100vh;
-
   background: url('bottom-banner.png') no-repeat center center;
-
   background-size: cover;
-
   background-attachment: scroll;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   box-sizing: border-box;
-
 }
-
   .bottom-banner img {
-
   display: none; /* hide the tag, now it's background-image */
-
 }
-
-
-
 
 
 /* Meme Gallery */
-
 .gallery-wrapper {
-
   overflow: hidden;
-
   width: 100%;
-
   margin-top: 30px;
-
   border-radius: 12px;
-
   position: relative;
-
 }
-
-
 
 .gallery-track {
-
   display: flex;
-
   gap: 18px;
-
   animation: scrollGallery 20s linear infinite;
-
   padding: 10px;
-
 }
-
-
 
 .gallery-meme {
-
   height: 160px;
-
   border-radius: 8px;
-
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-
   cursor: pointer;
-
 }
-
-
 
 .gallery-meme:hover {
-
   transform: scale(1.1);
-
   box-shadow: 0 6px 18px rgba(255, 255, 255, 0.25);
-
 }
-
-
 
 /* Lightbox effect */
-
 .lightbox {
-
   display: none;
-
   position: fixed;
-
   z-index: 999;
-
   top: 0; left: 0;
-
   width: 100%;
-
   height: 100%;
-
   background: rgba(0,0,0,0.85);
-
   justify-content: center;
-
   align-items: center;
-
 }
-
-
 
 .lightbox img {
-
   max-width: 90%;
-
   max-height: 90%;
-
   border-radius: 12px;
-
   box-shadow: 0 0 30px rgba(255,255,255,0.3);
-
   animation: fadeIn 0.4s ease-in-out;
-
 }
-
-
 
 @keyframes scrollGallery {
-
   0%   { transform: translateX(0); }
-
   100% { transform: translateX(-50%); }
-
 }
-
-
 
 .floating-lore-wrapper {
-
   position: relative;
-
   z-index: 5;
-
 }
-
-
 
 .floating-lore {
-
   position: fixed;
-
   top: 180px;
-
   right: 40px;
-
   width: 320px;
-
   display: flex;
-
   flex-direction: column;
-
   gap: 36px;
-
   pointer-events: none;
-
   z-index: 10;
-
 }
-
-
 
 .lore-chapter {
-
   opacity: 0;
-
   transform: translateY(30px);
-
   transition: opacity 0.7s ease, transform 0.7s ease;
-
   color: #FFDE6A;
-
   font-size: 1.5em;
-
   line-height: 1.6;
-
   text-align: left;
-
   max-width: 100%;
-
   pointer-events: none;
-
-
 
   background: rgba(0, 0, 0, 0.35); /* dark translucent background */
-
   padding: 12px 16px;
-
   border-radius: 16px;
-
   display: inline-block;
-
   backdrop-filter: blur(4px); /* soft blur behind text */
-
   text-align: center;
-
   max-width: 90%;
 
-
-
   /* 👇 Black outline effect */
-
   text-shadow:
-
     -1px -1px 0 #000,
-
      1px -1px 0 #000,
-
     -1px  1px 0 #000,
-
      1px  1px 0 #000;
-
 }
-
-
 
 .lore-chapter.visible {
-
   opacity: 1;
-
   transform: translateY(0);
-
 }
-
-
 
 .coin-fall {
-
   position: fixed;
-
   top: 0;
-
   left: 0;
-
   width: 100%;
-
   height: 100%;
-
   pointer-events: none;
-
   z-index: 2;
-
   }
-
-
 
 .coin {
-
   position: absolute;
-
   width: 32px;
-
   height: 32px;
-
   background: url('circle.png') center/cover no-repeat;
-
   animation: fall 6s linear infinite;
-
   }
 
-
-
     @keyframes fall {
-
       0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
-
       100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-
     }
 
-
-
 .tokenomics-section {
-
   position: relative;
-
   width: 100%;
-
   min-height: 100vh;
-
   background: url('tokenomics-bg.png') no-repeat center center;
-
   background-size: cover;
-
   background-attachment: scroll;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   padding: 100px 20px 20px;
-
   box-sizing: border-box;
-
   z-index: 1;
-
 }
-
-
 
 .tokenomics-section {
-
   margin-bottom: 0 !important;
-
   padding-bottom: 0 !important;
-
 }
-
-
 
 .tokenomics-section + .bottom-banner {
-
   margin-top: 0 !important;
-
   padding-bottom: 60px;
-
 }
-
-
 
 .tokenomics-content {
-
   max-width: 800px;
-
   text-align: center;
-
   color: #fff;
-
 }
-
-
 
 .token-logo {
-
   width: 120px;
-
   margin: 20px auto;
-
   display: block;
-
 }
-
-
 
 .tokenomics-content h2 {
-
   font-size: 2em;
-
   margin-bottom: 20px;
-
 }
-
-
 
 .tokenomics-content ul {
-
   list-style: none;
-
   padding: 0;
-
   margin: 0;
-
 }
-
-
 
 .tokenomics-content li {
-
   margin-bottom: 10px;
-
   font-size: 1.4em;
-
 }
-
-
 
     /* 🔧 Remove gap above Tokenomics */
-
 section.section + .tokenomics-section {
-
   margin-top: -40px; /* adjust this number as needed */
-
 }
-
-
 
 /* Optional: tighten the Jupiter section too */
-
 section.section iframe {
-
   margin-bottom: -10px;
-
 }
-
-
 
 footer {
-
   display: flex;
-
   justify-content: center;
-
   align-items: center;
-
   flex-direction: column;
-
   width: 100%;
-
   text-align: center;
-
   padding: 20px 0;
-
   font-size: 0.95em;
-
   color: #fff;
-
   margin: 0 auto;
-
 }
-
-
 
 .body-background-fade {
-
   position: absolute;
-
   top: 0;
-
   left: 0;
-
   width: 100%;
-
   height: 120px; /* adjust for stronger/softer fade */
-
   background: linear-gradient(to bottom, rgba(26, 14, 45, 1), rgba(26, 14, 45, 0));
-
   z-index: 1;
-
   pointer-events: none;
-
 }
-
-
 
 .fade-line-header-bottom {
-
   position: absolute;
-
   top: 305px;
-
   left: 0;
-
   width: 100%;
-
   height: 80px; /* adjust for stronger/softer fade */
-
   background: linear-gradient(to bottom, rgba(26, 14, 45, 1), rgba(26, 14, 45, 0));
-
   z-index: 15;
-
   pointer-events: none;
-
 }
-
-
 
 .fade-between-swap-tokenomics {
-
   position: absolute;
-
   top: -5px;
-
   left: 0;
-
   width: 100%;
-
   height: 80px; /* adjust for stronger/softer fade */
-
   background: linear-gradient(to bottom, rgba(26, 14, 45, 1), rgba(26, 14, 45, 0));
-
   z-index: 20;
-
   pointer-events: none;
-
 }
-
-
 
 .fade-between-tokenomics-bottom {
-
   position: absolute;
-
   top: 0px;
-
   left: 0;
-
   width: 100%;
-
   height: 80px; /* adjust for stronger/softer fade */
-
   background: linear-gradient(to bottom, rgba(26, 14, 45, 1), rgba(26, 14, 45, 0));
-
   z-index: 20;
-
   pointer-events: none;
-
 }
 
-
-
   </style>
-
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
-
 </head>
-
 <body>
-
   <div class="body-background-fade"></div>
-
-
 
 <div class="coin-fall" id="coin-fall"></div>
 
-
-
 <header>
-
   <h1>$WAGMIK</h1>
-
   <p>We’re All Gonna Make It… Kinda</p>
-
 </header>
-
-
 
 <div class="fade-line-header-bottom"></div>
 
-
-
 <section class="section about">
-
   <h2>🚀 About</h2>
-
-  <p>$WAGMIK is the coin for every Solana degen who bought the top, paper-handed the bottom, and still thinks memes are a valid investment strategy.</p>
-
-
-
+  <p>$WAGMIK is the coin for every Solana degen who bought the top, paper-handed the bottom, and still thinks memes are a valid investment strategy.
+  </p>
   <div class="quote">
-
     “This coin has no utility, and that’s the utility.”<br>
-
     <span>– A true degen prophet</span>
-
   </div>
-
   <a href="https://letsbonk.fun" target="_blank" class="cta">Buy on Bonk Launchpad</a>
-
 </section>
-
-
 
 <section class="section floating-lore-wrapper">
-
   <div class="floating-lore">
-
     <div class="lore-chapter">In the deep shadows of Solana memecoin culture...</div>
-
     <div class="lore-chapter">While BONK soared to memetic greatness, $WAGMIK sat quietly in the trenches...</div>
-
     <div class="lore-chapter">He wasn’t the fastest dog. He wasn’t airdropped to influencers...</div>
-
     <div class="lore-chapter">He was BONK’s underdog cousin...</div>
-
     <div class="lore-chapter">But instead of giving up, he asked ChatGPT for advice...</div>
-
     <div class="lore-chapter">Born from regret and refined by copium, $WAGMIK clawed into existence...</div>
-
     <div class="lore-chapter">Now, $WAGMIK isn’t here to change the world...</div>
-
     <div class="lore-chapter">He’s not just a token. He’s a story. A meme. A movement.</div>
-
   </div>
-
 </section>
-
-
 
 <section class="section lore">
-
   <h2>🧬 Lore</h2>
-
   <p>Forged from chart tears and bottom buys, $WAGMIK was born in the depths of Solana Twitter and raised on hopium. Bonk was the cousin who made it. WAGMIK was left behind. Until now.</p>
-
 </section>
-
-
 
 <section class="section">
-
   <h2>🔥 The Bonk Tribute</h2>
-
   <iframe
-
     src="https://dexscreener.com/solana/ysq96dvzrrmvrassyb2vr5chfwosqdrzqrgnmrrtr1l"
-
     frameborder="0"
-
     style="width:100%; height:500px; border:none; border-radius:12px;"
-
     allowfullscreen
-
   ></iframe>
-
 </section>
-
-
 
 <!-- 🚀 Meme Gallery Section -->
-
 <section class="section" id="meme-gallery">
-
   <h2>😂 Community Memes</h2>
-
   <div class="gallery-wrapper">
-
     <div class="gallery-track" id="memeTrack">
-
       <!-- REPLACE src with your meme file paths -->
-
       <img src="meme1.png" alt="Meme 1" class="gallery-meme" />
-
       <img src="meme2.png" alt="Meme 2" class="gallery-meme" />
-
       <img src="meme3.png" alt="Meme 3" class="gallery-meme" />
-
       <img src="meme4.png" alt="Meme 4" class="gallery-meme" />
-
       <img src="meme5.png" alt="Meme 5" class="gallery-meme" />
-
       <img src="meme6.png" alt="Meme 6" class="gallery-meme" />
-
       <img src="meme7.png" alt="Meme 7" class="gallery-meme" />
-
       <img src="meme8.png" alt="Meme 8" class="gallery-meme" />
-
       <img src="meme9.png" alt="Meme 9" class="gallery-meme" />
-
       <img src="meme10.png" alt="Meme 10" class="gallery-meme" />
-
       <img src="meme11.png" alt="Meme 11" class="gallery-meme" />
-
       <img src="meme12.png" alt="Meme 12" class="gallery-meme" />
-
       <!-- Add as many as needed -->
-
     </div>
-
   </div>
-
-
 
    <!-- Lightbox -->
-
   <div id="lightbox" class="lightbox">
-
     <img src="" alt="Zoomed Meme" id="lightbox-img" />
-
   </div>
-
 </section>
-
-
 
 <!-- Jupiter Swap Section -->
-
 <section class="section">
-
   <h2>🛒 Swap $WAGMIK</h2>
-
   <div style="display: flex; justify-content: center;">
-
     <iframe
-
       src="https://terminal.jup.ag/embed?inputMint=So11111111111111111111111111111111111111112&outputMint=Es9vMFrzaCERBzDJbNUcGMXyQpBwwxXSwrZ4GdVYz5r9&theme=dark"
-
       width="420"
-
       height="600"
-
       allow="clipboard-write"
-
       frameborder="0"
-
       style="border-radius: 16px; max-width: 100%;">
-
     </iframe>
-
   </div>
-
 </section>
-
-  
-
+ 
 <section class="tokenomics-section">
-
   <div class="fade-between-swap-tokenomics"></div>
-
   <div class="tokenomics-content">
-
     <h2>📊 Tokenomics</h2>
-
     <img src="coin.png" alt="$WAGMIK Coin" class="token-logo" />
-
     <ul>
-
-      <li><strong>Total Supply:</strong> 1,000,000,000</li>
-
+      <li><strong>Total Supply:</strong> 1,000,000,000></li>
       <li><strong>Tax:</strong> 0%</li>
-
-      <li><strong>Chain:</strong> Solan</li>
-
+      <li><strong>Chain:</strong> Solana</li>
       <li><strong>Utility:</strong> Vibes, Lore & Copium</li>
-
     </ul>
-
     <div style="margin-top: 30px;">
-
       <a href="https://x.com/wagmikdotsol" target="_blank">
-
         <img src="x_image.png" alt="Twitter/X" style="width:42px; height:42px;" />
-
       </a>
-
     </div>
-
   </div>
-
 </section>
-
-
 
 <div class="bottom-banner">
-
 <div class="fade-between-tokenomics-bottom"></div>
-
   <img src="bottom-banner.png" alt="Crypto Influencers Holding WAGMIK Coins" />
-
 </div>
-
-  
-
+ 
 <footer>
-
   Made with memes, madness, and moon math ✨<br>
-
   &copy; 2025 $WAGMIK. No rights reserved.
-
 </footer>
 
-
-
 <script>
-
   function createCoin() {
-
     const coin = document.createElement("div");
-
     coin.classList.add("coin");
-
     coin.style.left = Math.random() * 100 + "vw";
-
     coin.style.animationDuration = (Math.random() * 3 + 3) + "s";
-
     document.getElementById("coin-fall").appendChild(coin);
-
     setTimeout(() => coin.remove(), 7000);
-
   }
-
   setInterval(createCoin, 400);
-
 </script>
-
-
 
   <script>
-
   // Lightbox Logic
-
   const lightbox = document.getElementById("lightbox");
-
   const lightboxImg = document.getElementById("lightbox-img");
-
   const memes = document.querySelectorAll(".gallery-meme");
 
-
-
   memes.forEach((meme) => {
-
     meme.addEventListener("click", () => {
-
       lightboxImg.src = meme.src;
-
       lightbox.style.display = "flex";
-
     });
-
   });
-
-
 
   lightbox.addEventListener("click", () => {
-
     lightbox.style.display = "none";
-
   });
-
 </script>
-
-  
-
+ 
 <script>
-
   const chapters = document.querySelectorAll('.lore-chapter');
 
-
-
   window.addEventListener('scroll', () => {
-
     const scrollY = window.scrollY;
 
-
-
     chapters.forEach((chapter, index) => {
-
       // Reveal each chapter after a certain scroll depth
-
       const triggerPoint = 500 + index * 200;
 
-
-
       if (scrollY > triggerPoint) {
-
         chapter.classList.add('visible');
-
       } else {
-
         chapter.classList.remove('visible');
-
       }
-
     });
-
   });
-
 </script>
 
-
-
 </body>
-
 </html>
