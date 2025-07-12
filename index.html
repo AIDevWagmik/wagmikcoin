@@ -54,7 +54,12 @@ header h1, .section h2 {
     header p {
       font-size: 1.4em;
       margin-top: 12px;
-      color: #ffffffd9;
+      color: #ffa500;
+      text-shadow:
+         -2px -2px 0 #000,
+          2px -2px 0 #000,
+         -2px  2px 0 #000,
+          2px  2px 0 #000;
     }
 
     .section {
@@ -74,10 +79,6 @@ header h1, .section h2 {
       line-height: 1.6;
       text-align: center;
     }
-
-    .about p, .about .quote {
-  text-shadow: none;
-}
 
     .quote {
       margin-top: 30px;
@@ -281,6 +282,11 @@ header h1, .section h2 {
   max-width: 800px;
   text-align: center;
   color: #fff;
+  text-shadow:
+    -2px -2px 0 #000,
+     2px -2px 0 #000,
+    -2px  2px 0 #000,
+     2px  2px 0 #000;
 }
 
 .token-logo {
@@ -398,7 +404,7 @@ footer {
 
 <section class="section about">
   <h2>🚀 About</h2>
-  <p class="white-outline">$WAGMIK is the coin for every Solana degen who bought the top, paper-handed the bottom, and still thinks memes are a valid investment strategy.
+  <p">$WAGMIK is the coin for every Solana degen who bought the top, paper-handed the bottom, and still thinks memes are a valid investment strategy.
   </p>
   <div class="quote white-outline"">
     “This coin has no utility, and that’s the utility.”<br>
@@ -483,7 +489,7 @@ footer {
   <div class="tokenomics-content">
     <h2>📊 Tokenomics</h2>
     <img src="coin.png" alt="$WAGMIK Coin" class="token-logo" />
-    <ul class="white-outline">
+    <ul>
       <li><strong>Total Supply:</strong> 1,000,000,000></li>
       <li><strong>Tax:</strong> 0%</li>
       <li><strong>Chain:</strong> Solana</li>
