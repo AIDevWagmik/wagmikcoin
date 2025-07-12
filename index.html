@@ -188,10 +188,10 @@ header h1, .section h2 {
 }
 
 .floating-lore {
-  position: fixed;
-  top: 180px;
-  right: 40px;
-  width: 320px;
+  position: relative;
+  margin-top: 20px;
+  right: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 36px;
@@ -538,7 +538,7 @@ footer {
 
     chapters.forEach((chapter, index) => {
       // Reveal each chapter after a certain scroll depth
-      const triggerPoint = 200 + index * 180;
+      const triggerPoint = 200 + index * 150;
 
       if (scrollY > triggerPoint) {
         chapter.classList.add('visible');
