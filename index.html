@@ -651,6 +651,10 @@ footer {
   padding: 0;
 }
 
+.meme-modal {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .meme-modal {
     background: url('mobile-console-layout.png') center center no-repeat;
@@ -915,6 +919,27 @@ body {
   }
 }
 
+/* 👇 Ensure buttons show and are stacked correctly on desktop */
+@media (min-width: 769px) {
+  .meme-toggle-btn,
+  .degen-toggle-btn {
+    display: block;
+    position: fixed;
+    right: 20px;
+    z-index: 1001;
+  }
+
+  .degen-toggle-btn {
+    bottom: 80px;
+    background: #ffe06b;
+  }
+
+  .meme-toggle-btn {
+    bottom: 20px;
+    background: #ff4fd8;
+  }
+}
+
   </style>
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
 </head>
@@ -1063,9 +1088,9 @@ body {
 <button class="degen-toggle-btn" onclick="toggleDegen()">🧠 Degen Mode</button>
 
 <!-- Meme Generator Toggle Button -->
-<button class="meme-toggle-btn" onclick="toggleMeme()">🎭 Meme Generator</button>
+<!-- Meme Generator Toggle Button (shown on all screens) -->
+<button class="meme-toggle-btn" onclick="toggleMeme()" id="memeToggleBtn">🎭 Meme Generator</button>
 
-<!-- Meme Generator Modal -->
 <!-- Meme Generator Modal -->
 <div class="meme-modal" id="memeModal">
   <button class="close-meme" onclick="toggleMeme()">✖</button>
