@@ -640,14 +640,17 @@ footer {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.95);
+  background: url('console-layout.png') center center no-repeat;
+  background-size: cover;
   z-index: 1000;
-  padding: 40px 20px;
+  padding: 40px;
   box-sizing: border-box;
 }
 
 .meme-modal.active {
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .meme-modal h2 {
@@ -1463,6 +1466,19 @@ canvas.addEventListener("wheel", (e) => {
 </script>
 
 <div style="height: 150vh;<>/div>
+
+<button class="degen-toggle-btn" onclick="toggleDegen()">🧠 Degen Mode</button>
+<button class="meme-toggle-btn" onclick="toggleMeme()">🎭 Meme Generator</button>
+
+<div class="meme-modal" id="memeModal">
+  <button class="close-meme" onclick="toggleMeme()">✖</button>
+  <div class="meme-controls-wrapper">
+    <div class="meme-controls">
+      <!-- controls go here -->
+    </div>
+    <canvas id="memeCanvas" width="500" height="500"></canvas>
+  </div>
+</div>
 
 </body>
 </html>
