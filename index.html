@@ -1131,7 +1131,7 @@ footer {
 </div>
 
 <!-- 🔮 Degen Prophecies Modal -->
-<div class="degen-modal" id="degenModal">
+<div class="degen-modal" id="degenModal" style="display: none;">
   <button class="close-degen" onclick="toggleDegen()">✖</button>
   <h2>Degen Prophecies by $WAGMIK</h2>
   <p id="degenProphecy">Loading prophecy...</p>
@@ -1206,6 +1206,15 @@ footer {
 function toggleDegen() {
   const modal = document.getElementById('degenModal');
   const prophecy = document.getElementById('degenProphecy');
+
+  if (modal.style.display !== 'flex') {
+    const line = degenLines[Math.floor(Math.random() * degenLines.length)];
+    prophecy.textContent = `"${line}"`;
+    modal.style.display = 'flex';
+  } else {
+    modal.style.display = 'none';
+  }
+}
 
   if (!modal.classList.contains('active')) {
     // Choose random prophecy
@@ -1357,12 +1366,9 @@ function drawCanvas() {
 
   function toggleMeme() {
   const modal = document.getElementById('memeModal');
-  if (modal.style.display === 'flex') {
-    modal.style.display = 'none';
-  } else {
-    modal.style.display = 'flex';
-  }
+  modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
 }
+
 
   function downloadMeme() {
     const link = document.createElement('a');
