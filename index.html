@@ -442,10 +442,10 @@ footer {
     display: none;
   }
   
- .lore-toggle-btn {
+.lore-toggle-btn {
   display: none;
   position: fixed;
-  bottom: 140px; /* Above the other two */
+  bottom: 140px;
   right: 20px;
   z-index: 999;
   background: #ff4fd8;
@@ -456,6 +456,16 @@ footer {
   border-radius: 25px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.4);
   cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .floating-lore-wrapper {
+    display: none;
+  }
+
+  .lore-toggle-btn {
+    display: block; /* ✅ Show it on mobile now */
+  }
 }
 
 @media (max-width: 768px) {
@@ -621,6 +631,10 @@ footer {
   border-radius: 25px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.4);
   cursor: pointer;
+}
+
+.meme-toggle-btn {
+  display: block;
 }
 
 .meme-modal {
@@ -1052,7 +1066,7 @@ body {
 <button class="meme-toggle-btn" onclick="toggleMeme()">🎭 Meme Generator</button>
 
 <!-- Meme Generator Modal -->
-<div class="meme-controls" style="position: absolute; top: 25%; left: 10%; width: 35%;">
+<div> class="meme-controls" style="position: absolute; top: 25%; left: 10%; width: 35%;">
   <label for="bgSelect">Select Background:</label>
   <select id="bgSelect">
     <option value="">None</option>
@@ -1086,10 +1100,9 @@ body {
 
   <button onclick="drawMeme()">Preview</button>
   <button onclick="downloadMeme()">Download</button>
+ <canvas id="memeCanvas" class="console-canvas" width="500" height="500"></canvas>
+  </div>
 </div>
-
-<!-- Canvas positioned inside the screen (adjust % as needed) -->
-<canvas id="memeCanvas" width="500" height="500" style="position: absolute; top: 20%; right: 5%; max-width: 40%;"></canvas>
 
 <footer>
   Made with memes, madness, and moon math ✨<br>
