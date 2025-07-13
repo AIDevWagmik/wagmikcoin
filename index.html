@@ -442,9 +442,20 @@ footer {
     display: none;
   }
   
-  .lore-toggle-btn {
-    display: block;
-  }
+ .lore-toggle-btn {
+  display: none;
+  position: fixed;
+  bottom: 140px; /* Above the other two */
+  right: 20px;
+  z-index: 999;
+  background: #ff4fd8;
+  color: #000;
+  padding: 12px 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 25px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  cursor: pointer;
 }
 
 @media (max-width: 768px) {
@@ -619,11 +630,18 @@ footer {
   left: 0;
   width: 100vw;
   height: 100vh;
-  overflow-y: auto; /* ✅ Fix scroll cutoff */
-  background: rgba(0, 0, 0, 0.95);
+  background: url('console-layout.png') center center no-repeat;
+  background-size: cover;
   z-index: 1000;
-  padding: 40px 20px;
   box-sizing: border-box;
+  padding: 0;
+}
+
+@media (max-width: 768px) {
+  .meme-modal {
+    background: url('mobile-console-layout.png') center center no-repeat;
+    background-size: cover;
+  }
 }
 
 body {
@@ -1034,30 +1052,44 @@ body {
 <button class="meme-toggle-btn" onclick="toggleMeme()">🎭 Meme Generator</button>
 
 <!-- Meme Generator Modal -->
-<div class="meme-modal" id="memeModal">
-  <button class="close-meme" onclick="toggleMeme()">&times;</button>
+<div class="meme-controls" style="position: absolute; top: 25%; left: 10%; width: 35%;">
+  <label for="bgSelect">Select Background:</label>
+  <select id="bgSelect">
+    <option value="">None</option>
+    <option value="bg-trading.png">Trading Setup</option>
+    <option value="bg-luxury.png">Luxury Lifestyle</option>
+    <option value="bg-degen.png">Degen House</option>
+  </select>
 
-  <div class="console-container">
-    <img 
-      src="console-layout.png"
-      alt="Console Layout"
-      class="console-bg"
-      id="consoleBg"
-    />
+  <label for="hatSelect">Select Hat Accessory:</label>
+  <select id="hatSelect">
+    <option value="">None</option>
+    <option value="wagmik-hat.png">WAGMIK Hat</option>
+    <option value="bonk-hat.png">BONK Hat</option>
+    <option value="degen-hat.png">DEGEN Hat</option>
+  </select>
 
-    <!-- Invisible but clickable inputs positioned to match the layout -->
-    <select id="bgSelect" class="input-console input-bg"></select>
-    <select id="hatSelect" class="input-console input-hat"></select>
-    <select id="chainSelect" class="input-console input-chain"></select>
-    <select id="characterSelect" class="input-console input-character"></select>
-    <input type="text" id="topText" class="input-console input-top-text" placeholder="Top Text" />
-    <input type="text" id="bottomText" class="input-console input-bottom-text" placeholder="Bottom Text" />
-    <button onclick="drawMeme()" class="console-btn preview-btn"></button>
-    <button onclick="downloadMeme()" class="console-btn download-btn"></button>
+  <label for="chainSelect">Select Chain Accessory:</label>
+  <select id="chainSelect">
+    <option value="">None</option>
+    <option value="chain-wagmik.png">WAGMIK Chain</option>
+  </select>
 
-    <canvas id="memeCanvas" width="500" height="500" class="console-canvas"></canvas>
-  </div>
+  <label for="characterSelect">Select Character:</label>
+  <select id="characterSelect">
+    <option value="">None</option>
+    <option value="wagmik-cheering.png">WAGMIK Cheering</option>
+  </select>
+
+  <input type="text" id="topText" placeholder="Top Text">
+  <input type="text" id="bottomText" placeholder="Bottom Text">
+
+  <button onclick="drawMeme()">Preview</button>
+  <button onclick="downloadMeme()">Download</button>
 </div>
+
+<!-- Canvas positioned inside the screen (adjust % as needed) -->
+<canvas id="memeCanvas" width="500" height="500" style="position: absolute; top: 20%; right: 5%; max-width: 40%;"></canvas>
 
 <footer>
   Made with memes, madness, and moon math ✨<br>
@@ -1187,6 +1219,12 @@ function toggleDegen() {
 
   if (characterSrc) {
     characterImg.src = characterSrc;
+    characterImg.onload = () => {
+    drawCanvas();
+  };
+} else {
+  characterImg = new Image(); // ✅ Ensure old image is cleared
+  drawCanvas();
 }
 
 
@@ -1201,7 +1239,13 @@ function toggleDegen() {
   // Always set chain image
   if (chainSrc) {
     chainImg.src = chainSrc;
-  }
+    chainImg.onload = () => {
+    drawCanvas();
+  };
+} else {
+  chainImg = new Image(); // ✅ Ensure old image is cleared
+  drawCanvas();
+}
 
   // Load hat image and draw after it's ready
   if (hatSrc) {
@@ -1210,6 +1254,7 @@ function toggleDegen() {
       drawCanvas();
     };
   } else {
+    hatImg = new Image(); // ✅ Ensure old image is cleared
     drawCanvas();
   }
 }
