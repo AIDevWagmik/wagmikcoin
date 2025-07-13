@@ -633,10 +633,6 @@ footer {
   cursor: pointer;
 }
 
-.meme-toggle-btn {
-  display: block;
-}
-
 .meme-modal {
   display: none;
   position: fixed;
@@ -644,28 +640,11 @@ footer {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: url('console-layout.png') center center no-repeat;
-  background-size: cover;
+  background: rgba(0, 0, 0, 0.95);
   z-index: 1000;
+  padding: 40px 20px;
   box-sizing: border-box;
-  padding: 0;
 }
-
-.meme-modal {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .meme-modal {
-    background: url('mobile-console-layout.png') center center no-repeat;
-    background-size: cover;
-  }
-}
-
-body {
-  overflow-x: hidden;
-}
-
 
 .meme-modal.active {
   display: block;
@@ -708,27 +687,6 @@ body {
   cursor: pointer;
 }
 
-@media (max-width: 480px) {
-  .meme-modal {
-    padding: 20px 10px;
-  }
-
-  .meme-controls {
-    gap: 8px;
-  }
-
-  .meme-controls select,
-  .meme-controls input,
-  .meme-controls button {
-    font-size: 0.9em;
-    padding: 8px;
-  }
-
-  #memeCanvas {
-    width: 100%;
-    height: auto;
-  }
-}
 
 @media (min-width: 768px) {
   .meme-controls-wrapper {
@@ -1089,47 +1047,48 @@ body {
 
 <!-- Meme Generator Toggle Button -->
 <!-- Meme Generator Toggle Button (shown on all screens) -->
-<button class="meme-toggle-btn" onclick="toggleMeme()" id="memeToggleBtn">🎭 Meme Generator</button>
+<button class="meme-toggle-btn" onclick="toggleMeme()">🎭 Meme Generator</button>
 
 <!-- Meme Generator Modal -->
 <div class="meme-modal" id="memeModal">
-  <button class="close-meme" onclick="toggleMeme()">✖</button>
-  <div class="console-container">
-    <img src="console-layout.png" class="console-bg" alt="Console Layout">
-    
-    <!-- Controls -->
-    <select id="bgSelect" class="input-console input-bg">
-      <option value="">None</option>
+  <button class="close-meme" onclick="toggleMeme()">&times;</button>
+  <h2>Generate Your $WAGMIK Meme</h2>
+  <div class="meme-controls">
+    <label for="bgSelect">Select Background:</label>
+    <select id="bgSelect">
       <option value="bg-trading.png">Trading Setup</option>
       <option value="bg-luxury.png">Luxury Lifestyle</option>
       <option value="bg-degen.png">Degen House</option>
     </select>
 
-    <select id="hatSelect" class="input-console input-hat">
+    <label for="hatSelect">Select Hat Accessory:</label>
+    <select id="hatSelect">
       <option value="">None</option>
       <option value="wagmik-hat.png">WAGMIK Hat</option>
       <option value="bonk-hat.png">BONK Hat</option>
       <option value="degen-hat.png">DEGEN Hat</option>
     </select>
 
-    <select id="chainSelect" class="input-console input-chain">
-      <option value="">None</option>
-      <option value="chain-wagmik.png">WAGMIK Chain</option>
+    <label for="chainSelect">Select Chain Accessory:</label>
+    <select id="chainSelect">
+     <option value="">None</option>
+     <option value="chain-wagmik.png">WAGMIK Chain</option>
     </select>
 
-    <select id="characterSelect" class="input-console input-character">
-      <option value="">None</option>
-      <option value="wagmik-cheering.png">WAGMIK Cheering</option>
-    </select>
+   <label for="characterSelect">Select Character:</label>
+   <select id="characterSelect">
+    <option value="">None</option>
+    <option value="wagmik-cheering.png">WAGMIK Cheering</option>
+   </select>
 
-    <input type="text" id="topText" placeholder="Top Text" class="input-console input-top-text">
-    <input type="text" id="bottomText" placeholder="Bottom Text" class="input-console input-bottom-text">
 
-    <button onclick="drawMeme()" class="console-btn preview-btn">Preview</button>
-    <button onclick="downloadMeme()" class="console-btn download-btn">Download</button>
-
-    <canvas id="memeCanvas" class="console-canvas" width="300" height="300"></canvas>
+    <input type="text" id="topText" placeholder="Top Text">
+    <input type="text" id="bottomText" placeholder="Bottom Text">
+    <button onclick="drawMeme()">Preview</button>
+    <button onclick="downloadMeme()">Download</button>
   </div>
+
+  <canvas id="memeCanvas" width="500" height="500"></canvas>
 </div>
 
 
@@ -1221,7 +1180,7 @@ function toggleDegen() {
   });
 </script>
 
-  <script>
+ <script>
   const canvas = document.getElementById('memeCanvas');
   const ctx = canvas.getContext('2d');
   const bgSelect = document.getElementById('bgSelect');
@@ -1446,76 +1405,6 @@ canvas.addEventListener("wheel", (e) => {
   }
 });
 
-let activeItem = null;
-let startDist = null;
-
-// 🔹 Detect which item is touched
-canvas.addEventListener("touchstart", (e) => {
-  const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
-  const x = touch.clientX - rect.left;
-  const y = touch.clientY - rect.top;
-
-  const checkHit = (ix, iy, iw, ih) => x >= ix && x <= ix + iw && y >= iy && y <= iy + ih;
-
-  if (checkHit(hatX, hatY, hatImg.width * hatScale, hatImg.height * hatScale)) {
-    activeItem = 'hat';
-  } else if (checkHit(chainX, chainY, chainImg.width * chainScale, chainImg.height * chainScale)) {
-    activeItem = 'chain';
-  } else if (checkHit(characterX, characterY, characterImg.width * characterScale, characterImg.height * characterScale)) {
-    activeItem = 'character';
-  }
-
-  // Store starting distance for resizing
-  if (e.touches.length === 2) {
-    const dx = e.touches[0].clientX - e.touches[1].clientX;
-    const dy = e.touches[0].clientY - e.touches[1].clientY;
-    startDist = Math.sqrt(dx * dx + dy * dy);
-  }
-});
-
-canvas.addEventListener("touchmove", (e) => {
-  e.preventDefault(); // Prevent scroll
-
-  const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
-  const x = touch.clientX - rect.left;
-  const y = touch.clientY - rect.top;
-
-  const moveItem = (setX, setY, w, h) => {
-    setX(x - w / 2);
-    setY(y - h / 2);
-    drawMeme();
-  };
-
-  if (activeItem === 'hat') {
-    moveItem((v) => hatX = v, (v) => hatY = v, hatImg.width * hatScale, hatImg.height * hatScale);
-  } else if (activeItem === 'chain') {
-    moveItem((v) => chainX = v, (v) => chainY = v, chainImg.width * chainScale, chainImg.height * chainScale);
-  } else if (activeItem === 'character') {
-    moveItem((v) => characterX = v, (v) => characterY = v, characterImg.width * characterScale, characterImg.height * characterScale);
-  }
-
-  // Handle pinch zoom
-  if (e.touches.length === 2 && activeItem) {
-    const dx = e.touches[0].clientX - e.touches[1].clientX;
-    const dy = e.touches[0].clientY - e.touches[1].clientY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    const scaleDelta = (dist - startDist) * 0.005;
-
-    if (activeItem === 'hat') hatScale = Math.max(0.1, hatScale + scaleDelta);
-    if (activeItem === 'chain') chainScale = Math.max(0.1, chainScale + scaleDelta);
-    if (activeItem === 'character') characterScale = Math.max(0.1, characterScale + scaleDelta);
-
-    startDist = dist;
-    drawMeme();
-  }
-}, { passive: false });
-
-canvas.addEventListener("touchend", () => {
-  activeItem = null;
-  startDist = null;
-});
 
 </script>
 
