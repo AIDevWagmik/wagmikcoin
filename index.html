@@ -619,11 +619,17 @@ footer {
   left: 0;
   width: 100vw;
   height: 100vh;
+  overflow-y: auto; /* ✅ Fix scroll cutoff */
   background: rgba(0, 0, 0, 0.95);
   z-index: 1000;
   padding: 40px 20px;
   box-sizing: border-box;
 }
+
+body {
+  overflow-x: hidden;
+}
+
 
 .meme-modal.active {
   display: block;
@@ -686,6 +692,105 @@ footer {
     width: 100%;
     height: auto;
   }
+}
+
+@media (min-width: 768px) {
+  .meme-controls-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
+  }
+
+  .meme-controls {
+    max-width: 300px;
+    flex: 1;
+  }
+
+  #memeCanvas {
+    flex: 1;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .meme-controls input,
+  .meme-controls select,
+  .meme-controls button {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+}
+
+.meme-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.meme-console {
+  position: relative;
+  width: 600px;
+  height: 400px;
+  background: url('console-layout.png') no-repeat center center;
+  background-size: contain;
+}
+
+/* 👇 Style all controls to be absolutely positioned */
+.meme-console .control {
+  position: absolute;
+  font-size: 0.95em;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  background: #fff;
+  color: #000;
+}
+
+/* 🔧 Position each control (adjust as needed) */
+.bg-control { top: 40px; left: 40px; width: 200px; }
+.hat-control { top: 80px; left: 40px; width: 200px; }
+.chain-control { top: 120px; left: 40px; width: 200px; }
+.character-control { top: 160px; left: 40px; width: 200px; }
+.top-text { top: 200px; left: 40px; width: 300px; }
+.bottom-text { top: 240px; left: 40px; width: 300px; }
+.preview-btn { top: 290px; left: 40px; }
+.download-btn { top: 290px; left: 140px; }
+
+#memeCanvas {
+  border: 2px dashed #fff;
+  max-width: 100%;
+}
+
+/* 📱 Responsive mobile override */
+@media (max-width: 600px) {
+  .meme-wrapper {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .meme-console {
+    width: 100%;
+    height: 360px;
+    background: url('mobile-console-layout.png') no-repeat center center;
+    background-size: contain;
+  }
+
+  .meme-console .control {
+    transform: scale(0.85);
+    transform-origin: top left;
+  }
+
+  /* Optional: tweak positions for mobile if needed */
+  .bg-control { top: 30px; left: 20px; width: 80%; }
+  .hat-control { top: 70px; left: 20px; width: 80%; }
+  .chain-control { top: 110px; left: 20px; width: 80%; }
+  .character-control { top: 150px; left: 20px; width: 80%; }
+  .top-text { top: 190px; left: 20px; width: 80%; }
+  .bottom-text { top: 230px; left: 20px; width: 80%; }
+  .preview-btn { top: 275px; left: 20px; }
+  .download-btn { top: 275px; left: 140px; }
 }
 
   </style>
@@ -842,45 +947,45 @@ footer {
 <div class="meme-modal" id="memeModal">
   <button class="close-meme" onclick="toggleMeme()">&times;</button>
   <h2>Generate Your $WAGMIK Meme</h2>
-  <div class="meme-controls">
-    <label for="bgSelect">Select Background:</label>
-    <select id="bgSelect">
-      <option value="bg-trading.png">Trading Setup</option>
-      <option value="bg-luxury.png">Luxury Lifestyle</option>
-      <option value="bg-degen.png">Degen House</option>
-    </select>
 
-    <label for="hatSelect">Select Hat Accessory:</label>
-    <select id="hatSelect">
-      <option value="">None</option>
-      <option value="wagmik-hat.png">WAGMIK Hat</option>
-      <option value="bonk-hat.png">BONK Hat</option>
-      <option value="degen-hat.png">DEGEN Hat</option>
-    </select>
+  <div class="meme-wrapper">
+    <!-- 👇 The skinned UI console with controls over it -->
+    <div class="meme-console">
+      <select id="bgSelect" class="control bg-control">
+        <option value="bg-trading.png">Trading Setup</option>
+        <option value="bg-luxury.png">Luxury Lifestyle</option>
+        <option value="bg-degen.png">Degen House</option>
+      </select>
 
-    <label for="chainSelect">Select Chain Accessory:</label>
-    <select id="chainSelect">
-      <option value="">None</option>
-      <option value="chain-wagmik.png">WAGMIK Chain</option>
-    </select>
+      <select id="hatSelect" class="control hat-control">
+        <option value="">None</option>
+        <option value="wagmik-hat.png">WAGMIK Hat</option>
+        <option value="bonk-hat.png">BONK Hat</option>
+        <option value="degen-hat.png">DEGEN Hat</option>
+      </select>
 
-    <label for="characterSelect">Select Character:</label>
-    <select id="characterSelect">
-      <option value="">None</option>
-      <option value="wagmik-cheering.png">WAGMIK Cheering</option>
-    </select>
+      <select id="chainSelect" class="control chain-control">
+        <option value="">None</option>
+        <option value="chain-wagmik.png">WAGMIK Chain</option>
+      </select>
 
-    <input type="text" id="topText" placeholder="Top Text">
-    <input type="text" id="bottomText" placeholder="Bottom Text">
-    <button onclick="drawMeme()">Preview</button>
-    <button onclick="downloadMeme()">Download</button>
+      <select id="characterSelect" class="control character-control">
+        <option value="">None</option>
+        <option value="wagmik-cheering.png">WAGMIK Cheering</option>
+      </select>
+
+      <input type="text" id="topText" class="control top-text" placeholder="Top Text">
+      <input type="text" id="bottomText" class="control bottom-text" placeholder="Bottom Text">
+
+      <button onclick="drawMeme()" class="control preview-btn">Preview</button>
+      <button onclick="downloadMeme()" class="control download-btn">Download</button>
+    </div>
+
+    <!-- 👇 Canvas for rendering -->
+    <canvas id="memeCanvas" width="500" height="500"></canvas>
   </div>
-
-  <canvas id="memeCanvas" width="500" height="500"></canvas>
 </div>
 
-
- 
 <footer>
   Made with memes, madness, and moon math ✨<br>
   &copy; 2025 $WAGMIK. No rights reserved.
