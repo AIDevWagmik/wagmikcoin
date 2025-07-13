@@ -791,10 +791,13 @@ footer {
 }
 
 .console-container {
-  position: relative;
-  width: 100%;
-  max-width: 700px;
+  display: flex;
+  gap: 40px;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 900px;
   margin: auto;
+  position: relative;
 }
 
 .console-bg {
@@ -967,6 +970,29 @@ footer {
   .meme-toggle-btn {
     display: block;
     bottom: 20px;
+  }
+}
+
+@media (min-width: 768px) {
+  .meme-toggle-btn,
+  .degen-toggle-btn,
+  .lore-toggle-btn {
+    position: fixed;
+    right: 20px;
+    z-index: 999;
+    display: block;
+  }
+
+  .meme-toggle-btn {
+    bottom: 20px;
+  }
+
+  .degen-toggle-btn {
+    bottom: 80px;
+  }
+
+  .lore-toggle-btn {
+    bottom: 140px;
   }
 }
   
@@ -1330,8 +1356,13 @@ function drawCanvas() {
 }
 
   function toggleMeme() {
-    document.getElementById('memeModal').classList.toggle('active');
+  const modal = document.getElementById('memeModal');
+  if (modal.style.display === 'flex') {
+    modal.style.display = 'none';
+  } else {
+    modal.style.display = 'flex';
   }
+}
 
   function downloadMeme() {
     const link = document.createElement('a');
@@ -1438,10 +1469,8 @@ canvas.addEventListener("wheel", (e) => {
 
 </script>
 
-<div style="height: 150vh;<>/div>
-
 <!-- Meme Generator Modal -->
-<div class="meme-modal" id="memeModal">
+<div class="meme-modal" id="memeModal" style="display: none;">
   <button class="close-meme" onclick="toggleMeme()">✖</button>
   <div class="console-container">
     <img src="console-layout.png" class="console-bg" alt="Console Layout">
