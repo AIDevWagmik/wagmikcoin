@@ -793,6 +793,96 @@ body {
   .download-btn { top: 275px; left: 140px; }
 }
 
+.console-container {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin: auto;
+}
+
+.console-bg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Generic input overlay styles */
+.input-console,
+.console-btn {
+  position: absolute;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1em;
+  pointer-events: auto;
+}
+
+/* Adjust the following classes based on pixel placement on console-layout.png */
+.input-bg {
+  top: 45px; left: 35px; width: 220px;
+}
+
+.input-hat {
+  top: 85px; left: 35px; width: 220px;
+}
+
+.input-chain {
+  top: 125px; left: 35px; width: 220px;
+}
+
+.input-character {
+  top: 165px; left: 35px; width: 220px;
+}
+
+.input-top-text {
+  top: 205px; left: 35px; width: 220px;
+}
+
+.input-bottom-text {
+  top: 245px; left: 35px; width: 220px;
+}
+
+.preview-btn {
+  top: 290px; left: 35px; width: 100px; height: 35px;
+}
+
+.download-btn {
+  top: 290px; left: 155px; width: 100px; height: 35px;
+}
+
+.console-canvas {
+  position: absolute;
+  top: 45px;
+  right: 35px;
+  width: 200px;
+  height: 200px;
+  pointer-events: none; /* canvas interaction handled by script */
+}
+
+/* Mobile version override */
+@media (max-width: 600px) {
+  .console-bg {
+    content: url('mobile-console-layout.png');
+  }
+
+  /* Adjust all positions for the mobile version layout */
+  .input-bg { top: 70px; left: 20px; width: 260px; }
+  .input-hat { top: 110px; left: 20px; width: 260px; }
+  .input-chain { top: 150px; left: 20px; width: 260px; }
+  .input-character { top: 190px; left: 20px; width: 260px; }
+  .input-top-text { top: 230px; left: 20px; width: 260px; }
+  .input-bottom-text { top: 270px; left: 20px; width: 260px; }
+  .preview-btn { top: 310px; left: 20px; width: 110px; height: 35px; }
+  .download-btn { top: 310px; left: 170px; width: 110px; height: 35px; }
+  .console-canvas {
+    top: 360px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 260px;
+    height: auto;
+  }
+}
+
   </style>
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
 </head>
@@ -946,43 +1036,26 @@ body {
 <!-- Meme Generator Modal -->
 <div class="meme-modal" id="memeModal">
   <button class="close-meme" onclick="toggleMeme()">&times;</button>
-  <h2>Generate Your $WAGMIK Meme</h2>
 
-  <div class="meme-wrapper">
-    <!-- 👇 The skinned UI console with controls over it -->
-    <div class="meme-console">
-      <select id="bgSelect" class="control bg-control">
-        <option value="bg-trading.png">Trading Setup</option>
-        <option value="bg-luxury.png">Luxury Lifestyle</option>
-        <option value="bg-degen.png">Degen House</option>
-      </select>
+  <div class="console-container">
+    <img 
+      src="console-layout.png"
+      alt="Console Layout"
+      class="console-bg"
+      id="consoleBg"
+    />
 
-      <select id="hatSelect" class="control hat-control">
-        <option value="">None</option>
-        <option value="wagmik-hat.png">WAGMIK Hat</option>
-        <option value="bonk-hat.png">BONK Hat</option>
-        <option value="degen-hat.png">DEGEN Hat</option>
-      </select>
+    <!-- Invisible but clickable inputs positioned to match the layout -->
+    <select id="bgSelect" class="input-console input-bg"></select>
+    <select id="hatSelect" class="input-console input-hat"></select>
+    <select id="chainSelect" class="input-console input-chain"></select>
+    <select id="characterSelect" class="input-console input-character"></select>
+    <input type="text" id="topText" class="input-console input-top-text" placeholder="Top Text" />
+    <input type="text" id="bottomText" class="input-console input-bottom-text" placeholder="Bottom Text" />
+    <button onclick="drawMeme()" class="console-btn preview-btn"></button>
+    <button onclick="downloadMeme()" class="console-btn download-btn"></button>
 
-      <select id="chainSelect" class="control chain-control">
-        <option value="">None</option>
-        <option value="chain-wagmik.png">WAGMIK Chain</option>
-      </select>
-
-      <select id="characterSelect" class="control character-control">
-        <option value="">None</option>
-        <option value="wagmik-cheering.png">WAGMIK Cheering</option>
-      </select>
-
-      <input type="text" id="topText" class="control top-text" placeholder="Top Text">
-      <input type="text" id="bottomText" class="control bottom-text" placeholder="Bottom Text">
-
-      <button onclick="drawMeme()" class="control preview-btn">Preview</button>
-      <button onclick="downloadMeme()" class="control download-btn">Download</button>
-    </div>
-
-    <!-- 👇 Canvas for rendering -->
-    <canvas id="memeCanvas" width="500" height="500"></canvas>
+    <canvas id="memeCanvas" width="500" height="500" class="console-canvas"></canvas>
   </div>
 </div>
 
