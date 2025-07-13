@@ -877,27 +877,79 @@ footer {
   }
 }
 
-/* 👇 Ensure buttons show and are stacked correctly on desktop */
-@media (min-width: 769px) {
-  .meme-toggle-btn,
-  .degen-toggle-btn {
-    display: block;
-    position: fixed;
-    right: 20px;
-    z-index: 1001;
-  }
+/* 🔧 Floating Buttons */
+.meme-toggle-btn,
+.degen-toggle-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  background: #ff4fd8;
+  color: #000;
+  padding: 12px 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 25px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  cursor: pointer;
+}
 
-  .degen-toggle-btn {
-    bottom: 80px;
-    background: #ffe06b;
-  }
+.degen-toggle-btn {
+  bottom: 80px;
+  background: #ffe06b;
+}
 
-  .meme-toggle-btn {
-    bottom: 20px;
-    background: #ff4fd8;
+/* ✅ Optional stacking for more buttons */
+@media (min-width: 768px) {
+  .lore-toggle-btn {
+    bottom: 140px;
   }
 }
 
+@media (min-width: 768px) {
+  .meme-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: url('console-layout.png') center center no-repeat;
+    background-size: cover;
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 40px;
+    box-sizing: border-box;
+  }
+
+  .meme-modal.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .meme-controls-wrapper {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    max-width: 90%;
+    margin: auto;
+  }
+
+  .meme-controls {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #memeCanvas {
+    max-width: 500px;
+    height: auto;
+    border: 2px dashed #fff;
+  }
+}
+  
   </style>
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
 </head>
@@ -1050,48 +1102,50 @@ footer {
 <button class="meme-toggle-btn" onclick="toggleMeme()">🎭 Meme Generator</button>
 
 <!-- Meme Generator Modal -->
+<!-- ✅ Place this at the bottom of your <body>, just before </body> -->
 <div class="meme-modal" id="memeModal">
-  <button class="close-meme" onclick="toggleMeme()">&times;</button>
-  <h2>Generate Your $WAGMIK Meme</h2>
-  <div class="meme-controls">
-    <label for="bgSelect">Select Background:</label>
-    <select id="bgSelect">
-      <option value="bg-trading.png">Trading Setup</option>
-      <option value="bg-luxury.png">Luxury Lifestyle</option>
-      <option value="bg-degen.png">Degen House</option>
-    </select>
+  <button class="close-meme" onclick="toggleMeme()">✖</button>
+  <div class="meme-controls-wrapper">
+    <div class="meme-controls">
+      <label for="bgSelect">Select Background:</label>
+      <select id="bgSelect">
+        <option value="">None</option>
+        <option value="bg-trading.png">Trading Setup</option>
+        <option value="bg-luxury.png">Luxury Lifestyle</option>
+        <option value="bg-degen.png">Degen House</option>
+      </select>
 
-    <label for="hatSelect">Select Hat Accessory:</label>
-    <select id="hatSelect">
-      <option value="">None</option>
-      <option value="wagmik-hat.png">WAGMIK Hat</option>
-      <option value="bonk-hat.png">BONK Hat</option>
-      <option value="degen-hat.png">DEGEN Hat</option>
-    </select>
+      <label for="hatSelect">Select Hat Accessory:</label>
+      <select id="hatSelect">
+        <option value="">None</option>
+        <option value="wagmik-hat.png">WAGMIK Hat</option>
+        <option value="bonk-hat.png">BONK Hat</option>
+        <option value="degen-hat.png">DEGEN Hat</option>
+      </select>
 
-    <label for="chainSelect">Select Chain Accessory:</label>
-    <select id="chainSelect">
-     <option value="">None</option>
-     <option value="chain-wagmik.png">WAGMIK Chain</option>
-    </select>
+      <label for="chainSelect">Select Chain Accessory:</label>
+      <select id="chainSelect">
+        <option value="">None</option>
+        <option value="chain-wagmik.png">WAGMIK Chain</option>
+      </select>
 
-   <label for="characterSelect">Select Character:</label>
-   <select id="characterSelect">
-    <option value="">None</option>
-    <option value="wagmik-cheering.png">WAGMIK Cheering</option>
-   </select>
+      <label for="characterSelect">Select Character:</label>
+      <select id="characterSelect">
+        <option value="">None</option>
+        <option value="wagmik-cheering.png">WAGMIK Cheering</option>
+      </select>
 
+      <input type="text" id="topText" placeholder="Top Text">
+      <input type="text" id="bottomText" placeholder="Bottom Text">
 
-    <input type="text" id="topText" placeholder="Top Text">
-    <input type="text" id="bottomText" placeholder="Bottom Text">
-    <button onclick="drawMeme()">Preview</button>
-    <button onclick="downloadMeme()">Download</button>
+      <button onclick="drawMeme()">Preview</button>
+      <button onclick="downloadMeme()">Download</button>
+    </div>
+
+    <canvas id="memeCanvas" width="500" height="500"></canvas>
   </div>
-
-  <canvas id="memeCanvas" width="500" height="500"></canvas>
 </div>
-
-
+  
 <footer>
   Made with memes, madness, and moon math ✨<br>
   &copy; 2025 $WAGMIK. No rights reserved.
