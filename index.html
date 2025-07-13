@@ -597,6 +597,97 @@ footer {
   cursor: pointer;
 }
 
+.meme-toggle-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  background: #ff4fd8;
+  color: #000;
+  padding: 12px 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 25px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  cursor: pointer;
+}
+
+.meme-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 1000;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.meme-modal.active {
+  display: block;
+}
+
+.meme-modal h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.meme-controls {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.meme-controls select,
+.meme-controls input,
+.meme-controls button {
+  padding: 10px;
+  font-size: 1em;
+}
+
+#memeCanvas {
+  display: block;
+  margin: 20px auto;
+  border: 2px dashed #fff;
+}
+
+.close-meme {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.8em;
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .meme-modal {
+    padding: 20px 10px;
+  }
+
+  .meme-controls {
+    gap: 8px;
+  }
+
+  .meme-controls select,
+  .meme-controls input,
+  .meme-controls button {
+    font-size: 0.9em;
+    padding: 8px;
+  }
+
+  #memeCanvas {
+    width: 100%;
+    height: auto;
+  }
+}
+
   </style>
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
 </head>
@@ -743,6 +834,52 @@ footer {
 
 <!-- 📜 Degen Mode Button -->
 <button class="degen-toggle-btn" onclick="toggleDegen()">🧠 Degen Mode</button>
+
+<!-- Meme Generator Toggle Button -->
+<button class="meme-toggle-btn" onclick="toggleMeme()">🎭 Meme Generator</button>
+
+<!-- Meme Generator Modal -->
+<div class="meme-modal" id="memeModal">
+  <button class="close-meme" onclick="toggleMeme()">&times;</button>
+  <h2>Generate Your $WAGMIK Meme</h2>
+  <div class="meme-controls">
+    <label for="bgSelect">Select Background:</label>
+    <select id="bgSelect">
+      <option value="bg-trading.png">Trading Setup</option>
+      <option value="bg-luxury.png">Luxury Lifestyle</option>
+      <option value="bg-degen.png">Degen House</option>
+    </select>
+
+    <label for="hatSelect">Select Hat Accessory:</label>
+    <select id="hatSelect">
+      <option value="">None</option>
+      <option value="wagmik-hat.png">WAGMIK Hat</option>
+      <option value="bonk-hat.png">BONK Hat</option>
+      <option value="degen-hat.png">DEGEN Hat</option>
+    </select>
+
+    <label for="chainSelect">Select Chain Accessory:</label>
+    <select id="chainSelect">
+      <option value="">None</option>
+      <option value="chain-wagmik.png">WAGMIK Chain</option>
+    </select>
+
+    <label for="characterSelect">Select Character:</label>
+    <select id="characterSelect">
+      <option value="">None</option>
+      <option value="wagmik-cheering.png">WAGMIK Cheering</option>
+    </select>
+
+    <input type="text" id="topText" placeholder="Top Text">
+    <input type="text" id="bottomText" placeholder="Bottom Text">
+    <button onclick="drawMeme()">Preview</button>
+    <button onclick="downloadMeme()">Download</button>
+  </div>
+
+  <canvas id="memeCanvas" width="500" height="500"></canvas>
+</div>
+
+
  
 <footer>
   Made with memes, madness, and moon math ✨<br>
@@ -830,6 +967,290 @@ function toggleDegen() {
       }
     });
   });
+
+  <script>
+  const canvas = document.getElementById('memeCanvas');
+  const ctx = canvas.getContext('2d');
+  const bgSelect = document.getElementById('bgSelect');
+  const hatSelect = document.getElementById('hatSelect');
+  const topTextInput = document.getElementById('topText');
+  const bottomTextInput = document.getElementById('bottomText');
+
+  const backgrounds = {
+    "bg-trading.png": new Image(),
+    "bg-luxury.png": new Image(),
+    "bg-degen.png": new Image()
+  };
+
+  for (let key in backgrounds) {
+    backgrounds[key].src = key;
+  }
+
+  let hatImg = new Image();
+  let hatX = 200, hatY = 40, hatScale = 0.7;
+  let isDragging = false;
+
+  let chainImg = new Image();
+  let chainX = 150, chainY = 280, chainScale = 0.8;
+  let draggingChain = false;
+
+  let characterImg = new Image();
+  let characterX = 100, characterY = 100, characterScale = 1.0;
+  let draggingCharacter = false;
+
+
+
+  function drawMeme() {
+  const bg = backgrounds[bgSelect.value];
+  const hatSrc = hatSelect.value;
+  const chainSrc = document.getElementById('chainSelect').value;
+  const characterSrc = document.getElementById('characterSelect').value;
+
+  if (characterSrc) {
+    characterImg.src = characterSrc;
+}
+
+
+  if (!bg.complete) {
+    bg.onload = drawMeme;
+    return;
+  }
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+
+  // Always set chain image
+  if (chainSrc) {
+    chainImg.src = chainSrc;
+  }
+
+  // Load hat image and draw after it's ready
+  if (hatSrc) {
+    hatImg.src = hatSrc;
+    hatImg.onload = () => {
+      drawCanvas();
+    };
+  } else {
+    drawCanvas();
+  }
+}
+
+function drawCanvas() {
+  if (hatImg.src) {
+    const w = hatImg.width * hatScale;
+    const h = hatImg.height * hatScale;
+    ctx.drawImage(hatImg, hatX, hatY, w, h);
+  }
+
+  if (chainImg.src) {
+    const w = chainImg.width * chainScale;
+    const h = chainImg.height * chainScale;
+    ctx.drawImage(chainImg, chainX, chainY, w, h);
+  }
+
+  if (characterImg.src) {
+    const w = characterImg.width * characterScale;
+    const h = characterImg.height * characterScale;
+    ctx.drawImage(characterImg, characterX, characterY, w, h);
+}
+
+
+  ctx.font = 'bold 32px Impact';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'white';
+  ctx.strokeStyle = 'black';
+  ctx.lineWidth = 2;
+
+  const topText = topTextInput.value.toUpperCase();
+  const bottomText = bottomTextInput.value.toUpperCase();
+
+  if (topText) {
+    ctx.fillText(topText, canvas.width / 2, 40);
+    ctx.strokeText(topText, canvas.width / 2, 40);
+  }
+  if (bottomText) {
+    ctx.fillText(bottomText, canvas.width / 2, canvas.height - 20);
+    ctx.strokeText(bottomText, canvas.width / 2, canvas.height - 20);
+  }
+}
+
+  function toggleMeme() {
+    document.getElementById('memeModal').classList.toggle('active');
+  }
+
+  function downloadMeme() {
+    const link = document.createElement('a');
+    link.download = 'wagmik-meme.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  }
+
+  // Drag functionality
+  canvas.addEventListener("mousedown", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const w = hatImg.width * hatScale;
+    const h = hatImg.height * hatScale;
+    if (mx >= hatX && mx <= hatX + w && my >= hatY && my <= hatY + h) {
+      isDragging = true;
+    }
+  });
+
+  canvas.addEventListener("mouseup", () => {
+    isDragging = false;
+  });
+
+  canvas.addEventListener("mousemove", (e) => {
+    if (isDragging) {
+      const rect = canvas.getBoundingClientRect();
+      hatX = e.clientX - rect.left - (hatImg.width * hatScale) / 2;
+      hatY = e.clientY - rect.top - (hatImg.height * hatScale) / 2;
+      drawMeme();
+    }
+  });
+
+canvas.addEventListener("mousedown", (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const cw = chainImg.width * chainScale;
+  const ch = chainImg.height * chainScale;
+
+  if (mx >= chainX && mx <= chainX + cw && my >= chainY && my <= chainY + ch) {
+    draggingChain = true;
+  }
+});
+
+canvas.addEventListener("mouseup", () => {
+  draggingChain = false;
+});
+
+canvas.addEventListener("mousemove", (e) => {
+  if (draggingChain) {
+    const rect = canvas.getBoundingClientRect();
+    chainX = e.clientX - rect.left - (chainImg.width * chainScale) / 2;
+    chainY = e.clientY - rect.top - (chainImg.height * chainScale) / 2;
+    drawMeme();
+  }
+});
+
+// Optional: Resize chain with mouse wheel
+canvas.addEventListener("wheel", (e) => {
+  if (draggingChain) {
+    e.preventDefault();
+    chainScale += e.deltaY < 0 ? 0.05 : -0.05;
+    chainScale = Math.max(0.1, Math.min(2, chainScale));
+    drawMeme();
+  }
+});
+
+canvas.addEventListener("mousedown", (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const cw = characterImg.width * characterScale;
+  const ch = characterImg.height * characterScale;
+
+  if (mx >= characterX && mx <= characterX + cw && my >= characterY && my <= characterY + ch) {
+    draggingCharacter = true;
+  }
+});
+
+canvas.addEventListener("mouseup", () => {
+  draggingCharacter = false;
+});
+
+canvas.addEventListener("mousemove", (e) => {
+  if (draggingCharacter) {
+    const rect = canvas.getBoundingClientRect();
+    characterX = e.clientX - rect.left - (characterImg.width * characterScale) / 2;
+    characterY = e.clientY - rect.top - (characterImg.height * characterScale) / 2;
+    drawMeme();
+  }
+});
+
+// Optional: Resize character with mouse wheel
+canvas.addEventListener("wheel", (e) => {
+  if (draggingCharacter) {
+    e.preventDefault();
+    characterScale += e.deltaY < 0 ? 0.05 : -0.05;
+    characterScale = Math.max(0.1, Math.min(2, characterScale));
+    drawMeme();
+  }
+});
+
+let activeItem = null;
+let startDist = null;
+
+// 🔹 Detect which item is touched
+canvas.addEventListener("touchstart", (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  const x = touch.clientX - rect.left;
+  const y = touch.clientY - rect.top;
+
+  const checkHit = (ix, iy, iw, ih) => x >= ix && x <= ix + iw && y >= iy && y <= iy + ih;
+
+  if (checkHit(hatX, hatY, hatImg.width * hatScale, hatImg.height * hatScale)) {
+    activeItem = 'hat';
+  } else if (checkHit(chainX, chainY, chainImg.width * chainScale, chainImg.height * chainScale)) {
+    activeItem = 'chain';
+  } else if (checkHit(characterX, characterY, characterImg.width * characterScale, characterImg.height * characterScale)) {
+    activeItem = 'character';
+  }
+
+  // Store starting distance for resizing
+  if (e.touches.length === 2) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    startDist = Math.sqrt(dx * dx + dy * dy);
+  }
+});
+
+canvas.addEventListener("touchmove", (e) => {
+  e.preventDefault(); // Prevent scroll
+
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  const x = touch.clientX - rect.left;
+  const y = touch.clientY - rect.top;
+
+  const moveItem = (setX, setY, w, h) => {
+    setX(x - w / 2);
+    setY(y - h / 2);
+    drawMeme();
+  };
+
+  if (activeItem === 'hat') {
+    moveItem((v) => hatX = v, (v) => hatY = v, hatImg.width * hatScale, hatImg.height * hatScale);
+  } else if (activeItem === 'chain') {
+    moveItem((v) => chainX = v, (v) => chainY = v, chainImg.width * chainScale, chainImg.height * chainScale);
+  } else if (activeItem === 'character') {
+    moveItem((v) => characterX = v, (v) => characterY = v, characterImg.width * characterScale, characterImg.height * characterScale);
+  }
+
+  // Handle pinch zoom
+  if (e.touches.length === 2 && activeItem) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const scaleDelta = (dist - startDist) * 0.005;
+
+    if (activeItem === 'hat') hatScale = Math.max(0.1, hatScale + scaleDelta);
+    if (activeItem === 'chain') chainScale = Math.max(0.1, chainScale + scaleDelta);
+    if (activeItem === 'character') characterScale = Math.max(0.1, characterScale + scaleDelta);
+
+    startDist = dist;
+    drawMeme();
+  }
+}, { passive: false });
+
+canvas.addEventListener("touchend", () => {
+  activeItem = null;
+  startDist = null;
+});
+
 </script>
 
 <div style="height: 150vh;<>/div>
