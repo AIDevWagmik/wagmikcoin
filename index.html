@@ -543,6 +543,60 @@ footer {
   }
 }
 
+.degen-toggle-btn {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  z-index: 999;
+  background: #ffe06b;
+  color: #000;
+  padding: 12px 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 25px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  cursor: pointer;
+}
+
+.degen-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 5, 30, 0.98);
+  color: #FFDE6A;
+  z-index: 1001;
+  padding: 60px 20px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.degen-modal.active {
+  display: block;
+}
+
+.degen-modal h2 {
+  font-size: 1.8em;
+  margin-bottom: 20px;
+}
+
+.degen-modal p {
+  font-size: 1.3em;
+  font-style: italic;
+}
+
+.close-degen {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 1.6em;
+  background: none;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
   </style>
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
 </head>
@@ -677,8 +731,18 @@ footer {
   <div class="lore-chapter">He’s not just a token. He’s a story. A meme. A movement.</div>
 </div>
 
+<!-- 🔮 Degen Prophecies Modal -->
+<div class="degen-modal" id="degenModal">
+  <button class="close-degen" onclick="toggleDegen()">✖</button>
+  <h2>Degen Prophecies by $WAGMIK</h2>
+  <p id="degenProphecy">Loading prophecy...</p>
+</div>
+
 <!-- 📲 Floating Button (mobile only) -->
 <button class="lore-toggle-btn" onclick="toggleLore()">📜 Read Lore</button>
+
+<!-- 📜 Degen Mode Button -->
+<button class="degen-toggle-btn" onclick="toggleDegen()">🧠 Degen Mode</button>
  
 <footer>
   Made with memes, madness, and moon math ✨<br>
@@ -719,6 +783,34 @@ footer {
   lightbox.addEventListener("click", () => {
     lightbox.style.display = "none";
   });
+</script>
+
+<script>
+ const degenLines = [
+  "Buy high, hold higher.",
+  "You only lose when you sell.",
+  "Gas fees are a state of mind.",
+  "If it dumps, double down.",
+  "Degen rule #88: Never check the chart.",
+  "Real utility is in the meme.",
+  "WAGMIK is a vibe, not a roadmap.",
+  "Coins come and go, but hopium is eternal.",
+  "He who panics last, panics best.",
+  "Trust the vibes, not the volume."
+];
+
+function toggleDegen() {
+  const modal = document.getElementById('degenModal');
+  const prophecy = document.getElementById('degenProphecy');
+
+  if (!modal.classList.contains('active')) {
+    // Choose random prophecy
+    const line = degenLines[Math.floor(Math.random() * degenLines.length)];
+    prophecy.textContent = `"${line}"`;
+  }
+
+  modal.classList.toggle('active');
+}
 </script>
  
 <script>
