@@ -650,37 +650,6 @@ footer {
   color: #000;
   font-weight: bold;
    }
-
-.floating-apps {
-  position: fixed;
-  top: 50%;
-  left: 20px;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  z-index: 1002;
-}
-
-.floating-app-btn {
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-  border-radius: 12px;
-  transition: transform 0.3s;
-}
-
-.floating-app-btn:hover {
-  transform: scale(1.1);
-}
-
-.app-frame {
-  width: 90vw;
-  height: 80vh;
-  max-width: 1200px;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
-   }
 }
 
 </style>
@@ -804,29 +773,6 @@ footer {
 <div class="fade-between-tokenomics-bottom"></div>
   <img src="bottom-banner.png" alt="Crypto Influencers Holding WAGMIK Coins" />
   </div>
-  
-<!-- Floating App Icons -->
-<div class="floating-apps">
-  <img src="axiom.png" alt="Axiom" class="floating-app-btn" onclick="toggleApp('axiomApp')">
-  <img src="bullx.png" alt="Bullx" class="floating-app-btn" onclick="toggleApp('bullxApp')">
-  <img src="photon.png" alt="Photon" class="floating-app-btn" onclick="toggleApp('photonApp')">
-</div>
-
-<!-- App Modals -->
-<div class="modal" id="axiomApp">
-  <button class="close-btn" onclick="toggleApp('axiomApp')">✖</button>
-  <iframe src="https://axiom.trade/" frameborder="0" class="app-frame"></iframe>
-</div>
-
-<div class="modal" id="bullxApp">
-  <button class="close-btn" onclick="toggleApp('bullxApp')">✖</button>
-  <iframe src="https://bullx.io/login?redirectUrl=" frameborder="0" class="app-frame"></iframe>
-</div>
-
-<div class="modal" id="photonApp">
-  <button class="close-btn" onclick="toggleApp('photonApp')">✖</button>
-  <iframe src="https://photon-sol.tinyastro.io/" frameborder="0" class="app-frame"></iframe>
-</div>
 
 <!-- Lore Button & Modal -->
 <button class="floating-button lore-toggle-btn" onclick="toggleLore()">📜 Read Lore</button>
@@ -977,12 +923,6 @@ color: #000; color:#000">Reset</button>
   }
   function toggleMeme() {
     document.getElementById('memeModal').classList.toggle('active');
-  }
-</script>
-
-<script>
-  function toggleApp(id) {
-    document.getElementById(id).classList.toggle('active');
   }
 </script>
 
