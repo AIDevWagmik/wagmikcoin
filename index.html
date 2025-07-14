@@ -573,21 +573,6 @@ footer {
   }
 }
 
-.degen-toggle-btn {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  z-index: 999;
-  background: #ffe06b;
-  color: #000;
-  padding: 12px 18px;
-  font-weight: bold;
-  border: none;
-  border-radius: 25px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  cursor: pointer;
-}
-
 .degen-modal {
   display: none;
   position: fixed;
@@ -630,21 +615,6 @@ footer {
   background: none;
   color: #fff;
   border: none;
-  cursor: pointer;
-}
-
-.meme-toggle-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 999;
-  background: #ff4fd8;
-  color: #000;
-  padding: 12px 18px;
-  font-weight: bold;
-  border: none;
-  border-radius: 25px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
   cursor: pointer;
 }
 
@@ -857,12 +827,13 @@ footer {
   .preview-btn { top: 310px; left: 20px; width: 110px; height: 35px; }
   .download-btn { top: 310px; left: 170px; width: 110px; height: 35px; }
   .console-canvas {
+  position: absolute;
   top: 360px;
   left: 50%;
   transform: translateX(-50%);
   width: 260px;
   height: auto;
-  position: absolute;
+  right: auto;
    }
 }
 
@@ -892,7 +863,7 @@ footer {
     width: 100vw;
     height: 100vh;
     background: linear-gradient(rgba(20, 10, 40, 0.9), rgba(20, 10, 40, 0.9)),
-              url('console-layout.png') center center no-repeat;
+                url('console-layout.png') center center no-repeat;
     background-size: cover;
     z-index: 1000;
     overflow-y: auto;
@@ -901,12 +872,12 @@ footer {
     justify-content: center;
     align-items: center;
   }
-}
 
   .meme-modal.active {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
   .meme-controls-wrapper {
@@ -940,23 +911,39 @@ footer {
     z-index: 999;
   }
 
-  .degen-toggle-btn {
-    display: block;
-    position: fixed;
-    right: 20px;
-    bottom: 80px;
-    z-index: 999;
-    background: #ffe06b;
-  }
+  /* ✅ Meme Button */
+.meme-toggle-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  background: #ff4fd8;
+  color: #000;
+  padding: 12px 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 25px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  cursor: pointer;
+  display: block;
+}
 
-  .meme-toggle-btn {
-    display: block;
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    z-index: 999;
-    background: #ff4fd8;
-  }
+/* ✅ Degen Button */
+.degen-toggle-btn {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  z-index: 999;
+  background: #ffe06b;
+  color: #000;
+  padding: 12px 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 25px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  cursor: pointer;
+  display: block;
+   }
 }
  
 </style>
@@ -1080,6 +1067,9 @@ footer {
   <img src="bottom-banner.png" alt="Crypto Influencers Holding WAGMIK Coins" />
 </div>
 
+<!-- 📜 Lore Button -->
+<button class="lore-toggle-btn" onclick="toggleLore()">📜 Read Lore</button>
+
 <!-- 📜 Mobile Lore Modal -->
 <div class="lore-modal" id="loreModal">
   <button class="close-lore" onclick="toggleLore()">✖</button>
@@ -1093,13 +1083,59 @@ footer {
   <div class="lore-chapter">He’s not just a token. He’s a story. A meme. A movement.</div>
 </div>
 
+ <!-- 🧠 Degen Mode Button -->
+<button class="degen-toggle-btn" onclick="toggleDegen()">🧠 Degen Mode</button>
+
 <!-- 🔮 Degen Prophecies Modal -->
 <div class="degen-modal" id="degenModal"> <!-- not degen-Modal -->
   <button class="close-degen" onclick="toggleDegen()">✖</button>
   <h2>Degen Prophecies by $WAGMIK</h2>
   <p id="degenProphecy">Loading prophecy...</p>
 </div>
-  
+
+<!-- 🎭 Meme Generator Button -->
+<button class="meme-toggle-btn" onclick="toggleMeme()">🎭 Meme Generator</button>
+
+<!-- Meme Generator Modal -->
+<div class="meme-modal" id="memeModal">
+  <button class="close-meme" onclick="toggleMeme()">✖</button>
+  <div class="console-container">
+    <img src="console-layout.png" class="console-bg" alt="Console Layout">
+
+    <select id="bgSelect" class="input-console input-bg">
+      <option value="">None</option>
+      <option value="bg-trading.png">Trading Setup</option>
+      <option value="bg-luxury.png">Luxury Lifestyle</option>
+      <option value="bg-degen.png">Degen House</option>
+    </select>
+
+    <select id="hatSelect" class="input-console input-hat">
+      <option value="">None</option>
+      <option value="wagmik-hat.png">WAGMIK Hat</option>
+      <option value="bonk-hat.png">BONK Hat</option>
+      <option value="degen-hat.png">DEGEN Hat</option>
+    </select>
+
+    <select id="chainSelect" class="input-console input-chain">
+      <option value="">None</option>
+      <option value="chain-wagmik.png">WAGMIK Chain</option>
+    </select>
+
+    <select id="characterSelect" class="input-console input-character">
+      <option value="">None</option>
+      <option value="wagmik-cheering.png">WAGMIK Cheering</option>
+    </select>
+
+    <input type="text" id="topText" placeholder="Top Text" class="input-console input-top-text">
+    <input type="text" id="bottomText" placeholder="Bottom Text" class="input-console input-bottom-text">
+
+    <button onclick="drawMeme()" class="console-btn preview-btn">Preview</button>
+    <button onclick="downloadMeme()" class="console-btn download-btn">Download</button>
+
+    <canvas id="memeCanvas" class="console-canvas" width="300" height="300"></canvas>
+  </div>
+</div>
+
 <footer>
   Made with memes, madness, and moon math ✨<br>
   &copy; 2025 $WAGMIK. No rights reserved.
@@ -1414,57 +1450,7 @@ canvas.addEventListener("wheel", (e) => {
   }
 });
 
-
 </script>
-
-<!-- Meme Generator Modal -->
-<div class="meme-modal" id="memeModal">
-  <button class="close-meme" onclick="toggleMeme()">✖</button>
-  <div class="console-container">
-    <img src="console-layout.png" class="console-bg" alt="Console Layout">
-
-    <select id="bgSelect" class="input-console input-bg">
-      <option value="">None</option>
-      <option value="bg-trading.png">Trading Setup</option>
-      <option value="bg-luxury.png">Luxury Lifestyle</option>
-      <option value="bg-degen.png">Degen House</option>
-    </select>
-
-    <select id="hatSelect" class="input-console input-hat">
-      <option value="">None</option>
-      <option value="wagmik-hat.png">WAGMIK Hat</option>
-      <option value="bonk-hat.png">BONK Hat</option>
-      <option value="degen-hat.png">DEGEN Hat</option>
-    </select>
-
-    <select id="chainSelect" class="input-console input-chain">
-      <option value="">None</option>
-      <option value="chain-wagmik.png">WAGMIK Chain</option>
-    </select>
-
-    <select id="characterSelect" class="input-console input-character">
-      <option value="">None</option>
-      <option value="wagmik-cheering.png">WAGMIK Cheering</option>
-    </select>
-
-    <input type="text" id="topText" placeholder="Top Text" class="input-console input-top-text">
-    <input type="text" id="bottomText" placeholder="Bottom Text" class="input-console input-bottom-text">
-
-    <button onclick="drawMeme()" class="console-btn preview-btn">Preview</button>
-    <button onclick="downloadMeme()" class="console-btn download-btn">Download</button>
-
-    <canvas id="memeCanvas" class="console-canvas" width="300" height="300"></canvas>
-  </div>
-</div>
-
-<!-- 📜 Lore Button -->
-<button class="lore-toggle-btn" onclick="toggleLore()">📜 Read Lore</button>
-
-<!-- 🧠 Degen Mode Button -->
-<button class="degen-toggle-btn" onclick="toggleDegen()">🧠 Degen Mode</button>
-
-<!-- 🎭 Meme Generator Button -->
-<button class="meme-toggle-btn" onclick="toggleMeme()">🎭 Meme Generator</button>
 
 </body>
 </html>
