@@ -1136,11 +1136,12 @@ footer {
 </div>
 
 <!-- 🔮 Degen Prophecies Modal -->
-<div class="degen-modal" id="degen-Modal">
+<div class="degen-modal" id="degenModal"> <!-- not degen-Modal -->
   <button class="close-degen" onclick="toggleDegen()">✖</button>
   <h2>Degen Prophecies by $WAGMIK</h2>
   <p id="degenProphecy">Loading prophecy...</p>
 </div>
+
 
 <!-- 📲 Floating Button (mobile only) -->
 <button class="lore-toggle-btn" onclick="toggleLore()">📜 Read Lore</button>
@@ -1195,36 +1196,30 @@ footer {
 </script>
 
 <script>
- const degenLines = [
-  "Buy high, hold higher.",
-  "You only lose when you sell.",
-  "Gas fees are a state of mind.",
-  "If it dumps, double down.",
-  "Degen rule #88: Never check the chart.",
-  "Real utility is in the meme.",
-  "WAGMIK is a vibe, not a roadmap.",
-  "Coins come and go, but hopium is eternal.",
-  "He who panics last, panics best.",
-  "Trust the vibes, not the volume."
-];
+  const degenLines = [
+    "Buy high, hold higher.",
+    "You only lose when you sell.",
+    "Gas fees are a state of mind.",
+    "If it dumps, double down.",
+    "Degen rule #88: Never check the chart.",
+    "Real utility is in the meme.",
+    "WAGMIK is a vibe, not a roadmap.",
+    "Coins come and go, but hopium is eternal.",
+    "He who panics last, panics best.",
+    "Trust the vibes, not the volume."
+  ];
 
-  if (modal.style.display !== 'flex') {
-    const line = degenLines[Math.floor(Math.random() * degenLines.length)];
-    prophecy.textContent = `"${line}"`;
-    modal.style.display = 'flex';
-  } else {
-    modal.style.display = 'none';
+  function toggleDegen() {
+    const modal = document.getElementById('degenModal');
+    const prophecy = document.getElementById('degenProphecy');
+
+    if (!modal.classList.contains('active')) {
+      const line = degenLines[Math.floor(Math.random() * degenLines.length)];
+      prophecy.textContent = `"${line}"`;
+    }
+
+    modal.classList.toggle('active');
   }
-}
-
-  if (!modal.classList.contains('active')) {
-    // Choose random prophecy
-    const line = degenLines[Math.floor(Math.random() * degenLines.length)];
-    prophecy.textContent = `"${line}"`;
-  }
-
-  modal.classList.toggle('active');
-}
 </script>
  
 <script>
