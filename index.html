@@ -601,6 +601,8 @@ footer {
   text-align: center;
   box-sizing: border-box;
   backdrop-filter: blur(6px); /* <- Add blur */
+  justify-content: center;
+  align-items: center;
 }
 
 .degen-modal.active {
@@ -669,6 +671,11 @@ footer {
 .meme-modal h2 {
   text-align: center;
   margin-bottom: 20px;
+}
+
+.meme-modal {
+  display: none;
+  position: fixed;
 }
 
 .meme-controls {
@@ -888,6 +895,7 @@ footer {
     transform: translateX(-50%);
     width: 260px;
     height: auto;
+    right: auto; /* prevent right alignment */
   }
 }
 
@@ -906,7 +914,8 @@ footer {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: url('console-layout.png') center center no-repeat;
+    background: linear-gradient(rgba(20, 10, 40, 0.9), rgba(20, 10, 40, 0.9)),
+              url('console-layout.png') center center no-repeat;
     background-size: cover;
     z-index: 1000;
     overflow-y: auto;
@@ -957,6 +966,18 @@ footer {
   .meme-toggle-btn { bottom: 20px; background: #ff4fd8; }
 }
 
+.meme-toggle-btn,
+.degen-toggle-btn {
+  position: fixed;
+  right: 20px;
+  z-index: 999;
+}
+
+@media (min-width: 768px) {
+  .meme-toggle-btn { bottom: 20px; }
+  .degen-toggle-btn { bottom: 80px; }
+}
+  
   </style>
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
 </head>
@@ -1309,17 +1330,6 @@ function drawCanvas() {
   modal.classList.toggle('active');
 }
 
-function toggleDegen() {
-  const modal = document.getElementById('degenModal');
-  const prophecy = document.getElementById('degenProphecy');
-
-  if (!modal.classList.contains('active')) {
-    const line = degenLines[Math.floor(Math.random() * degenLines.length)];
-    prophecy.textContent = `"${line}"`;
-  }
-
-  modal.classList.toggle('active');
-}
 
   function downloadMeme() {
     const link = document.createElement('a');
