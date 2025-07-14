@@ -609,6 +609,16 @@ footer {
       transform: translateX(-50%);
     }
 
+    .floating-buttons {
+       position: fixed;
+       right: 20px;
+       bottom: 20px;
+       display: flex;
+       flex-direction: column;
+       gap: 20px;
+       z-index: 1001;
+}
+
     @media (min-width: 768px) {
       .console-container {
         display: flex;
@@ -650,6 +660,12 @@ footer {
   color: #000;
   font-weight: bold;
    }
+}
+
+@media (min-width: 769px) {
+  .lore-toggle-btn {
+    display: none;
+  }
 }
 
 </style>
@@ -798,7 +814,7 @@ footer {
 
 <!-- Meme Generator Button & Modal -->
 <button class="floating-button meme-toggle-btn" onclick="toggleMeme()">🎭 Meme Generator</button>
-<div class="modal" id="</select">
+<div class="modal" id="memeModal">
   <button class="close-btn" onclick="toggleMeme()">✖</button>
   <div class="console-container">
     <img src="console-layout.png" class="console-bg" alt="Console Layout">
