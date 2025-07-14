@@ -436,6 +436,7 @@ footer {
     display: none;
   }
   
+/* ✅ MOBILE-ONLY Lore Button */
 @media (max-width: 768px) {
   .lore-toggle-btn {
     display: block;
@@ -451,6 +452,21 @@ footer {
     border-radius: 25px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     cursor: pointer;
+  }
+
+  .lore-modal {
+    display: none;
+  }
+
+  .lore-modal.active {
+    display: block;
+  }
+}
+
+@media (min-width: 769px) {
+  .lore-toggle-btn,
+  .lore-modal {
+    display: none !important;
   }
 }
 
@@ -828,21 +844,6 @@ footer {
   .floating-lore-wrapper {
     display: none;
   
-.lore-toggle-btn {
-  display: none;
-  position: fixed;
-  bottom: 140px;
-  right: 20px;
-  z-index: 999;
-  background: #ff4fd8;
-  color: #000;
-  padding: 12px 18px;
-  font-weight: bold;
-  border: none;
-  border-radius: 25px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  cursor: pointer;
-}
 
 @media (min-width: 768px) {
   .meme-modal {
@@ -928,17 +929,45 @@ footer {
 }
   
 @media (min-width: 768px) {
-  .lore-toggle-btn,
   .degen-toggle-btn,
   .meme-toggle-btn {
-    position: fixed;
     display: block;
+    position: fixed;
     right: 20px;
     z-index: 999;
   }
 
-  .lore-toggle-btn {
-    bottom: 140px;
+  .degen-toggle-btn {
+    bottom: 80px;
+    background: #ffe06b;
+    color: #000;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .meme-toggle-btn {
+    bottom: 20px;
+    background: #ff4fd8;
+    color: #000;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+}
+
+/* ✅ Mobile: use same styles */
+@media (max-width: 768px) {
+  .degen-toggle-btn,
+  .meme-toggle-btn {
+    display: block;
+    position: fixed;
+    right: 20px;
+    z-index: 999;
   }
 
   .degen-toggle-btn {
@@ -950,6 +979,29 @@ footer {
     bottom: 20px;
     background: #ff4fd8;
   }
+}
+
+.meme-modal,
+.degen-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(20, 10, 40, 0.96);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 40px 20px;
+}
+
+/* Show them when toggled */
+.meme-modal.active,
+.degen-modal.active {
+  display: flex;
 }
  
 </style>
