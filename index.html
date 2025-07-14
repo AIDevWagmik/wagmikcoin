@@ -394,22 +394,7 @@ footer {
   pointer-events: none;
 }
 
-/* Mobile-only Lore Button */
-.lore-toggle-btn {
-  display: none;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 999;
-  background: #ff4fd8;
-  color: #000;
-  padding: 12px 18px;
-  font-weight: bold;
-  border: none;
-  border-radius: 25px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  cursor: pointer;
-}
+}}
 
 .lore-modal {
   display: none;
@@ -451,29 +436,21 @@ footer {
     display: none;
   }
   
-.lore-toggle-btn {
-  display: none;
-  position: fixed;
-  bottom: 140px;
-  right: 20px;
-  z-index: 999;
-  background: #ff4fd8;
-  color: #000;
-  padding: 12px 18px;
-  font-weight: bold;
-  border: none;
-  border-radius: 25px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  cursor: pointer;
-}
-
 @media (max-width: 768px) {
-  .floating-lore-wrapper {
-    display: none;
-  }
-
   .lore-toggle-btn {
-    display: block; /* ✅ Show it on mobile now */
+    display: block;
+    position: fixed;
+    bottom: 140px;
+    right: 20px;
+    z-index: 999;
+    background: #ff4fd8;
+    color: #000;
+    padding: 12px 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 25px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    cursor: pointer;
   }
 }
 
@@ -847,11 +824,24 @@ footer {
   }
 }
 
-/* ✅ Optional stacking for more buttons */
-@media (min-width: 768px) {
-  .lore-toggle-btn {
-    bottom: 140px;
-  }
+@media (max-width: 768px) {
+  .floating-lore-wrapper {
+    display: none;
+  
+.lore-toggle-btn {
+  display: none;
+  position: fixed;
+  bottom: 140px;
+  right: 20px;
+  z-index: 999;
+  background: #ff4fd8;
+  color: #000;
+  padding: 12px 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 25px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  cursor: pointer;
 }
 
 @media (min-width: 768px) {
@@ -902,15 +892,6 @@ footer {
   }
 }
 
-@media (min-width: 768px) {
-  .lore-toggle-btn {
-    display: block;
-    position: fixed;
-    right: 20px;
-    bottom: 140px;
-    z-index: 999;
-  }
-
   /* ✅ Meme Button */
 .meme-toggle-btn {
   position: fixed;
@@ -944,6 +925,31 @@ footer {
   cursor: pointer;
   display: block;
    }
+}
+  
+@media (min-width: 768px) {
+  .lore-toggle-btn,
+  .degen-toggle-btn,
+  .meme-toggle-btn {
+    position: fixed;
+    display: block;
+    right: 20px;
+    z-index: 999;
+  }
+
+  .lore-toggle-btn {
+    bottom: 140px;
+  }
+
+  .degen-toggle-btn {
+    bottom: 80px;
+    background: #ffe06b;
+  }
+
+  .meme-toggle-btn {
+    bottom: 20px;
+    background: #ff4fd8;
+  }
 }
  
 </style>
@@ -1070,6 +1076,12 @@ footer {
 <!-- 📜 Lore Button -->
 <button class="lore-toggle-btn" onclick="toggleLore()">📜 Read Lore</button>
 
+<!-- 🧠 Degen Mode Button -->
+<button class="degen-toggle-btn" onclick="toggleDegen()">🧠 Degen Mode</button>
+
+<!-- 🎭 Meme Generator Button -->
+<button class="meme-toggle-btn" onclick="toggleMeme()">🎭 Meme Generator</button>
+
 <!-- 📜 Mobile Lore Modal -->
 <div class="lore-modal" id="loreModal">
   <button class="close-lore" onclick="toggleLore()">✖</button>
@@ -1083,20 +1095,14 @@ footer {
   <div class="lore-chapter">He’s not just a token. He’s a story. A meme. A movement.</div>
 </div>
 
- <!-- 🧠 Degen Mode Button -->
-<button class="degen-toggle-btn" onclick="toggleDegen()">🧠 Degen Mode</button>
-
-<!-- 🔮 Degen Prophecies Modal -->
-<div class="degen-modal" id="degenModal"> <!-- not degen-Modal -->
+<!-- 🧠 Degen Modal -->
+<div class="degen-modal" id="degenModal">
   <button class="close-degen" onclick="toggleDegen()">✖</button>
   <h2>Degen Prophecies by $WAGMIK</h2>
   <p id="degenProphecy">Loading prophecy...</p>
 </div>
 
-<!-- 🎭 Meme Generator Button -->
-<button class="meme-toggle-btn" onclick="toggleMeme()">🎭 Meme Generator</button>
-
-<!-- Meme Generator Modal -->
+<!-- 🎭 Meme Generator Modal -->
 <div class="meme-modal" id="memeModal">
   <button class="close-meme" onclick="toggleMeme()">✖</button>
   <div class="console-container">
