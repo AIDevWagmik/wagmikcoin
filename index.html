@@ -481,20 +481,221 @@ footer {
   .section.about {
     margin-top: 0;
   }
+
+   /* Floating Buttons */
+    .floating-button {
+      position: fixed;
+      right: 20px;
+      z-index: 1001;
+      padding: 12px 18px;
+      border-radius: 20px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      transition: background 0.3s;
+    }
+
+    .lore-toggle-btn {
+      bottom: 140px;
+      background: #ff4fd8;
+    }
+
+    .degen-toggle-btn {
+      bottom: 80px;
+      background: #ffe06b;
+    }
+
+    .meme-toggle-btn {
+      bottom: 20px;
+      background: #50f7ff;
+    }
+
+    /* Modal Base */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(20, 10, 40, 0.92);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      padding: 40px 20px;
+      overflow-y: auto;
+      box-sizing: border-box;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 1.8em;
+      background: transparent;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* Lore Modal */
+    #loreModal {
+      background: linear-gradient(rgba(20, 10, 40, 0.96), rgba(20, 10, 40, 0.96)), url('lore.png') center center no-repeat;
+      background-size: cover;
+    }
+
+    .lore-chapter {
+      margin-bottom: 18px;
+      font-size: 1.2em;
+      max-width: 600px;
+      background: rgba(0,0,0,0.5);
+      padding: 12px;
+      border-radius: 10px;
+    }
+
+    /* Degen Modal */
+    #degenModal h2 {
+      color: #ffe06b;
+      margin-bottom: 16px;
+    }
+
+    #degenProphecy {
+      font-size: 1.4em;
+      font-style: italic;
+      text-align: center;
+    }
+
+    /* Meme Modal */
+    #memeModal {
+      background: linear-gradient(rgba(20, 10, 40, 0.9), rgba(20, 10, 40, 0.9)), url('console-layout.png') center center no-repeat;
+      background-size: cover;
+    }
+
+    .console-container {
+      position: relative;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .console-container img.console-bg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .input-console,
+    .console-btn {
+      position: absolute;
+      background: #fff;
+      border: none;
+      color: #000;
+      padding: 6px 10px;
+      font-size: 0.9em;
+      border-radius: 6px;
+    }
+
+    .console-canvas {
+      position: absolute;
+      border: 2px dashed white;
+      top: 320px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    @media (min-width: 768px) {
+      .console-container {
+        display: flex;
+
+        gap: 40px;
+        justify-content: center;
+        align-items: flex-start;
+      }
+      .console-canvas {
+        position: static;
+        transform: none;
+      }
+
+
+   @media (max-width: 768px) {
+     .console-bg {
+       content: url('mobile-console-layout.png');
+  }
+
+     .input-console {
+       font-size: 0.85em;
+  }
+
+     .console-canvas {
+       top: 360px;
+       left: 50%;
+       transform: translateX(-50%);
+       width: 260px;
+       height: auto;
+  }
+
+.floating-button:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.console-btn:hover {
+  background: #ffd700;
+  color: #000;
+  font-weight: bold;
+   }
+
+.floating-apps {
+  position: fixed;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 1002;
+}
+
+.floating-app-btn {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: transform 0.3s;
+}
+
+.floating-app-btn:hover {
+  transform: scale(1.1);
+}
+
+.app-frame {
+  width: 90vw;
+  height: 80vh;
+  max-width: 1200px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+   }
 }
 
 </style>
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
 </head>
 <body>
-  <div class="body-background-fade"></div>
-
-<div class="coin-fall" id="coin-fall"></div>
 
 <header>
   <h1>$WAGMIK</h1>
   <p>We’re All Gonna Make It… Kinda</p>
 </header>
+  
+<div class="body-background-fade"></div>
+
+<div class="coin-fall" id="coin-fall"></div>
 
 <div class="fade-line-header-bottom"></div>
 
@@ -603,6 +804,97 @@ footer {
 <div class="fade-between-tokenomics-bottom"></div>
   <img src="bottom-banner.png" alt="Crypto Influencers Holding WAGMIK Coins" />
   </div>
+  
+<!-- Floating App Icons -->
+<div class="floating-apps">
+  <img src="axiom.png" alt="Axiom" class="floating-app-btn" onclick="toggleApp('axiomApp')">
+  <img src="bullx.png" alt="Bullx" class="floating-app-btn" onclick="toggleApp('bullxApp')">
+  <img src="photon.png" alt="Photon" class="floating-app-btn" onclick="toggleApp('photonApp')">
+</div>
+
+<!-- App Modals -->
+<div class="modal" id="axiomApp">
+  <button class="close-btn" onclick="toggleApp('axiomApp')">✖</button>
+  <iframe src="https://axiom.trade/" frameborder="0" class="app-frame"></iframe>
+</div>
+
+<div class="modal" id="bullxApp">
+  <button class="close-btn" onclick="toggleApp('bullxApp')">✖</button>
+  <iframe src="https://bullx.io/login?redirectUrl=" frameborder="0" class="app-frame"></iframe>
+</div>
+
+<div class="modal" id="photonApp">
+  <button class="close-btn" onclick="toggleApp('photonApp')">✖</button>
+  <iframe src="https://photon-sol.tinyastro.io/" frameborder="0" class="app-frame"></iframe>
+</div>
+
+<!-- Lore Button & Modal -->
+<button class="floating-button lore-toggle-btn" onclick="toggleLore()">📜 Read Lore</button>
+<div class="modal" id="loreModal">
+  <button class="close-btn" onclick="toggleLore()">✖</button>
+  <div class="lore-chapter">In the deep shadows of Solana memecoin culture...</div>
+  <div class="lore-chapter">While BONK soared to memetic greatness, $WAGMIK sat quietly in the trenches...</div>
+  <div class="lore-chapter">He wasn’t the fastest dog. He wasn’t airdropped to influencers...</div>
+  <div class="lore-chapter">He was BONK’s underdog cousin...</div>
+  <div class="lore-chapter">But instead of giving up, he asked ChatGPT for advice...</div>
+  <div class="lore-chapter">Born from regret and refined by copium, $WAGMIK clawed into existence...</div>
+  <div class="lore-chapter">Now, $WAGMIK isn’t here to change the world...</div>
+  <div class="lore-chapter">He’s not just a token. He’s a story. A meme. A movement.</div>
+</div>
+
+<!-- Degen Button & Modal -->
+<button class="floating-button degen-toggle-btn" onclick="toggleDegen()">🧠 Degen Mode</button>
+<div class="modal" id="degenModal">
+  <button class="close-btn" onclick="toggleDegen()">✖</button>
+  <h2>Degen Prophecies by $WAGMIK</h2>
+  <p id="degenProphecy">Loading prophecy...</p>
+</div>
+
+<!-- Meme Generator Button & Modal -->
+<button class="floating-button meme-toggle-btn" onclick="toggleMeme()">🎭 Meme Generator</button>
+<div class="modal" id="</select">
+  <button class="close-btn" onclick="toggleMeme()">✖</button>
+  <div class="console-container">
+    <img src="console-layout.png" class="console-bg" alt="Console Layout">
+    
+<!-- Controls -->
+<select id="bgSelect" class="input-console" style="top:45px; left:35px; width:200px">
+  <option value="">None</option>
+  <option value="bg-trading.png">Trading Setup</option>
+  <option value="bg-luxury.png">Luxury Lifestyle</option>
+  <option value="bg-degen.png">Degen House</option>
+</select>
+
+<select id="hatSelect" class="input-console" style="top:85px; left:35px; width:200px">
+  <option value="">None</option>
+  <option value="wagmik-hat.png">WAGMIK Hat</option>
+  <option value="bonk-hat.png">BONK Hat</option>
+  <option value="degen-hat.png">DEGEN Hat</option>
+</select>
+
+<select id="chainSelect" class="input-console" style="top:125px; left:35px; width:200px">
+  <option value="">None</option>
+  <option value="chain-wagmik.png">WAGMIK Chain</option>
+</select>
+
+<select id="characterSelect" class="input-console" style="top:165px; left:35px; width:200px">
+  <option value="">None</option>
+  <option value="wagmik-cheering.png">WAGMIK Cheering</option>
+</select>
+
+<input type="text" id="topText" placeholder="Top Text" class="input-console" style="top:205px; left:35px; width:200px">
+<input type="text" id="bottomText" placeholder="Bottom Text" class="input-console" style="top:245px; left:35px; width:200px">
+
+<button onclick="drawMeme()" class="console-btn input-console" style="top:290px; left:35px; width:100px; background: linear-gradient(135deg, #ff4fd8 0%, #ffe06b 100%);
+color: #000; color:#000" ">Preview</button>
+<button onclick="downloadMeme()" class="console-btn input-console" style="top:290px; left:140px; width:100px; background: linear-gradient(135deg, #ff4fd8 0%, #ffe06b 100%);
+color: #000; color:#000"">Download</button>
+<button onclick="resetMeme()" class="console-btn input-console" style="top:330px; left:35px; width:205px; background: linear-gradient(135deg, #ff4fd8 0%, #ffe06b 100%);
+color: #000; color:#000">Reset</button>
+
+<canvas id="memeCanvas" class="console-canvas" width="300" height="300"></canvas>
+    
+  </div>
 </div>
 
 <footer>
@@ -658,6 +950,196 @@ footer {
       }
     });
   });
+</script>
+
+<script>
+  function toggleLore() {
+    document.getElementById('loreModal').classList.toggle('active');
+  }
+  function toggleDegen() {
+    const modal = document.getElementById('degenModal');
+    const lines = [
+      "Buy high, hold higher.",
+      "You only lose when you sell.",
+      "Gas fees are a state of mind.",
+      "If it dumps, double down.",
+      "Degen rule #88: Never check the chart.",
+      "Real utility is in the meme.",
+      "WAGMIK is a vibe, not a roadmap.",
+      "Coins come and go, but hopium is eternal.",
+      "He who panics last, panics best.",
+      "Trust the vibes, not the volume."
+    ];
+    if (!modal.classList.contains('active')) {
+      document.getElementById('degenProphecy').textContent = `"${lines[Math.floor(Math.random() * lines.length)]}"`;
+    }
+    modal.classList.toggle('active');
+  }
+  function toggleMeme() {
+    document.getElementById('memeModal').classList.toggle('active');
+  }
+</script>
+
+<script>
+  function toggleApp(id) {
+    document.getElementById(id).classList.toggle('active');
+  }
+</script>
+
+<script>
+const canvas = document.getElementById('memeCanvas');
+const ctx = canvas.getContext('2d');
+const bgSelect = document.getElementById('bgSelect');
+const hatSelect = document.getElementById('hatSelect');
+const chainSelect = document.getElementById('chainSelect');
+const characterSelect = document.getElementById('characterSelect');
+const topTextInput = document.getElementById('topText');
+const bottomTextInput = document.getElementById('bottomText');
+
+const backgrounds = {
+  "bg-trading.png": new Image(),
+  "bg-luxury.png": new Image(),
+  "bg-degen.png": new Image()
+};
+for (let key in backgrounds) backgrounds[key].src = key;
+
+let hatImg = new Image(), hatX = 200, hatY = 40, hatScale = 0.7, draggingHat = false;
+let chainImg = new Image(), chainX = 150, chainY = 280, chainScale = 0.8, draggingChain = false;
+let characterImg = new Image(), characterX = 100, characterY = 100, characterScale = 1.0, draggingChar = false;
+
+function drawMeme() {
+  const bg = backgrounds[bgSelect.value];
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (bg?.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+
+  if (characterSelect.value) {
+    characterImg.src = characterSelect.value;
+    characterImg.onload = () => drawCanvas();
+  } else {
+    characterImg = new Image();
+    drawCanvas();
+  }
+
+  if (chainSelect.value) {
+    chainImg.src = chainSelect.value;
+    chainImg.onload = () => drawCanvas();
+  } else {
+    chainImg = new Image();
+    drawCanvas();
+  }
+
+  if (hatSelect.value) {
+    hatImg.src = hatSelect.value;
+    hatImg.onload = () => drawCanvas();
+  } else {
+    hatImg = new Image();
+    drawCanvas();
+  }
+}
+
+function drawCanvas() {
+  if (hatImg.src) ctx.drawImage(hatImg, hatX, hatY, hatImg.width * hatScale, hatImg.height * hatScale);
+  if (chainImg.src) ctx.drawImage(chainImg, chainX, chainY, chainImg.width * chainScale, chainImg.height * chainScale);
+  if (characterImg.src) ctx.drawImage(characterImg, characterX, characterY, characterImg.width * characterScale, characterImg.height * characterScale);
+
+  ctx.font = 'bold 28px Impact';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'white';
+  ctx.strokeStyle = 'black';
+  ctx.lineWidth = 2;
+
+  if (topTextInput.value) {
+    ctx.fillText(topTextInput.value.toUpperCase(), canvas.width / 2, 40);
+    ctx.strokeText(topTextInput.value.toUpperCase(), canvas.width / 2, 40);
+  }
+  if (bottomTextInput.value) {
+    ctx.fillText(bottomTextInput.value.toUpperCase(), canvas.width / 2, canvas.height - 20);
+    ctx.strokeText(bottomTextInput.value.toUpperCase(), canvas.width / 2, canvas.height - 20);
+  }
+}
+
+function downloadMeme() {
+  const link = document.createElement('a');
+  link.download = 'wagmik-meme.png';
+  link.href = canvas.toDataURL();
+  link.click();
+}
+
+function resetMeme() {
+  document.getElementById('bgSelect').value = "";
+  document.getElementById('hatSelect').value = "";
+  document.getElementById('chainSelect').value = "";
+  document.getElementById('characterSelect').value = "";
+  document.getElementById('topText').value = "";
+  document.getElementById('bottomText').value = "";
+
+  hatImg = new Image();
+  chainImg = new Image();
+  characterImg = new Image();
+  drawMeme();
+}
+
+// 📦 Utility for detecting interaction hitbox
+function isInside(mx, my, x, y, w, h) {
+  return mx >= x && mx <= x + w && my >= y && my <= y + h;
+}
+
+function setupDragAndResize(imgObj, xRef, yRef, scaleRef, draggingFlag) {
+  const ref = { x: xRef, y: yRef, dragging: draggingFlag, scale: scaleRef };
+
+  canvas.addEventListener('mousedown', (e) => {
+    const r = canvas.getBoundingClientRect();
+    const mx = e.clientX - r.left, my = e.clientY - r.top;
+    const w = imgObj.width * ref.scale, h = imgObj.height * ref.scale;
+    if (isInside(mx, my, ref.x, ref.y, w, h)) ref.dragging = true;
+  });
+
+  canvas.addEventListener('mousemove', (e) => {
+    if (ref.dragging) {
+      const r = canvas.getBoundingClientRect();
+      ref.x = e.clientX - r.left - (imgObj.width * ref.scale) / 2;
+      ref.y = e.clientY - r.top - (imgObj.height * ref.scale) / 2;
+      drawMeme();
+    }
+  });
+
+  canvas.addEventListener('mouseup', () => ref.dragging = false);
+  canvas.addEventListener('mouseleave', () => ref.dragging = false);
+
+  canvas.addEventListener('wheel', (e) => {
+    if (ref.dragging) {
+      e.preventDefault();
+      ref.scale += e.deltaY < 0 ? 0.05 : -0.05;
+      ref.scale = Math.max(0.2, Math.min(2.5, ref.scale));
+      drawMeme();
+    }
+  });
+
+  // ✨ Touch support
+  canvas.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    const r = canvas.getBoundingClientRect();
+    const mx = t.clientX - r.left, my = t.clientY - r.top;
+    const w = imgObj.width * ref.scale, h = imgObj.height * ref.scale;
+    if (isInside(mx, my, ref.x, ref.y, w, h)) ref.dragging = true;
+  });
+
+  canvas.addEventListener('touchmove', (e) => {
+    if (ref.dragging) {
+      const t = e.touches[0];
+      const r = canvas.getBoundingClientRect();
+      ref.x = t.clientX - r.left - (imgObj.width * ref.scale) / 2;
+      ref.y = t.clientY - r.top - (imgObj.height * ref.scale) / 2;
+      drawMeme();
+    }
+  });
+
+  canvas.addEventListener('touchend', () => ref.dragging = false);
+}
+
+setupDragAndResize(hatImg, hatX, hatY, hatScale, draggingHat);
+setupDragAndResize(chainImg, chainX, chainY, chainScale, draggingChain);
+setupDragAndResize(characterImg, characterX, characterY, characterScale, draggingChar);
 </script>
 
 </body>
