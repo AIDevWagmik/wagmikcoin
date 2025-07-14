@@ -394,7 +394,34 @@ footer {
   pointer-events: none;
 }
 
-}}
+/* Floating Buttons */
+.floating-button {
+  position: fixed;
+  right: 20px;
+  z-index: 1001;
+  padding: 12px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  transition: background 0.3s;
+}
+
+.lore-toggle-btn {
+  bottom: 140px;
+  background: #ff4fd8;
+}
+
+.degen-toggle-btn {
+  bottom: 80px;
+  background: #ffe06b;
+}
+
+.meme-toggle-btn {
+  bottom: 20px;
+  background: #50f7ff;
+}
 
 @media (max-width: 768px) {
   body {
@@ -481,30 +508,6 @@ footer {
   .section.about {
     margin-top: 0;
   }
-
-   /* Floating Buttons */
-    .floating-button {
-      position: fixed;
-      right: 20px;
-      z-index: 1001;
-      padding: 12px 18px;
-      border-radius: 20px;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-      transition: background 0.3s;
-    }
-
-    .lore-toggle-btn {
-      bottom: 140px;
-      background: #ff4fd8;
-    }
-
-    .degen-toggle-btn {
-      bottom: 80px;
-      background: #ffe06b;
-    }
 
     .meme-toggle-btn {
       bottom: 20px;
