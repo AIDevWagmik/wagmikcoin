@@ -884,20 +884,25 @@ footer {
 }
 
 /* 🔧 Floating Buttons */
-.meme-toggle-btn,
-.degen-toggle-btn {
+.meme-modal,
+.degen-modal {
+  display: none;
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 999;
-  background: #ff4fd8;
-  color: #000;
-  padding: 12px 18px;
-  font-weight: bold;
-  border: none;
-  border-radius: 25px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-  cursor: pointer;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.95); /* or your custom background */
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.meme-modal.active,
+.degen-modal.active {
+  display: flex;
 }
 
 .degen-toggle-btn {
@@ -1131,7 +1136,7 @@ footer {
 </div>
 
 <!-- 🔮 Degen Prophecies Modal -->
-<div class="degen-modal" id="degenModal" style="display: none;">
+<div class="degen-modal" id="degen-Modal">
   <button class="close-degen" onclick="toggleDegen()">✖</button>
   <h2>Degen Prophecies by $WAGMIK</h2>
   <p id="degenProphecy">Loading prophecy...</p>
@@ -1202,10 +1207,6 @@ footer {
   "He who panics last, panics best.",
   "Trust the vibes, not the volume."
 ];
-
-function toggleDegen() {
-  const modal = document.getElementById('degenModal');
-  const prophecy = document.getElementById('degenProphecy');
 
   if (modal.style.display !== 'flex') {
     const line = degenLines[Math.floor(Math.random() * degenLines.length)];
@@ -1364,11 +1365,22 @@ function drawCanvas() {
   }
 }
 
-  function toggleMeme() {
+ function toggleMeme() {
   const modal = document.getElementById('memeModal');
-  modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+  modal.classList.toggle('active');
 }
 
+function toggleDegen() {
+  const modal = document.getElementById('degenModal');
+  const prophecy = document.getElementById('degenProphecy');
+
+  if (!modal.classList.contains('active')) {
+    const line = degenLines[Math.floor(Math.random() * degenLines.length)];
+    prophecy.textContent = `"${line}"`;
+  }
+
+  modal.classList.toggle('active');
+}
 
   function downloadMeme() {
     const link = document.createElement('a');
@@ -1476,7 +1488,7 @@ canvas.addEventListener("wheel", (e) => {
 </script>
 
 <!-- Meme Generator Modal -->
-<div class="meme-modal" id="memeModal" style="display: none;">
+<div class="meme-modal" id="memeModal">
   <button class="close-meme" onclick="toggleMeme()">✖</button>
   <div class="console-container">
     <img src="console-layout.png" class="console-bg" alt="Console Layout">
