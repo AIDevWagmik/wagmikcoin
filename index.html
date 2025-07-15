@@ -423,6 +423,40 @@ footer {
   background: #50f7ff;
 }
 
+/* Modal Base */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(20, 10, 40, 0.92);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      padding: 40px 20px;
+      overflow-y: auto;
+      box-sizing: border-box;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 1.8em;
+      background: transparent;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
 @media (max-width: 768px) {
   body {
     background-size: cover; /* fix zoomed background */
@@ -512,40 +546,6 @@ footer {
     .meme-toggle-btn {
       bottom: 20px;
       background: #50f7ff;
-    }
-
-    /* Modal Base */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(20, 10, 40, 0.92);
-      backdrop-filter: blur(6px);
-      z-index: 1000;
-      padding: 40px 20px;
-      overflow-y: auto;
-      box-sizing: border-box;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal .close-btn {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      font-size: 1.8em;
-      background: transparent;
-      border: none;
-      color: white;
-      cursor: pointer;
     }
 
     /* Lore Modal */
