@@ -1184,7 +1184,7 @@ function setupDragAndResize(obj) {
     const t = e.touches[0];
     const r = canvas.getBoundingClientRect();
     const mx = t.clientX - r.left, my = t.clientY - r.top;
-    const w = imgObj.width * ref.scale, h = imgObj.height * ref.scale;
+    const w = ref.img.width * ref.scale, h = ref.img.height * ref.scale;
     if (isInside(mx, my, ref.x, ref.y, w, h)) ref.dragging = true;
   });
 
