@@ -1056,33 +1056,54 @@ function drawMeme() {
     return;
   }
 
-  // Update selected images
-  if (hatSelect.value && hat.img.src !== hatSelect.value) {
-    hat.img.src = hatSelect.value;
-    return; // wait for load event
+  // Load and wait for images
+  let waiting = 0;
+
+  if (hatSelect.value) {
+    if (hat.img.src !== location.origin + '/' + hatSelect.value) {
+      waiting++;
+      hat.img.onload = () => {
+        waiting--;
+        if (waiting === 0) drawCanvas();
+      };
+      hat.img.src = hatSelect.value;
+    }
+  } else {
+    hat.img.src = "";
   }
 
-  if (!hatSelect.value) hat.img.src = "";
-
-  if (chainSelect.value && chain.img.src !== chainSelect.value) {
-
-  chain.img.src = chainSelect.value;
-   return;
+  if (chainSelect.value) {
+    if (chain.img.src !== location.origin + '/' + chainSelect.value) {
+      waiting++;
+      chain.img.onload = () => {
+        waiting--;
+        if (waiting === 0) drawCanvas();
+      };
+      chain.img.src = chainSelect.value;
+    }
+  } else {
+    chain.img.src = "";
   }
-  
-  if (!chainSelect.value) chain.img.src = "";
 
-  if (characterSelect.value && character.img.src !== characterSelect.value) {
-    character.img.src = characterSelect.value;
-    return;
+  if (characterSelect.value) {
+    if (character.img.src !== location.origin + '/' + characterSelect.value) {
+      waiting++;
+      character.img.onload = () => {
+        waiting--;
+        if (waiting === 0) drawCanvas();
+      };
+      character.img.src = characterSelect.value;
+    }
+  } else {
+    character.img.src = "";
   }
-  if (!characterSelect.value) character.img.src = "";
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (bg) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
-  drawCanvas();
+
+  if (waiting === 0) drawCanvas();
 }
-  
+
 function drawCanvas() {␊
   if (character.img.complete && characterSelect.value)
     ctx.drawImage(character.img, character.x, character.y, character.img.width * character.scale, character.img.height * character.scale);
