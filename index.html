@@ -1036,13 +1036,14 @@ bottomTextInput.addEventListener('input', drawMeme);
 const backgrounds = {
   "bg-trading.png": new Image(),
   "bg-luxury.png": new Image(),
-  "bg-degen.png": new Image()
+  "bg-degen.png": new Image(),
 };
 for (let key in backgrounds) backgrounds[key].src = key;
 
-let hatImg = new Image(), hatX = 200, hatY = 40, hatScale = 0.7, draggingHat = false;
-let chainImg = new Image(), chainX = 150, chainY = 280, chainScale = 0.8, draggingChain = false;
-let characterImg = new Image(), characterX = 100, characterY = 100, characterScale = 1.0, draggingChar = false;
+// Accessory state objects
+const hat = { img: new Image(), x: 200, y: 40, scale: 0.7, dragging: false };
+const chain = { img: new Image(), x: 150, y: 280, scale: 0.8, dragging: false };
+const character = { img: new Image(), x: 100, y: 100, scale: 1.0, dragging: false };
 
 function drawMeme() {
   const bg = backgrounds[bgSelect.value];
@@ -1051,46 +1052,29 @@ function drawMeme() {
     return;
   }
 
+  // Update selected images
+  if (characterSelect.value) {
+    character.img.onload = drawCanvas;
+    character.img.src = characterSelect.value;
+  }
+  if (chainSelect.value) {
+    chain.img.onload = drawCanvas;
+    chain.img.src = chainSelect.value;
+  }
+  if (hatSelect.value) {
+    hat.img.onload = drawCanvas;
+    hat.img.src = hatSelect.value;
+  }
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (bg) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
-
-  // Load Character
-  const charVal = characterSelect.value;
-  if (charVal) {
-    characterImg.src = charVal;
-    characterImg.onload = () => {
-      setupDragAndResize(characterImg, characterX, characterY, characterScale, draggingChar);
-      drawCanvas(); // callback after character loaded
-    };
-  }
-
-  // Load Chain
-  const chainVal = chainSelect.value;
-  if (chainVal) {
-    chainImg.src = chainVal;
-    chainImg.onload = () => {
-      setupDragAndResize(chainImg, chainX, chainY, chainScale, draggingChain);
-      drawCanvas(); // callback after chain loaded
-    };
-  }
-
-  // Load Hat
-  const hatVal = hatSelect.value;
-  if (hatVal) {
-    hatImg.src = hatVal;
-    hatImg.onload = () => {
-      setupDragAndResize(hatImg, hatX, hatY, hatScale, draggingHat);
-      drawCanvas(); // callback after hat loaded
-    };
-  }
-
-  drawCanvas(); // draw immediately as fallback
+  drawCanvas();
 }
-
-function drawCanvas() {
-  if (hatImg.src) ctx.drawImage(hatImg, hatX, hatY, hatImg.width * hatScale, hatImg.height * hatScale);
-  if (chainImg.src) ctx.drawImage(chainImg, chainX, chainY, chainImg.width * chainScale, chainImg.height * chainScale);
-  if (characterImg.src) ctx.drawImage(characterImg, characterX, characterY, characterImg.width * characterScale, characterImg.height * characterScale);
+  
+function drawCanvas() {␊
+  if (hat.img.src) ctx.drawImage(hat.img, hat.x, hat.y, hat.img.width * hat.scale, hat.img.height * hat.scale);
+  if (chain.img.src) ctx.drawImage(chain.img, chain.x, chain.y, chain.img.width * chain.scale, chain.img.height * chain.scale);
+  if (character.img.src) ctx.drawImage(character.img, character.x, character.y, character.img.width * character.scale, character.img.height * character.scale);
 
   ctx.font = 'bold 28px Impact';
   ctx.textAlign = 'center';
@@ -1123,9 +1107,18 @@ function resetMeme() {
   document.getElementById('topText').value = "";
   document.getElementById('bottomText').value = "";
 
-  hatImg = new Image();
-  chainImg = new Image();
-  characterImg = new Image();
+  hat.img = new Image();
+  hat.x = 200;
+  hat.y = 40;
+  hat.scale = 0.7;
+  chain.img = new Image();
+  chain.x = 150;
+  chain.y = 280;
+  chain.scale = 0.8;
+  character.img = new Image();
+  character.x = 100;
+  character.y = 100;
+  character.scale = 1.0;
   drawMeme();
 }
 
@@ -1134,21 +1127,21 @@ function isInside(mx, my, x, y, w, h) {
   return mx >= x && mx <= x + w && my >= y && my <= y + h;
 }
 
-function setupDragAndResize(imgObj, xRef, yRef, scaleRef, draggingFlag) {
-  const ref = { x: xRef, y: yRef, dragging: draggingFlag, scale: scaleRef };
+function setupDragAndResize(obj) {
+  const ref = obj;
 
   canvas.addEventListener('mousedown', (e) => {
     const r = canvas.getBoundingClientRect();
     const mx = e.clientX - r.left, my = e.clientY - r.top;
-    const w = imgObj.width * ref.scale, h = imgObj.height * ref.scale;
+    const w = ref.img.width * ref.scale, h = ref.img.height * ref.scale;
     if (isInside(mx, my, ref.x, ref.y, w, h)) ref.dragging = true;
   });
 
   canvas.addEventListener('mousemove', (e) => {
     if (ref.dragging) {
-      const r = canvas.getBoundingClientRect();
-      ref.x = e.clientX - r.left - (imgObj.width * ref.scale) / 2;
-      ref.y = e.clientY - r.top - (imgObj.height * ref.scale) / 2;
+      const r = canvas.getBoundingClientRect();␊
+      ref.x = e.clientX - r.left - (ref.img.width * ref.scale) / 2;
+      ref.y = e.clientY - r.top - (ref.img.height * ref.scale) / 2;
       drawMeme();
     }
   });
@@ -1177,9 +1170,9 @@ function setupDragAndResize(imgObj, xRef, yRef, scaleRef, draggingFlag) {
   canvas.addEventListener('touchmove', (e) => {
     if (ref.dragging) {
       const t = e.touches[0];
-      const r = canvas.getBoundingClientRect();
-      ref.x = t.clientX - r.left - (imgObj.width * ref.scale) / 2;
-      ref.y = t.clientY - r.top - (imgObj.height * ref.scale) / 2;
+      const r = canvas.getBoundingClientRect();␊
+      ref.x = t.clientX - r.left - (ref.img.width * ref.scale) / 2;
+      ref.y = t.clientY - r.top - (ref.img.height * ref.scale) / 2;
       drawMeme();
     }
   });
@@ -1187,9 +1180,9 @@ function setupDragAndResize(imgObj, xRef, yRef, scaleRef, draggingFlag) {
   canvas.addEventListener('touchend', () => ref.dragging = false);
 }
 
-setupDragAndResize(hatImg, hatX, hatY, hatScale, draggingHat);
-setupDragAndResize(chainImg, chainX, chainY, chainScale, draggingChain);
-setupDragAndResize(characterImg, characterX, characterY, characterScale, draggingChar);
+setupDragAndResize(hat);
+setupDragAndResize(chain);
+setupDragAndResize(character);
 </script>
 
 </body>
