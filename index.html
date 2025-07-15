@@ -1018,17 +1018,17 @@ canvas#memeCanvas {
 </script>
 
 <script>
-const canvas = document.getElementById('memeCanvas');
-const ctx = canvas.getContext('2d');
-const bgSelect = document.getElementById('bgSelect');
-const hatSelect = document.getElementById('hatSelect');
-const chainSelect = document.getElementById('chainSelect');
-const characterSelect = document.getElementById('characterSelect');
-const topTextInput = document.getElementById('topText');
+const canvas = document.getElementById('memeCanvas');␊
+const ctx = canvas.getContext('2d');␊
+const bgSelect = document.getElementById('bgSelect');␊
+const hatSelect = document.getElementById('hatSelect');␊
+const chainSelect = document.getElementById('chainSelect');␊
+const characterSelect = document.getElementById('characterSelect');␊
+const topTextInput = document.getElementById('topText');␊
 const bottomTextInput = document.getElementById('bottomText');
 
 // Update meme whenever a control changes
-[bgSelect, hatSelect, chainSelect, characterSelect, topTextInput, bottomTextInput]
+[bgSelect, hatSelect, chainSelect, characterSelect]
   .forEach(el => el.addEventListener('change', drawMeme));
 topTextInput.addEventListener('input', drawMeme);
 bottomTextInput.addEventListener('input', drawMeme);
@@ -1036,7 +1036,7 @@ bottomTextInput.addEventListener('input', drawMeme);
 const backgrounds = {
   "bg-trading.png": new Image(),
   "bg-luxury.png": new Image(),
-  "bg-degen.png": new Image(),
+  "bg-degen.png": new Image()
 };
 for (let key in backgrounds) backgrounds[key].src = key;
 
@@ -1044,6 +1044,10 @@ for (let key in backgrounds) backgrounds[key].src = key;
 const hat = { img: new Image(), x: 200, y: 40, scale: 0.7, dragging: false };
 const chain = { img: new Image(), x: 150, y: 280, scale: 0.8, dragging: false };
 const character = { img: new Image(), x: 100, y: 100, scale: 1.0, dragging: false };
+
+hat.img.onload = drawMeme;
+chain.img.onload = drawMeme;
+character.img.onload = drawMeme;
 
 function drawMeme() {
   const bg = backgrounds[bgSelect.value];
@@ -1053,18 +1057,26 @@ function drawMeme() {
   }
 
   // Update selected images
-  if (characterSelect.value) {
-    character.img.onload = drawCanvas;
-    character.img.src = characterSelect.value;
-  }
-  if (chainSelect.value) {
-    chain.img.onload = drawCanvas;
-    chain.img.src = chainSelect.value;
-  }
-  if (hatSelect.value) {
-    hat.img.onload = drawCanvas;
+  if (hatSelect.value && hat.img.src !== hatSelect.value) {
     hat.img.src = hatSelect.value;
+    return; // wait for load event
   }
+
+  if (!hatSelect.value) hat.img.src = "";
+
+  if (chainSelect.value && chain.img.src !== chainSelect.value) {
+
+  chain.img.src = chainSelect.value;
+   return;
+  }
+  
+  if (!chainSelect.value) chain.img.src = "";
+
+  if (characterSelect.value && character.img.src !== characterSelect.value) {
+    character.img.src = characterSelect.value;
+    return;
+  }
+  if (!characterSelect.value) character.img.src = "";
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (bg) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
@@ -1072,9 +1084,12 @@ function drawMeme() {
 }
   
 function drawCanvas() {␊
-  if (hat.img.src) ctx.drawImage(hat.img, hat.x, hat.y, hat.img.width * hat.scale, hat.img.height * hat.scale);
-  if (chain.img.src) ctx.drawImage(chain.img, chain.x, chain.y, chain.img.width * chain.scale, chain.img.height * chain.scale);
-  if (character.img.src) ctx.drawImage(character.img, character.x, character.y, character.img.width * character.scale, character.img.height * character.scale);
+  if (character.img.complete && characterSelect.value)
+    ctx.drawImage(character.img, character.x, character.y, character.img.width * character.scale, character.img.height * character.scale);
+  if (chain.img.complete && chainSelect.value)
+    ctx.drawImage(chain.img, chain.x, chain.y, chain.img.width * chain.scale, chain.img.height * chain.scale);
+  if (hat.img.complete && hatSelect.value)
+    ctx.drawImage(hat.img, hat.x, hat.y, hat.img.width * hat.scale, hat.img.height * hat.scale);
 
   ctx.font = 'bold 28px Impact';
   ctx.textAlign = 'center';
@@ -1119,6 +1134,9 @@ function resetMeme() {
   character.x = 100;
   character.y = 100;
   character.scale = 1.0;
+  hat.img.src = "";
+  chain.img.src = "";
+  character.img.src = "";
   drawMeme();
 }
 
@@ -1183,6 +1201,9 @@ function setupDragAndResize(obj) {
 setupDragAndResize(hat);
 setupDragAndResize(chain);
 setupDragAndResize(character);
+
+window.addEventListener('DOMContentLoaded', drawMeme);
+  
 </script>
 
 </body>
