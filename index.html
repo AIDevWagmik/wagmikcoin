@@ -1123,14 +1123,17 @@ function resetMeme() {
   document.getElementById('bottomText').value = "";
 
   hat.img = new Image();
+  hat.img.onload = drawMeme;
   hat.x = 200;
   hat.y = 40;
   hat.scale = 0.7;
   chain.img = new Image();
+  chain.img.onload = drawMeme;
   chain.x = 150;
   chain.y = 280;
   chain.scale = 0.8;
   character.img = new Image();
+  character.img.onload = drawMeme;
   character.x = 100;
   character.y = 100;
   character.scale = 1.0;
