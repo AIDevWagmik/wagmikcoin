@@ -423,40 +423,6 @@ footer {
   background: #50f7ff;
 }
 
-/* Modal Base */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(20, 10, 40, 0.92);
-      backdrop-filter: blur(6px);
-      z-index: 1000;
-      padding: 40px 20px;
-      overflow-y: auto;
-      box-sizing: border-box;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal .close-btn {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      font-size: 1.8em;
-      background: transparent;
-      border: none;
-      color: white;
-      cursor: pointer;
-    }
-
 @media (max-width: 768px) {
   body {
     background-size: cover; /* fix zoomed background */
@@ -547,6 +513,41 @@ footer {
       bottom: 20px;
       background: #50f7ff;
     }
+  }
+
+    /* Modal Base */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(20, 10, 40, 0.92);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      padding: 40px 20px;
+      overflow-y: auto;
+      box-sizing: border-box;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 1.8em;
+      background: transparent;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
 
     /* Lore Modal */
     #loreModal {
@@ -575,99 +576,114 @@ footer {
       text-align: center;
     }
 
-    /* Meme Modal */
-    #memeModal {
-      background: linear-gradient(rgba(20, 10, 40, 0.9), rgba(20, 10, 40, 0.9)), url('console-layout.png') center center no-repeat;
-      background-size: cover;
-    }
-
-    .console-container {
-      position: relative;
-      width: 100%;
-      max-width: 700px;
-    }
-
-    .console-container img.console-bg {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .input-console,
-    .console-btn {
-      position: absolute;
-      background: #fff;
-      border: none;
-      color: #000;
-      padding: 6px 10px;
-      font-size: 0.9em;
-      border-radius: 6px;
-    }
-
-    .console-canvas {
-      position: absolute;
-      border: 2px dashed white;
-      top: 320px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .floating-buttons {
-       position: fixed;
-       right: 20px;
-       bottom: 20px;
-       display: flex;
-       flex-direction: column;
-       gap: 20px;
-       z-index: 1001;
+/* Meme Modal */
+#memeModal {
+  background: linear-gradient(rgba(20, 10, 40, 0.9), rgba(20, 10, 40, 0.9)), url('console-layout.png') center center no-repeat;
+  background-size: cover;
 }
 
-    @media (min-width: 768px) {
-      .console-container {
-        display: flex;
-
-        gap: 40px;
-        justify-content: center;
-        align-items: flex-start;
-      }
-      .console-canvas {
-        position: static;
-        transform: none;
-      }
-
-
-   @media (max-width: 768px) {
-     .console-bg {
-       content: url('mobile-console-layout.png');
-  }
-
-     .input-console {
-       font-size: 0.85em;
-  }
-
-     .console-canvas {
-       top: 360px;
-       left: 50%;
-       transform: translateX(-50%);
-       width: 260px;
-       height: auto;
-  }
-
-.floating-button:hover {
-  opacity: 0.9;
-  transform: scale(1.05);
+/* Base Styles */
+.console-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.console-btn:hover {
-  background: #ffd700;
-  color: #000;
-  font-weight: bold;
-   }
+.console-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 400px;
 }
 
-@media (min-width: 769px) {
-  .lore-toggle-btn {
-    display: none;
+.console-controls input,
+.console-controls select,
+.console-controls button {
+  padding: 10px;
+  font-size: 1em;
+  border-radius: 8px;
+  border: none;
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+canvas#memeCanvas {
+  border: 2px dashed white;
+  margin-top: 20px;
+  width: 90%;
+  max-width: 360px;
+}
+
+.console-container img.console-bg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.floating-buttons {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 1001;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .console-bg {
+    content: url('mobile-console-layout.png');
+  }
+
+  .input-console {
+    font-size: 0.85em;
+  }
+
+  .console-canvas {
+    top: 360px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 260px;
+    height: auto;
+  }
+
+  .floating-button:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+
+  .console-btn:hover {
+    background: #ffd700;
+    color: #000;
+    font-weight: bold;
+  }
+}     
+
+/* Desktop override */
+@media (min-width: 768px) {
+  .console-container {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .console-controls {
+    width: 300px;
+    max-width: 300px;
+  }
+
+  canvas#memeCanvas {
+    width: 360px;
+    height: 360px;
   }
 }
 
@@ -775,7 +791,7 @@ footer {
     <h2>📊 Tokenomics</h2>
     <img src="coin.png" alt="$WAGMIK Coin" class="token-logo" />
     <ul>
-      <li><strong>Total Supply:</strong> 1,000,000,000></li>
+      <li><strong>Total Supply:</strong> 1,000,000,000</li>
       <li><strong>Tax:</strong> 0%</li>
       <li><strong>Chain:</strong> Solana</li>
       <li><strong>Utility:</strong> Vibes, Lore & Copium</li>
@@ -820,45 +836,50 @@ footer {
 <div class="modal" id="memeModal">
   <button class="close-btn" onclick="toggleMeme()">✖</button>
   <div class="console-container">
+    
+    <!-- 🖼 Background -->
     <img src="console-layout.png" class="console-bg" alt="Console Layout">
-    
-<!-- Controls -->
-<select id="bgSelect" class="input-console" style="top:45px; left:35px; width:200px">
-  <option value="">None</option>
-  <option value="bg-trading.png">Trading Setup</option>
-  <option value="bg-luxury.png">Luxury Lifestyle</option>
-  <option value="bg-degen.png">Degen House</option>
-</select>
 
-<select id="hatSelect" class="input-console" style="top:85px; left:35px; width:200px">
-  <option value="">None</option>
-  <option value="wagmik-hat.png">WAGMIK Hat</option>
-  <option value="bonk-hat.png">BONK Hat</option>
-  <option value="degen-hat.png">DEGEN Hat</option>
-</select>
+    <!-- 🎛 Controls Section -->
+    <div class="console-controls">
+      <label>Console Layout</label>
+      <select id="bgSelect">
+        <option value="">None</option>
+        <option value="bg-trading.png">Trading Setup</option>
+        <option value="bg-luxury.png">Luxury Lifestyle</option>
+        <option value="bg-degen.png">Degen House</option>
+      </select>
 
-<select id="chainSelect" class="input-console" style="top:125px; left:35px; width:200px">
-  <option value="">None</option>
-  <option value="chain-wagmik.png">WAGMIK Chain</option>
-</select>
+      <select id="hatSelect">
+        <option value="">None</option>
+        <option value="wagmik-hat.png">WAGMIK Hat</option>
+        <option value="bonk-hat.png">BONK Hat</option>
+        <option value="degen-hat.png">DEGEN Hat</option>
+      </select>
 
-<select id="characterSelect" class="input-console" style="top:165px; left:35px; width:200px">
-  <option value="">None</option>
-  <option value="wagmik-cheering.png">WAGMIK Cheering</option>
-</select>
+      <select id="chainSelect">
+        <option value="">None</option>
+        <option value="chain-wagmik.png">WAGMIK Chain</option>
+      </select>
 
-<input type="text" id="topText" placeholder="Top Text" class="input-console" style="top:205px; left:35px; width:200px">
-<input type="text" id="bottomText" placeholder="Bottom Text" class="input-console" style="top:245px; left:35px; width:200px">
+      <select id="characterSelect">
+        <option value="">None</option>
+        <option value="wagmik-cheering.png">WAGMIK Cheering</option>
+      </select>
 
-<button onclick="drawMeme()" class="console-btn input-console" style="top:290px; left:35px; width:100px; background: linear-gradient(135deg, #ff4fd8 0%, #ffe06b 100%);
-color: #000; color:#000" ">Preview</button>
-<button onclick="downloadMeme()" class="console-btn input-console" style="top:290px; left:140px; width:100px; background: linear-gradient(135deg, #ff4fd8 0%, #ffe06b 100%);
-color: #000; color:#000"">Download</button>
-<button onclick="resetMeme()" class="console-btn input-console" style="top:330px; left:35px; width:205px; background: linear-gradient(135deg, #ff4fd8 0%, #ffe06b 100%);
-color: #000; color:#000">Reset</button>
+      <input type="text" id="topText" placeholder="Top Text">
+      <input type="text" id="bottomText" placeholder="Bottom Text">
 
-<canvas id="memeCanvas" class="console-canvas" width="300" height="300"></canvas>
-    
+      <!-- 🧠 Stylish Buttons -->
+      <div class="button-row">
+        <button onclick="drawMeme()" class="console-btn">Preview</button>
+        <button onclick="downloadMeme()" class="console-btn">Download</button>
+        <button onclick="resetMeme()" class="console-btn full-width">Reset</button>
+      </div>
+    </div>
+
+    <!-- 🖼 Preview Canvas -->
+    <canvas id="memeCanvas" class="console-canvas" width="360" height="360"></canvas>
   </div>
 </div>
 
@@ -968,32 +989,42 @@ let characterImg = new Image(), characterX = 100, characterY = 100, characterSca
 
 function drawMeme() {
   const bg = backgrounds[bgSelect.value];
+  if (bg && !bg.complete) {
+    bg.onload = drawMeme;
+    return;
+  }
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (bg?.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+  if (bg) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
-  if (characterSelect.value) {
-    characterImg.src = characterSelect.value;
-    characterImg.onload = () => drawCanvas();
-  } else {
-    characterImg = new Image();
-    drawCanvas();
+  // Load Character
+  const charVal = characterSelect.value;
+  if (charVal) {
+    characterImg.src = charVal;
+    characterImg.onload = () => {
+      drawCanvas(); // callback after character loaded
+    };
   }
 
-  if (chainSelect.value) {
-    chainImg.src = chainSelect.value;
-    chainImg.onload = () => drawCanvas();
-  } else {
-    chainImg = new Image();
-    drawCanvas();
+  // Load Chain
+  const chainVal = chainSelect.value;
+  if (chainVal) {
+    chainImg.src = chainVal;
+    chainImg.onload = () => {
+      drawCanvas(); // callback after chain loaded
+    };
   }
 
-  if (hatSelect.value) {
-    hatImg.src = hatSelect.value;
-    hatImg.onload = () => drawCanvas();
-  } else {
-    hatImg = new Image();
-    drawCanvas();
+  // Load Hat
+  const hatVal = hatSelect.value;
+  if (hatVal) {
+    hatImg.src = hatVal;
+    hatImg.onload = () => {
+      drawCanvas(); // callback after hat loaded
+    };
   }
+
+  drawCanvas(); // draw immediately as fallback
 }
 
 function drawCanvas() {
