@@ -206,49 +206,47 @@ html, body {
   z-index: 5;
 }
 
-.floating-lore {
-  position: absolute;
-  top: -60px;
-  right: 40px; /* Flush to right side of screen */
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end; /* Ensures children hug right */
-  gap: 48px;
-  pointer-events: none;
-  z-index: 10;
-}
+@media (min-width: 769px) {
+  .floating-lore {
+    position: absolute;
+    top: -60px;
+    right: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 48px;
+    pointer-events: none;
+    z-index: 10;
+  }
 
-.lore-chapter {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  .lore-chapter {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    color: #FFDE6A;
+    font-size: 1.3em;
+    line-height: 1.6;
+    text-align: center;
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 12px 16px;
+    border-radius: 16px;
+    display: inline-block;
+    backdrop-filter: blur(4px);
+    max-width: 280px;
+    word-wrap: break-word;
+    white-space: normal;
+    text-shadow:
+      -2px -2px 0 #000,
+       2px -2px 0 #000,
+      -2px  2px 0 #000,
+       2px  2px 0 #000;
+  }
 
-  color: #FFDE6A;
-  font-size: 1.3em;
-  line-height: 1.6;
-  text-align: center;
-  pointer-events: none;
-
-  background: rgba(0, 0, 0, 0.35);
-  padding: 12px 16px;
-  border-radius: 16px;
-  display: inline-block;
-  backdrop-filter: blur(4px);
-
-  max-width: 280px;
-  word-wrap: break-word;
-  white-space: normal;
-
-  text-shadow:
-    -2px -2px 0 #000,
-     2px -2px 0 #000,
-    -2px  2px 0 #000,
-     2px  2px 0 #000;
-}
-
-.lore-chapter.visible {
-  opacity: 1;
-  transform: translateY(0);
+  .lore-chapter.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .coin-fall {
@@ -462,12 +460,6 @@ footer {
     padding: 10px 20px;
   }
 
-  .floating-lore {
-    right: 10px;
-    gap: 36px;
-    top: -40px;
-  }
-
   .lore-chapter {
     font-size: 1.1em;
     padding: 10px 12px;
@@ -590,6 +582,8 @@ footer {
   gap: 20px;
   max-width: 800px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .console-controls {
@@ -627,9 +621,13 @@ canvas#memeCanvas {
 }
 
 .console-container img.console-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: auto;
-  display: block;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.25; /* Adjust opacity as needed */
 }
 
 .floating-buttons {
@@ -646,37 +644,49 @@ canvas#memeCanvas {
 @media (max-width: 768px) {
   .console-bg {
     content: url('mobile-console-layout.png');
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    opacity: 0.3;
   }
 
-  .console-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 0;
-  opacity: 0.3;
-}
-
-.console-controls,
-.console-canvas {
-  position: relative;
-  z-index: 2;
-}
-
-  .input-console {
-    font-size: 0.85em;
+  .console-controls,
+  .console-canvas {
+    position: relative;
+    z-index: 2;
   }
 
- .console-canvas {
-  display: block;
-  margin: 0 auto;
-  width: 90%;
-  max-width: 300px;
-  height: auto;
-}
+  .console-controls {
+    padding: 0 10px; /* ⬅️ NEW: give mobile some horizontal breathing room */
+  }
 
-  .floating-button:hover {
-    opacity: 0.9;
-    transform: scale(1.05);
+  .console-controls input,
+  .console-controls select,
+  .console-controls button {
+    font-size: 0.95em;       /* ⬅️ NEW: slightly larger text for readability */
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    font-family: inherit;
+    font-weight: 600;        /* ⬅️ NEW: make labels bold for clarity */
+  }
+
+  .button-row {
+    flex-direction: column;  /* ⬅️ NEW: stack buttons vertically */
+    gap: 10px;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .button-row button {
+    width: 100%;             /* ⬅️ NEW: make each button full width */
+    background: linear-gradient(135deg, #ff4fd8 0%, #ffe06b 100%);
+    color: #000;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 16px;
   }
 
   .console-btn:hover {
@@ -684,7 +694,20 @@ canvas#memeCanvas {
     color: #000;
     font-weight: bold;
   }
-}     
+
+  .floating-button:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+
+  canvas#memeCanvas {
+    width: 90%;
+    max-width: 300px;
+    height: auto;
+    margin: 20px auto 0;
+    display: block;
+  }
+}
 
 /* Desktop override */
 @media (min-width: 768px) {
