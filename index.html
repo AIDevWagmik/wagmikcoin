@@ -951,16 +951,25 @@ canvas#memeCanvas {
         <option value="wagmik-hat.png">WAGMIK Hat</option>
         <option value="bonk-hat.png">BONK Hat</option>
         <option value="degen-hat.png">DEGEN Hat</option>
+        <option value="pepe-hat.png">PEPE Hat</option>
+        <option value="bonk-hat2.png">BONK Hat2</option>
+        <option value="degen-hat2.png">Degen Hat2</option>
+      </select>
+
       </select>
 
       <select id="chainSelect">
         <option value="">None</option>
         <option value="chain-wagmik.png">WAGMIK Chain</option>
+        <option value="chain2.png">Cuban Chain</option>
+        <option value="glasses.png">Meme Glasses</option>
       </select>
 
       <select id="characterSelect">
         <option value="">None</option>
         <option value="wagmik-cheering.png">WAGMIK Cheering</option>
+        <option value="ponke.png">Ponke</option>
+        <option value="pepe.png">Pepe</option>
       </select>
 
       <input type="text" id="topText" placeholder="Top Text">
@@ -1102,6 +1111,10 @@ hat.img.onload = drawCanvas;
 chain.img.onload = drawCanvas;
 character.img.onload = drawCanvas;
 
+let hatLoaded = false;
+let chainLoaded = false;
+let charLoaded = false;
+
 function loadAccessory(imageObj, src, callback) {
   imageObj.onload = () => {
     callback();
@@ -1117,15 +1130,53 @@ function drawMeme() {
     ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
   }
 
-  const charVal = characterSelect.value;
-  const chainVal = chainSelect.value;
+  hatLoaded = chainLoaded = charLoaded = false; // reset flags
+
   const hatVal = hatSelect.value;
+  const chainVal = chainSelect.value;
+  const charVal = characterSelect.value;
 
-  if (charVal) loadAccessory(character.img, charVal, drawCanvas);
-  if (chainVal) loadAccessory(chain.img, chainVal, drawCanvas);
-  if (hatVal) loadAccessory(hat.img, hatVal, drawCanvas);
+  if (hatVal) {
+    hat.img.onload = () => {
+      hatLoaded = true;
+      maybeDrawAll();
+    };
+    hat.img.src = hatVal;
+  } else {
+    hat.img.src = "";
+    hatLoaded = true;
+  }
 
-  drawCanvas(); // Initial draw
+  if (chainVal) {
+    chain.img.onload = () => {
+      chainLoaded = true;
+      maybeDrawAll();
+    };
+    chain.img.src = chainVal;
+  } else {
+    chain.img.src = "";
+    chainLoaded = true;
+  }
+
+  if (charVal) {
+    character.img.onload = () => {
+      charLoaded = true;
+      maybeDrawAll();
+    };
+    character.img.src = charVal;
+  } else {
+    character.img.src = "";
+    charLoaded = true;
+  }
+
+  // Draw initial state for immediate feedback (optional)
+  drawCanvas();
+}
+
+function maybeDrawAll() {
+  if (hatLoaded && chainLoaded && charLoaded) {
+    drawCanvas();
+  }
 }
 
 function drawCanvas() {
