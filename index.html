@@ -13,7 +13,6 @@ body, .section p, .tokenomics-content li {
 header h1 {
   font-size: 3.2em;
   color: #ffe06b;
-   margin-top: -20px;
   text-shadow:
     -2px -2px 4px rgba(0, 0, 0, 0.85),
      2px -2px 4px rgba(0, 0, 0, 0.85),
@@ -23,7 +22,7 @@ header h1 {
 
 header p {
   font-size: 1.4em;
-  margin-top: 25px;
+  margin-top: 12px;
   color: #ffa500;
   text-shadow:
     -1px -1px 3px rgba(0, 0, 0, 0.8),
@@ -1306,36 +1305,66 @@ canvas.addEventListener("wheel", (e) => {
   drawMeme();
 });
 
+  function setupTouchHandlers(obj) {
+  let active = false;
+  let initialDist = 0;
+  let initialScale = obj.scale;
+
   canvas.addEventListener('touchstart', (e) => {
-  e.preventDefault();
-    const rect = canvas.getBoundingClientRect();
-    const t = e.touches[0];
-    const mx = t.clientX - rect.left;
-    const my = t.clientY - rect.top;
+    if (e.touches.length === 1) {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.touches[0].clientX - rect.left;
+      const y = e.touches[0].clientY - rect.top;
 
-    dragging = getTouchedObject(mx, my);
-    if (dragging) dragging.dragging = true;
+      const w = obj.img.width * obj.scale;
+      const h = obj.img.height * obj.scale;
+
+      if (isInside(x, y, obj.x, obj.y, w, h)) {
+        obj.dragging = true;
+        active = true;
+      }
+    }
+
+    if (e.touches.length === 2) {
+      initialDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      initialScale = obj.scale;
+    }
   });
 
-    canvas.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    if (!dragging) return;
-    const rect = canvas.getBoundingClientRect();
-    const t = e.touches[0];
-    dragging.x = t.clientX - rect.left - (dragging.img.width * dragging.scale) / 2;
-    dragging.y = t.clientY - rect.top - (dragging.img.height * dragging.scale) / 2;
-    drawMeme();
+  canvas.addEventListener('touchmove', (e) => {
+    if (active && obj.dragging && e.touches.length === 1) {
+      const rect = canvas.getBoundingClientRect();
+      obj.x = e.touches[0].clientX - rect.left - (obj.img.width * obj.scale) / 2;
+      obj.y = e.touches[0].clientY - rect.top - (obj.img.height * obj.scale) / 2;
+      drawMeme();
+    }
+
+    if (e.touches.length === 2) {
+      const newDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      obj.scale = Math.max(0.2, Math.min(2.5, initialScale * newDist / initialDist));
+      drawMeme();
+    }
   });
 
-  canvas.addEventListener("touchend", () => {
-    if (dragging) dragging.dragging = false;
-    dragging = null;
+  canvas.addEventListener('touchend', () => {
+    obj.dragging = false;
+    active = false;
   });
 }
   
 setupDragAndResize(hat);
 setupDragAndResize(chain);
 setupDragAndResize(character);
+
+setupTouchHandlers(hat);
+setupTouchHandlers(chain);
+setupTouchHandlers(character);
 
 // Bind to change and input events
 [bgSelect, hatSelect, chainSelect, characterSelect].forEach(el =>
