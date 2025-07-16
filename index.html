@@ -1102,22 +1102,30 @@ hat.img.onload = drawCanvas;
 chain.img.onload = drawCanvas;
 character.img.onload = drawCanvas;
 
+function loadAccessory(imageObj, src, callback) {
+  imageObj.onload = () => {
+    callback();
+  };
+  imageObj.src = src;
+}
+
 function drawMeme() {
   const bg = backgrounds[bgSelect.value];
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (bg && bg.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+  if (bg && bg.complete) {
+    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+  }
 
   const charVal = characterSelect.value;
-  if (charVal) character.img.src = charVal;
-
   const chainVal = chainSelect.value;
-  if (chainVal) chain.img.src = chainVal;
-
   const hatVal = hatSelect.value;
-  if (hatVal) hat.img.src = hatVal;
 
-  drawCanvas();
+  if (charVal) loadAccessory(character.img, charVal, drawCanvas);
+  if (chainVal) loadAccessory(chain.img, chainVal, drawCanvas);
+  if (hatVal) loadAccessory(hat.img, hatVal, drawCanvas);
+
+  drawCanvas(); // Initial draw
 }
 
 function drawCanvas() {
