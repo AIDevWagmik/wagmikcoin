@@ -933,6 +933,8 @@ canvas#memeCanvas {
         <option value="bg-trading.png">Trading Setup</option>
         <option value="bg-luxury.png">Luxury Lifestyle</option>
         <option value="bg-degen.png">Degen House</option>
+        <option value="casino.png">Casino</option>
+        <option value="jet.png">Jet</option>
       </select>
 
       <select id="hatSelect">
@@ -959,6 +961,8 @@ canvas#memeCanvas {
         <option value="wagmik-cheering.png">WAGMIK Cheering</option>
         <option value="ponke.png">Ponke</option>
         <option value="pepe.png">Pepe</option>
+        <option value="wolf.png">Wolf</option>
+        <option value="wolf-rich.png">Wolf Rich</option>
       </select>
 
       <input type="text" id="topText" placeholder="Top Text">
@@ -1303,7 +1307,8 @@ canvas.addEventListener("wheel", (e) => {
   dragging.scale += e.deltaY < 0 ? 0.05 : -0.05;
   dragging.scale = Math.max(0.2, Math.min(2.5, dragging.scale));
   drawMeme();
-});
+ });
+} 
 
   function setupTouchHandlers(obj) {
   let active = false;
