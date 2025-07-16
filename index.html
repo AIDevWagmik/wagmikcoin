@@ -22,7 +22,7 @@ header h1 {
 
 header p {
   font-size: 1.4em;
-  margin-top: 12px;
+  margin-top: 20px;
   color: #ffa500;
   text-shadow:
     -1px -1px 3px rgba(0, 0, 0, 0.8),
@@ -57,7 +57,7 @@ html, body {
       position: relative;
       background: url('banner.png') center/cover no-repeat;
       max-height: 400px;
-      padding: 80px 20px 40px;
+      padding: 60px 20px 40px;
       text-align: center;
     }
 
@@ -72,12 +72,13 @@ html, body {
 
     header h1 {
       font-size: 3.2em;
+      margin-top: -10px;
       color: #ffe06b;
     }
 
     header p {
       font-size: 1.4em;
-      margin-top: 12px;
+      margin-top: 20px;
       color: #ffa500;
     }
 
@@ -934,11 +935,11 @@ canvas#memeCanvas {
 <div class="modal" id="memeModal">
   <button class="close-btn" onclick="toggleMeme()">✖</button>
   <div class="console-container">
-    <img src="console-layout.png" class="console-bg" alt="Console Layout">
+    <img src="console-layout.png" class="console-bg" alt="MEME Generator">
 
     <!-- 🎛 Controls Section -->
     <div class="console-controls">
-      <label>Console Layout</label>
+      <label>MEME Generator</label>
       <select id="bgSelect">
         <option value="">None</option>
         <option value="bg-trading.png">Trading Setup</option>
@@ -1107,9 +1108,23 @@ const hat = { img: new Image(), x: 200, y: 40, scale: 0.7, dragging: false };
 const chain = { img: new Image(), x: 150, y: 280, scale: 0.8, dragging: false };
 const character = { img: new Image(), x: 100, y: 100, scale: 1.0, dragging: false };
 
-hat.img.onload = drawCanvas;
-chain.img.onload = drawCanvas;
-character.img.onload = drawCanvas;
+hat.img.onload = () => {
+  hat.x = canvas.width / 2 - (hat.img.width * hat.scale) / 2;
+  hat.y = canvas.height / 2 - (hat.img.height * hat.scale) / 2 - 100; // raise it slightly
+  drawMeme();
+};
+
+chain.img.onload = () => {
+  chain.x = canvas.width / 2 - (chain.img.width * chain.scale) / 2;
+  chain.y = canvas.height / 2 + 80; // below character
+  drawMeme();
+};
+
+character.img.onload = () => {
+  character.x = canvas.width / 2 - (character.img.width * character.scale) / 2;
+  character.y = canvas.height / 2 - (character.img.height * character.scale) / 2;
+  drawMeme();
+};
 
 let hatLoaded = false;
 let chainLoaded = false;
@@ -1229,59 +1244,77 @@ function isInside(mx, my, x, y, w, h) {
 }
 
 function setupDragAndResize(obj) {
-  canvas.addEventListener('mousedown', e => {
-    const r = canvas.getBoundingClientRect();
-    const mx = e.clientX - r.left;
-    const my = e.clientY - r.top;
-    const w = obj.img.width * obj.scale;
-    const h = obj.img.height * obj.scale;
-    if (isInside(mx, my, obj.x, obj.y, w, h)) obj.dragging = true;
-  });
+let dragging = null;
 
-  canvas.addEventListener('mousemove', e => {
-    if (obj.dragging) {
-      const r = canvas.getBoundingClientRect();
-      obj.x = e.clientX - r.left - (obj.img.width * obj.scale) / 2;
-      obj.y = e.clientY - r.top - (obj.img.height * obj.scale) / 2;
-      drawMeme();
+canvas.addEventListener("mousedown", (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  const items = [hat, chain, character];
+  for (let item of items) {
+    const w = item.img.width * item.scale;
+    const h = item.img.height * item.scale;
+    if (mx >= item.x && mx <= item.x + w && my >= item.y && my <= item.y + h) {
+      item.dragging = true;
+      dragging = item;
+      break;
     }
-  });
+  }
+});
 
-  canvas.addEventListener('mouseup', () => obj.dragging = false);
-  canvas.addEventListener('mouseleave', () => obj.dragging = false);
+canvas.addEventListener("mousemove", (e) => {
+  if (!dragging) return;
+  const rect = canvas.getBoundingClientRect();
+  dragging.x = e.clientX - rect.left - (dragging.img.width * dragging.scale) / 2;
+  dragging.y = e.clientY - rect.top - (dragging.img.height * dragging.scale) / 2;
+  drawMeme();
+});
 
-  canvas.addEventListener('wheel', e => {
-    if (obj.dragging) {
-      e.preventDefault();
-      obj.scale += e.deltaY < 0 ? 0.05 : -0.05;
-      obj.scale = Math.max(0.2, Math.min(2.5, obj.scale));
-      drawMeme();
-    }
-  });
+canvas.addEventListener("mouseup", () => {
+  if (dragging) dragging.dragging = false;
+  dragging = null;
+});
 
-  canvas.addEventListener('touchstart', e => {
+canvas.addEventListener("mouseleave", () => {
+  if (dragging) dragging.dragging = false;
+  dragging = null;
+});
+
+canvas.addEventListener("wheel", (e) => {
+  if (!dragging) return;
+  e.preventDefault();
+  dragging.scale += e.deltaY < 0 ? 0.05 : -0.05;
+  dragging.scale = Math.max(0.2, Math.min(2.5, dragging.scale));
+  drawMeme();
+});
+
+  canvas.addEventListener("touchstart", (e) => {
+    const rect = canvas.getBoundingClientRect();
     const t = e.touches[0];
-    const r = canvas.getBoundingClientRect();
-    const mx = t.clientX - r.left;
-    const my = t.clientY - r.top;
-    const w = obj.img.width * obj.scale;
-    const h = obj.img.height * obj.scale;
-    if (isInside(mx, my, obj.x, obj.y, w, h)) obj.dragging = true;
+    const mx = t.clientX - rect.left;
+    const my = t.clientY - rect.top;
+
+    dragging = getTouchedObject(mx, my);
+    if (dragging) dragging.dragging = true;
   });
 
-  canvas.addEventListener('touchmove', e => {
-    if (obj.dragging) {
-      const t = e.touches[0];
-      const r = canvas.getBoundingClientRect();
-      obj.x = t.clientX - r.left - (obj.img.width * obj.scale) / 2;
-      obj.y = t.clientY - r.top - (obj.img.height * obj.scale) / 2;
-      drawMeme();
-    }
+  canvas.addEventListener("touchmove", (e) => {
+    if (!dragging) return;
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const t = e.touches[0];
+    dragging.x = t.clientX - rect.left - (dragging.img.width * dragging.scale) / 2;
+    dragging.y = t.clientY - rect.top - (dragging.img.height * dragging.scale) / 2;
+    drawMeme();
   });
 
-  canvas.addEventListener('touchend', () => obj.dragging = false);
+  canvas.addEventListener("touchend", () => {
+    if (dragging) dragging.dragging = false;
+    dragging = null;
+  });
 }
-
+  
 setupDragAndResize(hat);
 setupDragAndResize(chain);
 setupDragAndResize(character);
