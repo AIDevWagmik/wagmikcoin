@@ -740,6 +740,45 @@ canvas#memeCanvas {
   }
 }
 
+/* Floating App Logos (Left Center) */
+.floating-apps {
+  position: fixed;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 1002;
+}
+
+.app-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.app-logo:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 14px rgba(255, 255, 255, 0.3);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .floating-apps {
+    left: 6px;
+    gap: 12px;
+  }
+
+  .app-logo {
+    width: 36px;
+    height: 36px;
+  }
+}
+
 </style>
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
 </head>
@@ -932,6 +971,19 @@ canvas#memeCanvas {
     <!-- 🖼 Preview Canvas -->
     <canvas id="memeCanvas" class="console-canvas" width="360" height="360"></canvas>
   </div>
+</div>
+
+<!-- 🌐 Floating App Links (Left Center) -->
+<div class="floating-apps">
+  <a href="https://bullx.io/login?redirectUrl=" target="_blank">
+    <img src="bullx.png" alt="BullX" class="app-logo" />
+  </a>
+  <a href="https://axiom.trade/" target="_blank">
+    <img src="axiom.png" alt="Axiom" class="app-logo" />
+  </a>
+  <a href="https://photon-sol.tinyastro.io/" target="_blank">
+    <img src="photon.png" alt="Photon" class="app-logo" />
+  </a>
 </div>
 
 <footer>
