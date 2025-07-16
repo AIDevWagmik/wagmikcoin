@@ -1018,97 +1018,57 @@ canvas#memeCanvas {
 </script>
 
 <script>
-const canvas = document.getElementById('memeCanvas');␊
-const ctx = canvas.getContext('2d');␊
-const bgSelect = document.getElementById('bgSelect');␊
-const hatSelect = document.getElementById('hatSelect');␊
-const chainSelect = document.getElementById('chainSelect');␊
-const characterSelect = document.getElementById('characterSelect');␊
-const topTextInput = document.getElementById('topText');␊
-const bottomTextInput = document.getElementById('bottomText');
+const canvas = document.getElementById('memeCanvas');
+const ctx = canvas.getContext('2d');
 
-// Update meme whenever a control changes
-[bgSelect, hatSelect, chainSelect, characterSelect]
-  .forEach(el => el.addEventListener('change', drawMeme));
-topTextInput.addEventListener('input', drawMeme);
-bottomTextInput.addEventListener('input', drawMeme);
+const bgSelect = document.getElementById('bgSelect');
+const hatSelect = document.getElementById('hatSelect');
+const chainSelect = document.getElementById('chainSelect');
+const characterSelect = document.getElementById('characterSelect');
+const topTextInput = document.getElementById('topText');
+const bottomTextInput = document.getElementById('bottomText');
 
 const backgrounds = {
   "bg-trading.png": new Image(),
   "bg-luxury.png": new Image(),
   "bg-degen.png": new Image()
 };
-for (let key in backgrounds) backgrounds[key].src = key;
 
-// Accessory state objects
+Object.keys(backgrounds).forEach(key => backgrounds[key].src = key);
+
 const hat = { img: new Image(), x: 200, y: 40, scale: 0.7, dragging: false };
 const chain = { img: new Image(), x: 150, y: 280, scale: 0.8, dragging: false };
 const character = { img: new Image(), x: 100, y: 100, scale: 1.0, dragging: false };
 
-hat.img.onload = drawMeme;
-chain.img.onload = drawMeme;
-character.img.onload = drawMeme;
+hat.img.onload = drawCanvas;
+chain.img.onload = drawCanvas;
+character.img.onload = drawCanvas;
 
 function drawMeme() {
   const bg = backgrounds[bgSelect.value];
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Draw background
-  if (bg && bg.complete) {
-    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
-  }
+  if (bg && bg.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
-  // Load and draw character
   const charVal = characterSelect.value;
-  if (charVal) {
-    if (characterImg.src !== charVal) {
-      characterImg.onload = drawCanvas;
-      characterImg.src = charVal;
-    }
-  } else {
-    characterImg.src = "";
-  }
+  if (charVal) character.img.src = charVal;
 
-  // Load and draw chain
   const chainVal = chainSelect.value;
-  if (chainVal) {
-    if (chainImg.src !== chainVal) {
-      chainImg.onload = drawCanvas;
-      chainImg.src = chainVal;
-    }
-  } else {
-    chainImg.src = "";
-  }
+  if (chainVal) chain.img.src = chainVal;
 
-  // Load and draw hat
   const hatVal = hatSelect.value;
-  if (hatVal) {
-    if (hatImg.src !== hatVal) {
-      hatImg.onload = drawCanvas;
-      hatImg.src = hatVal;
-    }
-  } else {
-    hatImg.src = "";
-  }
+  if (hatVal) hat.img.src = hatVal;
 
-  // Final draw call (if everything is already loaded)
   drawCanvas();
 }
-  
+
 function drawCanvas() {
-  if (hat.img.src) {
-    ctx.drawImage(hat.img, hat.x, hat.y, hat.img.width * hat.scale, hat.img.height * hat.scale);
-  }
+  [character, chain, hat].forEach(obj => {
+    if (obj.img.src) {
+      ctx.drawImage(obj.img, obj.x, obj.y, obj.img.width * obj.scale, obj.img.height * obj.scale);
+    }
+  });
 
-  if (chain.img.src) {
-    ctx.drawImage(chain.img, chain.x, chain.y, chain.img.width * chain.scale, chain.img.height * chain.scale);
-  }
-
-  if (character.img.src) {
-    ctx.drawImage(character.img, character.x, character.y, character.img.width * character.scale, character.img.height * character.scale);
-  }
-
-  // Text overlays
   ctx.font = 'bold 28px Impact';
   ctx.textAlign = 'center';
   ctx.fillStyle = 'white';
@@ -1133,98 +1093,89 @@ function downloadMeme() {
 }
 
 function resetMeme() {
-  document.getElementById('bgSelect').value = "";
-  document.getElementById('hatSelect').value = "";
-  document.getElementById('chainSelect').value = "";
-  document.getElementById('characterSelect').value = "";
-  document.getElementById('topText').value = "";
-  document.getElementById('bottomText').value = "";
+  bgSelect.value = "";
+  hatSelect.value = "";
+  chainSelect.value = "";
+  characterSelect.value = "";
+  topTextInput.value = "";
+  bottomTextInput.value = "";
 
-  hat.img = new Image();
-  hat.img.onload = drawMeme;
-  hat.x = 200;
-  hat.y = 40;
-  hat.scale = 0.7;
-  chain.img = new Image();
-  chain.img.onload = drawMeme;
-  chain.x = 150;
-  chain.y = 280;
-  chain.scale = 0.8;
-  character.img = new Image();
-  character.img.onload = drawMeme;
-  character.x = 100;
-  character.y = 100;
-  character.scale = 1.0;
   hat.img.src = "";
   chain.img.src = "";
   character.img.src = "";
+
   drawMeme();
 }
 
-// 📦 Utility for detecting interaction hitbox
 function isInside(mx, my, x, y, w, h) {
   return mx >= x && mx <= x + w && my >= y && my <= y + h;
 }
 
 function setupDragAndResize(obj) {
-  const ref = obj;
-
-  canvas.addEventListener('mousedown', (e) => {
+  canvas.addEventListener('mousedown', e => {
     const r = canvas.getBoundingClientRect();
-    const mx = e.clientX - r.left, my = e.clientY - r.top;
-    const w = ref.img.width * ref.scale, h = ref.img.height * ref.scale;
-    if (isInside(mx, my, ref.x, ref.y, w, h)) ref.dragging = true;
+    const mx = e.clientX - r.left;
+    const my = e.clientY - r.top;
+    const w = obj.img.width * obj.scale;
+    const h = obj.img.height * obj.scale;
+    if (isInside(mx, my, obj.x, obj.y, w, h)) obj.dragging = true;
   });
 
-  canvas.addEventListener('mousemove', (e) => {
-    if (ref.dragging) {
-      const r = canvas.getBoundingClientRect();␊
-      ref.x = e.clientX - r.left - (ref.img.width * ref.scale) / 2;
-      ref.y = e.clientY - r.top - (ref.img.height * ref.scale) / 2;
+  canvas.addEventListener('mousemove', e => {
+    if (obj.dragging) {
+      const r = canvas.getBoundingClientRect();
+      obj.x = e.clientX - r.left - (obj.img.width * obj.scale) / 2;
+      obj.y = e.clientY - r.top - (obj.img.height * obj.scale) / 2;
       drawMeme();
     }
   });
 
-  canvas.addEventListener('mouseup', () => ref.dragging = false);
-  canvas.addEventListener('mouseleave', () => ref.dragging = false);
+  canvas.addEventListener('mouseup', () => obj.dragging = false);
+  canvas.addEventListener('mouseleave', () => obj.dragging = false);
 
-  canvas.addEventListener('wheel', (e) => {
-    if (ref.dragging) {
+  canvas.addEventListener('wheel', e => {
+    if (obj.dragging) {
       e.preventDefault();
-      ref.scale += e.deltaY < 0 ? 0.05 : -0.05;
-      ref.scale = Math.max(0.2, Math.min(2.5, ref.scale));
+      obj.scale += e.deltaY < 0 ? 0.05 : -0.05;
+      obj.scale = Math.max(0.2, Math.min(2.5, obj.scale));
       drawMeme();
     }
   });
 
-  // ✨ Touch support
-  canvas.addEventListener('touchstart', (e) => {
+  canvas.addEventListener('touchstart', e => {
     const t = e.touches[0];
     const r = canvas.getBoundingClientRect();
-    const mx = t.clientX - r.left, my = t.clientY - r.top;
-    const w = ref.img.width * ref.scale, h = ref.img.height * ref.scale;
-    if (isInside(mx, my, ref.x, ref.y, w, h)) ref.dragging = true;
+    const mx = t.clientX - r.left;
+    const my = t.clientY - r.top;
+    const w = obj.img.width * obj.scale;
+    const h = obj.img.height * obj.scale;
+    if (isInside(mx, my, obj.x, obj.y, w, h)) obj.dragging = true;
   });
 
-  canvas.addEventListener('touchmove', (e) => {
-    if (ref.dragging) {
+  canvas.addEventListener('touchmove', e => {
+    if (obj.dragging) {
       const t = e.touches[0];
-      const r = canvas.getBoundingClientRect();␊
-      ref.x = t.clientX - r.left - (ref.img.width * ref.scale) / 2;
-      ref.y = t.clientY - r.top - (ref.img.height * ref.scale) / 2;
+      const r = canvas.getBoundingClientRect();
+      obj.x = t.clientX - r.left - (obj.img.width * obj.scale) / 2;
+      obj.y = t.clientY - r.top - (obj.img.height * obj.scale) / 2;
       drawMeme();
     }
   });
 
-  canvas.addEventListener('touchend', () => ref.dragging = false);
+  canvas.addEventListener('touchend', () => obj.dragging = false);
 }
 
 setupDragAndResize(hat);
 setupDragAndResize(chain);
 setupDragAndResize(character);
 
-window.addEventListener('DOMContentLoaded', drawMeme);
-  
+// Bind to change and input events
+[bgSelect, hatSelect, chainSelect, characterSelect].forEach(el =>
+  el.addEventListener('change', drawMeme)
+);
+[topTextInput, bottomTextInput].forEach(el =>
+  el.addEventListener('input', drawMeme)
+);
 </script>
 
 </body>
