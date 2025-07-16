@@ -13,6 +13,7 @@ body, .section p, .tokenomics-content li {
 header h1 {
   font-size: 3.2em;
   color: #ffe06b;
+   margin-top: -20px;
   text-shadow:
     -2px -2px 4px rgba(0, 0, 0, 0.85),
      2px -2px 4px rgba(0, 0, 0, 0.85),
@@ -22,7 +23,7 @@ header h1 {
 
 header p {
   font-size: 1.4em;
-  margin-top: 20px;
+  margin-top: 25px;
   color: #ffa500;
   text-shadow:
     -1px -1px 3px rgba(0, 0, 0, 0.8),
@@ -57,7 +58,7 @@ html, body {
       position: relative;
       background: url('banner.png') center/cover no-repeat;
       max-height: 400px;
-      padding: 60px 20px 40px;
+      padding: 80px 20px 40px;
       text-align: center;
     }
 
@@ -68,18 +69,6 @@ html, body {
     header h1, header p {
       position: relative;
       z-index: 2;
-    }
-
-    header h1 {
-      font-size: 3.2em;
-      margin-top: -10px;
-      color: #ffe06b;
-    }
-
-    header p {
-      font-size: 1.4em;
-      margin-top: 20px;
-      color: #ffa500;
     }
 
     .section {
@@ -1080,9 +1069,26 @@ canvas#memeCanvas {
     }
     modal.classList.toggle('active');
   }
-  function toggleMeme() {
-    document.getElementById('memeModal').classList.toggle('active');
+ function toggleMeme() {
+  const memeModal = document.getElementById('memeModal');
+  const loreBtn = document.querySelector('.lore-toggle-btn');
+  const degenBtn = document.querySelector('.degen-toggle-btn');
+  const memeBtn = document.querySelector('.meme-toggle-btn');
+
+  memeModal.classList.toggle('active');
+
+  if (memeModal.classList.contains('active')) {
+    // Hide buttons when meme generator is open
+    loreBtn.style.display = 'none';
+    degenBtn.style.display = 'none';
+    memeBtn.style.display = 'none';
+  } else {
+    // Show them again when closed
+    loreBtn.style.display = '';
+    degenBtn.style.display = '';
+    memeBtn.style.display = '';
   }
+}
 </script>
 
 <script>
@@ -1104,9 +1110,20 @@ const backgrounds = {
 
 Object.keys(backgrounds).forEach(key => backgrounds[key].src = key);
 
-const hat = { img: new Image(), x: 200, y: 40, scale: 0.7, dragging: false };
-const chain = { img: new Image(), x: 150, y: 280, scale: 0.8, dragging: false };
-const character = { img: new Image(), x: 100, y: 100, scale: 1.0, dragging: false };
+const hat = { img: new Image(), x: 0, y: 0, scale: 0.7, dragging: false };
+const chain = { img: new Image(), x: 0, y: 0, scale: 0.8, dragging: false };
+const character = { img: new Image(), x: 0, y: 0, scale: 1.0, dragging: false };
+
+const centerAccessories = () => {
+  const cw = canvas.width;
+  const ch = canvas.height;
+  hat.x = cw / 2 - 50;
+  hat.y = 20;
+  chain.x = cw / 2 - 60;
+  chain.y = ch - 80;
+  character.x = cw / 2 - 70;
+  character.y = ch / 2 - 60;
+};
 
 hat.img.onload = () => {
   hat.x = canvas.width / 2 - (hat.img.width * hat.scale) / 2;
@@ -1289,7 +1306,8 @@ canvas.addEventListener("wheel", (e) => {
   drawMeme();
 });
 
-  canvas.addEventListener("touchstart", (e) => {
+  canvas.addEventListener('touchstart', (e) => {
+  e.preventDefault();
     const rect = canvas.getBoundingClientRect();
     const t = e.touches[0];
     const mx = t.clientX - rect.left;
@@ -1299,9 +1317,9 @@ canvas.addEventListener("wheel", (e) => {
     if (dragging) dragging.dragging = true;
   });
 
-  canvas.addEventListener("touchmove", (e) => {
-    if (!dragging) return;
+    canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
+    if (!dragging) return;
     const rect = canvas.getBoundingClientRect();
     const t = e.touches[0];
     dragging.x = t.clientX - rect.left - (dragging.img.width * dragging.scale) / 2;
