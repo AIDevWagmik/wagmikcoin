@@ -1108,14 +1108,16 @@ const bottomTextInput = document.getElementById('bottomText');
 const backgrounds = {
   "bg-trading.png": new Image(),
   "bg-luxury.png": new Image(),
-  "bg-degen.png": new Image()
+  "bg-degen.png": new Image(),
+  "casino.png": new Image(),
+  "jet.png": new Image()
 };
 
 Object.keys(backgrounds).forEach(key => backgrounds[key].src = key);
 
-const hat = { img: new Image(), x: 0, y: 0, scale: 0.7, dragging: false };
-const chain = { img: new Image(), x: 0, y: 0, scale: 0.8, dragging: false };
-const character = { img: new Image(), x: 0, y: 0, scale: 1.0, dragging: false };
+const hat = { img: new Image(), x: 0, y: 0, scale: 0.7, rotation: 0, dragging: false };
+const chain = { img: new Image(), x: 0, y: 0, scale: 0.8, rotation: 0, dragging: false };
+const character = { img: new Image(), x: 0, y: 0, scale: 1.0, rotation: 0, dragging: false };
 
 const centerAccessories = () => {
   const cw = canvas.width;
@@ -1217,10 +1219,20 @@ function maybeDrawAll() {
 function drawCanvas() {
   [character, chain, hat].forEach(obj => {
     if (obj.img.src) {
-      ctx.drawImage(obj.img, obj.x, obj.y, obj.img.width * obj.scale, obj.img.height * obj.scale);
+      const w = obj.img.width * obj.scale;
+      const h = obj.img.height * obj.scale;
+      const cx = obj.x + w / 2;
+      const cy = obj.y + h / 2;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(obj.rotation);
+      ctx.drawImage(obj.img, -w / 2, -h / 2, w, h);
+      ctx.restore();
     }
   });
 
+  // ... (text drawing remains the same)
   ctx.font = 'bold 28px Impact';
   ctx.textAlign = 'center';
   ctx.fillStyle = 'white';
@@ -1304,23 +1316,31 @@ canvas.addEventListener("mouseleave", () => {
 canvas.addEventListener("wheel", (e) => {
   if (!dragging) return;
   e.preventDefault();
-  dragging.scale += e.deltaY < 0 ? 0.05 : -0.05;
-  dragging.scale = Math.max(0.2, Math.min(2.5, dragging.scale));
+
+  if (e.shiftKey) {
+    // 🌀 Rotate
+    dragging.rotation += e.deltaY * 0.01;
+  } else {
+    // 🔍 Zoom
+    dragging.scale += e.deltaY < 0 ? 0.05 : -0.05;
+    dragging.scale = Math.max(0.2, Math.min(2.5, dragging.scale));
+  }
   drawMeme();
- });
+  });
 } 
 
   function setupTouchHandlers(obj) {
   let active = false;
   let initialDist = 0;
   let initialScale = obj.scale;
+  let initialAngle = 0;
+  let initialRotation = obj.rotation;
 
   canvas.addEventListener('touchstart', (e) => {
     if (e.touches.length === 1) {
       const rect = canvas.getBoundingClientRect();
       const x = e.touches[0].clientX - rect.left;
       const y = e.touches[0].clientY - rect.top;
-
       const w = obj.img.width * obj.scale;
       const h = obj.img.height * obj.scale;
 
@@ -1331,13 +1351,14 @@ canvas.addEventListener("wheel", (e) => {
     }
 
     if (e.touches.length === 2) {
-      initialDist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
+      const dx = e.touches[1].clientX - e.touches[0].clientX;
+      const dy = e.touches[1].clientY - e.touches[0].clientY;
+      initialDist = Math.hypot(dx, dy);
+      initialAngle = Math.atan2(dy, dx);
       initialScale = obj.scale;
+      initialRotation = obj.rotation;
     }
-  });
+  }, { passive: false });
 
   canvas.addEventListener('touchmove', (e) => {
     if (active && obj.dragging && e.touches.length === 1) {
@@ -1348,19 +1369,21 @@ canvas.addEventListener("wheel", (e) => {
     }
 
     if (e.touches.length === 2) {
-      const newDist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
+      const dx = e.touches[1].clientX - e.touches[0].clientX;
+      const dy = e.touches[1].clientY - e.touches[0].clientY;
+      const newDist = Math.hypot(dx, dy);
+      const newAngle = Math.atan2(dy, dx);
+
       obj.scale = Math.max(0.2, Math.min(2.5, initialScale * newDist / initialDist));
+      obj.rotation = initialRotation + (newAngle - initialAngle);
       drawMeme();
     }
-  });
+  }, { passive: false });
 
   canvas.addEventListener('touchend', () => {
     obj.dragging = false;
     active = false;
-  });
+  }, { passive: false });
 }
   
 setupDragAndResize(hat);
