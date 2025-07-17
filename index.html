@@ -774,15 +774,6 @@ canvas {
   touch-action: none; /* 🔥 Stops browser scroll when touching canvas */
 }
 
-:root {
-  --jupiter-terminal-primary: 199, 242, 132;
-  --jupiter-terminal-background: 0, 0, 0;
-  --jupiter-terminal-primaryText: 232, 249, 255;
-  --jupiter-terminal-warning: 251, 191, 36;
-  --jupiter-terminal-interactive: 33, 42, 54;
-  --jupiter-terminal-module: 16, 23, 31;
-}
-
 @media (max-width: 768px) {
   #rotationSliderWrapper {
     display: none !important;
@@ -790,16 +781,25 @@ canvas {
 }
 
 #integrated-terminal {
-  position: fixed;
-  left: 10px;
-  bottom: 60px;
-  width: 90vw;
-  max-width: 384px;
-  height: 600px;
-  max-height: 75vh;
-  z-index: 9999;
-  border-radius: 16px;
-  overflow: hidden;
+  position: fixed !important;
+  left: 10px !important;
+  bottom: 60px !important;
+  width: 90vw !important;
+  max-width: 384px !important;
+  height: 600px !important;
+  max-height: 75vh !important;
+  z-index: 9999 !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+}
+
+:root {
+  --jupiter-terminal-primary: 199, 242, 132;
+  --jupiter-terminal-background: 0, 0, 0;
+  --jupiter-terminal-primaryText: 232, 249, 255;
+  --jupiter-terminal-warning: 251, 191, 36;
+  --jupiter-terminal-interactive: 33, 42, 54;
+  --jupiter-terminal-module: 16, 23, 31;
 }
 
 </style>
@@ -1017,19 +1017,7 @@ canvas {
   </a>
 </div>
 
-<div id="integrated-terminal" style="
-  position: fixed;
-  left: 10px;           /* Push to left */
-  bottom: 60px;         /* Lift slightly from bottom */
-  width: 90vw;
-  max-width: 384px;
-  height: 600px;
-  max-height: 75vh;
-  z-index: 9999;        /* Ensure it's on top */
-  border-radius: 16px;
-  overflow: hidden;
-">
-</div>
+<div id="integrated-terminal"></div>
 
 <footer>
   Made with memes, madness, and moon math ✨<br>
@@ -1211,6 +1199,8 @@ function loadAccessory(imageObj, src, callback) {
 }
 
 function drawMeme() {
+  allAssetsReady = false; // Prevent early drawCanvas calls
+
   const bg = backgrounds[bgSelect.value];
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -1224,47 +1214,36 @@ function drawMeme() {
   const chainVal = chainSelect.value;
   const charVal = characterSelect.value;
 
-  if (hatVal) {
-    hat.img.onload = () => {
-      hatLoaded = true;
-      maybeDrawAll();
-    };
-    hat.img.src = hatVal;
-  } else {
-    hat.img.src = "";
-    hatLoaded = true;
-  }
+ if (hatVal && hat.img.src !== hatVal) {
+  hat.img.onload = () => { hatLoaded = true; maybeDrawAll(); };
+  hat.img.src = hatVal;
+}
 
-  if (chainVal) {
-    chain.img.onload = () => {
-      chainLoaded = true;
-      maybeDrawAll();
-    };
-    chain.img.src = chainVal;
-  } else {
-    chain.img.src = "";
-    chainLoaded = true;
-  }
+if (chainVal && chain.img.src !== chainVal) {
+  chain.img.onload = () => { chainLoaded = true; maybeDrawAll(); };
+  chain.img.src = chainVal;
+}
 
-  if (charVal) {
-    character.img.onload = () => {
-      charLoaded = true;
-      maybeDrawAll();
-    };
-    character.img.src = charVal;
-  } else {
-    character.img.src = "";
-    charLoaded = true;
+if (charVal && character.img.src !== charVal) {
+  character.img.onload = () => { charLoaded = true; maybeDrawAll(); };
+  character.img.src = charVal;
   }
 }
 
+let allAssetsReady = false;
+
 function maybeDrawAll() {
   if (hatLoaded && chainLoaded && charLoaded) {
+    allAssetsReady = true;
     drawCanvas();
   }
 }
 
 function drawCanvas() {
+  if (!allAssetsReady) return; // Prevent early/partial drawing
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   [character, chain, hat].forEach(obj => {
     if (obj.img.src) {
       const w = obj.img.width * obj.scale;
@@ -1280,7 +1259,7 @@ function drawCanvas() {
     }
   });
 
-  // ... (text drawing remains the same)
+  // Text drawing
   ctx.font = 'bold 28px Impact';
   ctx.textAlign = 'center';
   ctx.fillStyle = 'white';
@@ -1288,12 +1267,15 @@ function drawCanvas() {
   ctx.lineWidth = 2;
 
   if (topTextInput.value) {
-    ctx.fillText(topTextInput.value.toUpperCase(), canvas.width / 2, 40);
-    ctx.strokeText(topTextInput.value.toUpperCase(), canvas.width / 2, 40);
+    const text = topTextInput.value.toUpperCase();
+    ctx.fillText(text, canvas.width / 2, 40);
+    ctx.strokeText(text, canvas.width / 2, 40);
   }
+
   if (bottomTextInput.value) {
-    ctx.fillText(bottomTextInput.value.toUpperCase(), canvas.width / 2, canvas.height - 20);
-    ctx.strokeText(bottomTextInput.value.toUpperCase(), canvas.width / 2, canvas.height - 20);
+    const text = bottomTextInput.value.toUpperCase();
+    ctx.fillText(text, canvas.width / 2, canvas.height - 20);
+    ctx.strokeText(text, canvas.width / 2, canvas.height - 20);
   }
 }
 
@@ -1357,7 +1339,7 @@ canvas.addEventListener("mousemove", (e) => {
   const rect = canvas.getBoundingClientRect();
   dragging.x = e.clientX - rect.left - (dragging.img.width * dragging.scale) / 2;
   dragging.y = e.clientY - rect.top - (dragging.img.height * dragging.scale) / 2;
-  drawMeme();
+  drawCanvas();
 });
 
 canvas.addEventListener("mouseup", () => {
@@ -1378,7 +1360,7 @@ canvas.addEventListener("wheel", (e) => {
   dragging.scale += e.deltaY < 0 ? 0.05 : -0.05;
   dragging.scale = Math.max(0.2, Math.min(2.5, dragging.scale));
 
-  drawMeme(); // ✅ move this INSIDE
+ drawCanvas(); // ✅ move this INSIDE
 });
 }  
 
@@ -1419,7 +1401,7 @@ canvas.addEventListener("wheel", (e) => {
       const rect = canvas.getBoundingClientRect();
       obj.x = e.touches[0].clientX - rect.left - (obj.img.width * obj.scale) / 2;
       obj.y = e.touches[0].clientY - rect.top - (obj.img.height * obj.scale) / 2;
-      drawMeme();
+      drawCanvas();;
     }
 
     if (e.touches.length === 2 && activeTouchObj === obj) {
