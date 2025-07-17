@@ -774,6 +774,19 @@ canvas#memeCanvas {
   }
 }
 
+canvas {
+  touch-action: none; /* 🔥 Stops browser scroll when touching canvas */
+}
+
+:root {
+  --jupiter-terminal-primary: 255, 224, 107;
+  --jupiter-terminal-background: 26, 14, 45;
+  --jupiter-terminal-primaryText: 255, 255, 255;
+  --jupiter-terminal-warning: 255, 79, 216;
+  --jupiter-terminal-interactive: 33, 42, 54;
+  --jupiter-terminal-module: 20, 10, 40;
+}
+
 </style>
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
 </head>
@@ -860,16 +873,7 @@ canvas#memeCanvas {
 <!-- Jupiter Swap Section -->
 <section class="section">
   <h2>🛒 Swap $WAGMIK</h2>
-  <div style="display: flex; justify-content: center;">
-    <iframe
-      src="https://terminal.jup.ag/embed?inputMint=So11111111111111111111111111111111111111112&outputMint=Es9vMFrzaCERBzDJbNUcGMXyQpBwwxXSwrZ4GdVYz5r9&theme=dark"
-      width="420"
-      height="600"
-      allow="clipboard-write"
-      frameborder="0"
-      style="border-radius: 16px; max-width: 100%;">
-    </iframe>
-  </div>
+  <div id="jupiter-terminal"></div>
 </section>
  
 <section class="tokenomics-section">
@@ -928,6 +932,7 @@ canvas#memeCanvas {
     <!-- 🎛 Controls Section -->
     <div class="console-controls">
       <label>MEME Generator</label>
+
       <select id="bgSelect">
         <option value="">None</option>
         <option value="bg-trading.png">Trading Setup</option>
@@ -945,8 +950,6 @@ canvas#memeCanvas {
         <option value="pepe-hat.png">PEPE Hat</option>
         <option value="bonk-hat2.png">BONK Hat2</option>
         <option value="degen-hat2.png">Degen Hat2</option>
-      </select>
-
       </select>
 
       <select id="chainSelect">
@@ -978,6 +981,12 @@ canvas#memeCanvas {
 
     <!-- 🖼 Preview Canvas -->
     <canvas id="memeCanvas" class="console-canvas" width="360" height="360"></canvas>
+
+    <!-- 🔁 Rotation Slider -->
+    <div id="rotationSliderWrapper" style="display:none; margin-top: 10px;">
+      <label style="color: white;">Rotate</label>
+      <input id="rotationSlider" type="range" min="-180" max="180" value="0" />
+    </div>
   </div>
 </div>
 
@@ -1095,6 +1104,7 @@ canvas#memeCanvas {
 </script>
 
 <script>
+  
 const canvas = document.getElementById('memeCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -1104,6 +1114,18 @@ const chainSelect = document.getElementById('chainSelect');
 const characterSelect = document.getElementById('characterSelect');
 const topTextInput = document.getElementById('topText');
 const bottomTextInput = document.getElementById('bottomText');
+
+const rotationSlider = document.getElementById("rotationSlider");
+const sliderWrapper = document.getElementById("rotationSliderWrapper");
+
+let selectedObj = null;
+
+rotationSlider.addEventListener("input", () => {
+  if (selectedObj) {
+    selectedObj.rotation = parseFloat(rotationSlider.value) * Math.PI / 180;
+    drawMeme();
+  }
+});
 
 const backgrounds = {
   "bg-trading.png": new Image(),
@@ -1115,9 +1137,9 @@ const backgrounds = {
 
 Object.keys(backgrounds).forEach(key => backgrounds[key].src = key);
 
-const hat = { img: new Image(), x: 0, y: 0, scale: 0.7, rotation: 0, dragging: false };
-const chain = { img: new Image(), x: 0, y: 0, scale: 0.8, rotation: 0, dragging: false };
-const character = { img: new Image(), x: 0, y: 0, scale: 1.0, rotation: 0, dragging: false };
+const hat = { img: new Image(), x: 0, y: 0, scale: 0.7, dragging: false, rotation: 0 };
+const chain = { img: new Image(), x: 0, y: 0, scale: 0.8, dragging: false, rotation: 0 };
+const character = { img: new Image(), x: 0, y: 0, scale: 1.0, dragging: false, rotation: 0 };
 
 const centerAccessories = () => {
   const cw = canvas.width;
@@ -1287,12 +1309,21 @@ canvas.addEventListener("mousedown", (e) => {
   for (let item of items) {
     const w = item.img.width * item.scale;
     const h = item.img.height * item.scale;
-    if (mx >= item.x && mx <= item.x + w && my >= item.y && my <= item.y + h) {
+    if (isInside(mx, my, item.x, item.y, w, h)) {
       item.dragging = true;
       dragging = item;
-      break;
+      selectedObj = item;
+
+      // Show rotation slider
+      sliderWrapper.style.display = 'block';
+      rotationSlider.value = (item.rotation * 180 / Math.PI).toFixed(0);
+      return;
     }
   }
+
+  // Clicked outside any object → hide slider
+  sliderWrapper.style.display = 'none';
+  selectedObj = null;
 });
 
 canvas.addEventListener("mousemove", (e) => {
@@ -1317,13 +1348,9 @@ canvas.addEventListener("wheel", (e) => {
   if (!dragging) return;
   e.preventDefault();
 
-  if (e.shiftKey) {
-    // 🌀 Rotate
-    dragging.rotation += e.deltaY * 0.01;
-  } else {
     // 🔍 Zoom
-    dragging.scale += e.deltaY < 0 ? 0.05 : -0.05;
-    dragging.scale = Math.max(0.2, Math.min(2.5, dragging.scale));
+dragging.scale += e.deltaY < 0 ? 0.05 : -0.05;
+dragging.scale = Math.max(0.2, Math.min(2.5, dragging.scale));
   }
   drawMeme();
   });
@@ -1402,6 +1429,20 @@ setupTouchHandlers(character);
   el.addEventListener('input', drawMeme)
 );
 </script>
+
+<script>
+  window.Jupiter.init({
+    displayMode: "widget",
+    endpoint: "https://api.mainnet-beta.solana.com", // Optional: specify endpoint
+    container: document.getElementById("jupiter-terminal"),
+    defaultExplorer: "Solscan", // Optional
+    // Optional: token pair
+    defaultInputMint: "So11111111111111111111111111111111111111112", // SOL
+    defaultOutputMint: "Es9vMFrzaCERBzDJbNUcGMXyQpBwwxXSwrZ4GdVYz5r9", // USDT or your WAGMIK token mint
+    // You can customize more here
+  });
+</script>
+
 
 </body>
 </html>
