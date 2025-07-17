@@ -780,17 +780,17 @@ canvas {
   }
 }
 
-#integrated-terminal {
-  position: fixed !important;
-  left: 10px !important;
-  bottom: 60px !important;
-  width: 90vw !important;
-  max-width: 384px !important;
-  height: 600px !important;
-  max-height: 75vh !important;
-  z-index: 9999 !important;
-  border-radius: 16px !important;
-  overflow: hidden !important;
+#jupiter-container {
+  position: fixed;
+  left: 10px;
+  bottom: 60px;
+  width: 90vw;
+  max-width: 384px;
+  height: 600px;
+  max-height: 75vh;
+  z-index: 9999;
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 :root {
@@ -1017,7 +1017,9 @@ canvas {
   </a>
 </div>
 
-<div id="integrated-terminal"></div>
+<div id="jupiter-container"
+     style="position: fixed; left: 10px; bottom: 60px; width: 384px; max-width: 90vw; height: 600px; max-height: 75vh; z-index: 9999; border-radius: 16px; overflow: hidden;">
+</div>
 
 <footer>
   Made with memes, madness, and moon math ✨<br>
@@ -1075,52 +1077,46 @@ canvas {
 </script>
 
 <script>
-  function toggleLore() {
-    document.getElementById('loreModal').classList.toggle('active');
+// --- Modal Toggles ---
+function toggleLore() {
+  document.getElementById('loreModal').classList.toggle('active');
+}
+
+function toggleDegen() {
+  const modal = document.getElementById('degenModal');
+  const lines = [
+    "Buy high, hold higher.",
+    "You only lose when you sell.",
+    "Gas fees are a state of mind.",
+    "If it dumps, double down.",
+    "Degen rule #88: Never check the chart.",
+    "Real utility is in the meme.",
+    "WAGMIK is a vibe, not a roadmap.",
+    "Coins come and go, but hopium is eternal.",
+    "He who panics last, panics best.",
+    "Trust the vibes, not the volume."
+  ];
+  if (!modal.classList.contains('active')) {
+    document.getElementById('degenProphecy').textContent =
+      `"${lines[Math.floor(Math.random() * lines.length)]}"`;
   }
-  function toggleDegen() {
-    const modal = document.getElementById('degenModal');
-    const lines = [
-      "Buy high, hold higher.",
-      "You only lose when you sell.",
-      "Gas fees are a state of mind.",
-      "If it dumps, double down.",
-      "Degen rule #88: Never check the chart.",
-      "Real utility is in the meme.",
-      "WAGMIK is a vibe, not a roadmap.",
-      "Coins come and go, but hopium is eternal.",
-      "He who panics last, panics best.",
-      "Trust the vibes, not the volume."
-    ];
-    if (!modal.classList.contains('active')) {
-      document.getElementById('degenProphecy').textContent = `"${lines[Math.floor(Math.random() * lines.length)]}"`;
-    }
-    modal.classList.toggle('active');
-  }
- function toggleMeme() {
+  modal.classList.toggle('active');
+}
+
+function toggleMeme() {
   const memeModal = document.getElementById('memeModal');
   const loreBtn = document.querySelector('.lore-toggle-btn');
   const degenBtn = document.querySelector('.degen-toggle-btn');
   const memeBtn = document.querySelector('.meme-toggle-btn');
 
   memeModal.classList.toggle('active');
-
-  if (memeModal.classList.contains('active')) {
-    // Hide buttons when meme generator is open
-    loreBtn.style.display = 'none';
-    degenBtn.style.display = 'none';
-    memeBtn.style.display = 'none';
-  } else {
-    // Show them again when closed
-    loreBtn.style.display = '';
-    degenBtn.style.display = '';
-    memeBtn.style.display = '';
-  }
+  const show = !memeModal.classList.contains('active');
+  loreBtn.style.display = show ? '' : 'none';
+  degenBtn.style.display = show ? '' : 'none';
+  memeBtn.style.display = show ? '' : 'none';
 }
-</script>
 
-<script>
-  
+// --- Canvas Setup ---
 const canvas = document.getElementById('memeCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -1135,18 +1131,13 @@ const rotationSlider = document.getElementById("rotationSlider");
 const sliderWrapper = document.getElementById("rotationSliderWrapper");
 
 let selectedObj = null;
-let activeTouchObj = null; // ⬅ global
-let hatLoaded = false;
-let chainLoaded = false;
-let charLoaded = false;
+let activeTouchObj = null;
+let hatLoaded = false, chainLoaded = false, charLoaded = false;
 let allAssetsReady = false;
 
-rotationSlider.addEventListener("input", () => {
-  if (selectedObj) {
-    selectedObj.rotation = parseFloat(rotationSlider.value) * Math.PI / 180;
-    drawMeme();
-  }
-});
+const hat = { img: new Image(), x: 0, y: 0, scale: 0.7, dragging: false, rotation: 0 };
+const chain = { img: new Image(), x: 0, y: 0, scale: 0.8, dragging: false, rotation: 0 };
+const character = { img: new Image(), x: 0, y: 0, scale: 1.0, dragging: false, rotation: 0 };
 
 const backgrounds = {
   "bg-trading.png": new Image(),
@@ -1158,95 +1149,33 @@ const backgrounds = {
 
 Object.keys(backgrounds).forEach(key => backgrounds[key].src = key);
 
-const hat = { img: new Image(), x: 0, y: 0, scale: 0.7, dragging: false, rotation: 0 };
-const chain = { img: new Image(), x: 0, y: 0, scale: 0.8, dragging: false, rotation: 0 };
-const character = { img: new Image(), x: 0, y: 0, scale: 1.0, dragging: false, rotation: 0 };
-
-const centerAccessories = () => {
-  const cw = canvas.width;
-  const ch = canvas.height;
-  hat.x = cw / 2 - 50;
-  hat.y = 20;
-  chain.x = cw / 2 - 60;
-  chain.y = ch - 80;
-  character.x = cw / 2 - 70;
-  character.y = ch / 2 - 60;
-};
-
-hat.img.onload = () => {
-  hat.x = canvas.width / 2 - (hat.img.width * hat.scale) / 2;
-  hat.y = canvas.height / 2 - (hat.img.height * hat.scale) / 2 - 100; // raise it slightly
-  drawMeme();
-};
-
-chain.img.onload = () => {
-  chain.x = canvas.width / 2 - (chain.img.width * chain.scale) / 2;
-  chain.y = canvas.height / 2 + 80; // below character
-  drawMeme();
-};
-
-character.img.onload = () => {
-  character.x = canvas.width / 2 - (character.img.width * character.scale) / 2;
-  character.y = canvas.height / 2 - (character.img.height * character.scale) / 2;
-  drawMeme();
-};
+rotationSlider.addEventListener("input", () => {
+  if (selectedObj) {
+    selectedObj.rotation = parseFloat(rotationSlider.value) * Math.PI / 180;
+    drawCanvas();
+  }
+});
 
 function drawMeme() {
   allAssetsReady = false;
-
-  const bg = backgrounds[bgSelect.value];
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  if (bg && bg.complete) {
-    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
-  }
-
   hatLoaded = chainLoaded = charLoaded = false;
 
   const hatVal = hatSelect.value;
   const chainVal = chainSelect.value;
   const charVal = characterSelect.value;
 
-  // Hat
-  if (hatVal) {
-    if (hat.img.src !== location.origin + '/' + hatVal) {
-      hat.img.onload = () => { hatLoaded = true; maybeDrawAll(); };
-      hat.img.src = hatVal;
+  const load = (imgObj, val, callback) => {
+    if (val && imgObj.src !== location.origin + '/' + val) {
+      imgObj.onload = () => { callback(true); };
+      imgObj.src = val;
     } else {
-      hatLoaded = true;
+      callback(true);
     }
-  } else {
-    hat.img.src = "";
-    hatLoaded = true;
-  }
+  };
 
-  // Chain
-  if (chainVal) {
-    if (chain.img.src !== location.origin + '/' + chainVal) {
-      chain.img.onload = () => { chainLoaded = true; maybeDrawAll(); };
-      chain.img.src = chainVal;
-    } else {
-      chainLoaded = true;
-    }
-  } else {
-    chain.img.src = "";
-    chainLoaded = true;
-  }
-
-  // Character
-  if (charVal) {
-    if (character.img.src !== location.origin + '/' + charVal) {
-      character.img.onload = () => { charLoaded = true; maybeDrawAll(); };
-      character.img.src = charVal;
-    } else {
-      charLoaded = true;
-    }
-  } else {
-    character.img.src = "";
-    charLoaded = true;
-  }
-
-  // No drawCanvas here — wait until all are loaded
+  load(hat.img, hatVal, (v) => { hatLoaded = v; maybeDrawAll(); });
+  load(chain.img, chainVal, (v) => { chainLoaded = v; maybeDrawAll(); });
+  load(character.img, charVal, (v) => { charLoaded = v; maybeDrawAll(); });
 }
 
 function maybeDrawAll() {
@@ -1255,67 +1184,40 @@ function maybeDrawAll() {
     drawCanvas();
   }
 }
-  
 
 function drawCanvas() {
-  if (!allAssetsReady) return; // Prevent early/partial drawing
-
+  if (!allAssetsReady) return;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const bg = backgrounds[bgSelect.value];
+  if (bg && bg.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
   [character, chain, hat].forEach(obj => {
-    if (obj.img.src) {
-      const w = obj.img.width * obj.scale;
-      const h = obj.img.height * obj.scale;
-      const cx = obj.x + w / 2;
-      const cy = obj.y + h / 2;
-
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(obj.rotation);
-      ctx.drawImage(obj.img, -w / 2, -h / 2, w, h);
-      ctx.restore();
-    }
+    if (!obj.img.src) return;
+    const w = obj.img.width * obj.scale;
+    const h = obj.img.height * obj.scale;
+    ctx.save();
+    ctx.translate(obj.x + w / 2, obj.y + h / 2);
+    ctx.rotate(obj.rotation);
+    ctx.drawImage(obj.img, -w / 2, -h / 2, w, h);
+    ctx.restore();
   });
 
-  // Text drawing
   ctx.font = 'bold 28px Impact';
   ctx.textAlign = 'center';
   ctx.fillStyle = 'white';
   ctx.strokeStyle = 'black';
   ctx.lineWidth = 2;
 
-  if (topTextInput.value) {
-    const text = topTextInput.value.toUpperCase();
-    ctx.fillText(text, canvas.width / 2, 40);
-    ctx.strokeText(text, canvas.width / 2, 40);
-  }
-
-  if (bottomTextInput.value) {
-    const text = bottomTextInput.value.toUpperCase();
-    ctx.fillText(text, canvas.width / 2, canvas.height - 20);
-    ctx.strokeText(text, canvas.width / 2, canvas.height - 20);
-  }
-}
-
-function downloadMeme() {
-  const link = document.createElement('a');
-  link.download = 'wagmik-meme.png';
-  link.href = canvas.toDataURL();
-  link.click();
+  const top = topTextInput.value.toUpperCase();
+  const bot = bottomTextInput.value.toUpperCase();
+  if (top) { ctx.fillText(top, canvas.width / 2, 40); ctx.strokeText(top, canvas.width / 2, 40); }
+  if (bot) { ctx.fillText(bot, canvas.width / 2, canvas.height - 20); ctx.strokeText(bot, canvas.width / 2, canvas.height - 20); }
 }
 
 function resetMeme() {
-  bgSelect.value = "";
-  hatSelect.value = "";
-  chainSelect.value = "";
-  characterSelect.value = "";
-  topTextInput.value = "";
-  bottomTextInput.value = "";
-
-  hat.img.src = "";
-  chain.img.src = "";
-  character.img.src = "";
-
+  [bgSelect, hatSelect, chainSelect, characterSelect].forEach(sel => sel.value = "");
+  topTextInput.value = bottomTextInput.value = "";
+  hat.img.src = chain.img.src = character.img.src = "";
   drawMeme();
 }
 
@@ -1324,70 +1226,57 @@ function isInside(mx, my, x, y, w, h) {
 }
 
 function setupDragAndResize(obj) {
-let dragging = null;
-
-canvas.addEventListener("mousedown", (e) => {
-  const rect = canvas.getBoundingClientRect();
-  const mx = e.clientX - rect.left;
-  const my = e.clientY - rect.top;
-
-  const items = [hat, chain, character];
-  for (let item of items) {
-    const w = item.img.width * item.scale;
-    const h = item.img.height * item.scale;
-    if (isInside(mx, my, item.x, item.y, w, h)) {
-      item.dragging = true;
-      dragging = item;
-      selectedObj = item;
-
-      // Show rotation slider
-      sliderWrapper.style.display = 'block';
-      rotationSlider.value = (item.rotation * 180 / Math.PI).toFixed(0);
-      return;
+  let dragging = null;
+  canvas.addEventListener("mousedown", (e) => {
+    const { left, top } = canvas.getBoundingClientRect();
+    const mx = e.clientX - left;
+    const my = e.clientY - top;
+    [hat, chain, character].forEach(item => {
+      const w = item.img.width * item.scale;
+      const h = item.img.height * item.scale;
+      if (isInside(mx, my, item.x, item.y, w, h)) {
+        item.dragging = true; dragging = item;
+        selectedObj = item;
+        if (!/Mobi|Android/i.test(navigator.userAgent)) {
+          sliderWrapper.style.display = 'block';
+          rotationSlider.value = (item.rotation * 180 / Math.PI).toFixed(0);
+        }
+      }
+    });
+    if (!dragging) {
+      selectedObj = null;
+      sliderWrapper.style.display = 'none';
     }
-  }
+  });
 
-  // Clicked outside any object → hide slider
-  sliderWrapper.style.display = 'none';
-  selectedObj = null;
-});
+  canvas.addEventListener("mousemove", (e) => {
+    if (!dragging) return;
+    const rect = canvas.getBoundingClientRect();
+    dragging.x = e.clientX - rect.left - (dragging.img.width * dragging.scale) / 2;
+    dragging.y = e.clientY - rect.top - (dragging.img.height * dragging.scale) / 2;
+    drawCanvas();
+  });
 
-canvas.addEventListener("mousemove", (e) => {
-  if (!dragging) return;
-  const rect = canvas.getBoundingClientRect();
-  dragging.x = e.clientX - rect.left - (dragging.img.width * dragging.scale) / 2;
-  dragging.y = e.clientY - rect.top - (dragging.img.height * dragging.scale) / 2;
-  drawCanvas();
-});
+  ["mouseup", "mouseleave"].forEach(evt => {
+    canvas.addEventListener(evt, () => {
+      if (dragging) dragging.dragging = false;
+      dragging = null;
+    });
+  });
 
-canvas.addEventListener("mouseup", () => {
-  if (dragging) dragging.dragging = false;
-  dragging = null;
-});
+  canvas.addEventListener("wheel", (e) => {
+    if (!dragging) return;
+    e.preventDefault();
+    dragging.scale += e.deltaY < 0 ? 0.05 : -0.05;
+    dragging.scale = Math.max(0.2, Math.min(2.5, dragging.scale));
+    drawCanvas();
+  });
+}
 
-canvas.addEventListener("mouseleave", () => {
-  if (dragging) dragging.dragging = false;
-  dragging = null;
-});
-
-canvas.addEventListener("wheel", (e) => {
-  if (!dragging) return;
-  e.preventDefault();
-
-  // 🔍 Zoom
-  dragging.scale += e.deltaY < 0 ? 0.05 : -0.05;
-  dragging.scale = Math.max(0.2, Math.min(2.5, dragging.scale));
-
- drawCanvas(); // ✅ move this INSIDE
-});
-}  
-
-  function setupTouchHandlers(obj) {
+function setupTouchHandlers(obj) {
   let active = false;
-  let initialDist = 0;
-  let initialScale = obj.scale;
-  let initialAngle = 0;
-  let initialRotation = obj.rotation;
+  let initialDist = 0, initialScale = obj.scale;
+  let initialAngle = 0, initialRotation = obj.rotation;
 
   canvas.addEventListener('touchstart', (e) => {
     if (e.touches.length === 1 && !activeTouchObj) {
@@ -1396,14 +1285,10 @@ canvas.addEventListener("wheel", (e) => {
       const y = e.touches[0].clientY - rect.top;
       const w = obj.img.width * obj.scale;
       const h = obj.img.height * obj.scale;
-
       if (isInside(x, y, obj.x, obj.y, w, h)) {
-        obj.dragging = true;
-        active = true;
-        activeTouchObj = obj;
+        obj.dragging = true; active = true; activeTouchObj = obj;
       }
     }
-
     if (e.touches.length === 2 && activeTouchObj === obj) {
       const dx = e.touches[1].clientX - e.touches[0].clientX;
       const dy = e.touches[1].clientY - e.touches[0].clientY;
@@ -1415,54 +1300,44 @@ canvas.addEventListener("wheel", (e) => {
   }, { passive: false });
 
   canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
     if (active && obj.dragging && activeTouchObj === obj && e.touches.length === 1) {
       const rect = canvas.getBoundingClientRect();
       obj.x = e.touches[0].clientX - rect.left - (obj.img.width * obj.scale) / 2;
       obj.y = e.touches[0].clientY - rect.top - (obj.img.height * obj.scale) / 2;
-      drawCanvas();;
+      drawCanvas();
     }
-
     if (e.touches.length === 2 && activeTouchObj === obj) {
       const dx = e.touches[1].clientX - e.touches[0].clientX;
       const dy = e.touches[1].clientY - e.touches[0].clientY;
       const newDist = Math.hypot(dx, dy);
       const newAngle = Math.atan2(dy, dx);
-
       obj.scale = Math.max(0.2, Math.min(2.5, initialScale * newDist / initialDist));
       obj.rotation = initialRotation + (newAngle - initialAngle);
-      drawMeme();
+      drawCanvas();
     }
   }, { passive: false });
 
   canvas.addEventListener('touchend', () => {
-    obj.dragging = false;
-    active = false;
+    obj.dragging = false; active = false;
     if (activeTouchObj === obj) activeTouchObj = null;
   }, { passive: false });
 }
-  
-setupDragAndResize(hat);
-setupDragAndResize(chain);
-setupDragAndResize(character);
 
-setupTouchHandlers(hat);
-setupTouchHandlers(chain);
-setupTouchHandlers(character);
+[hat, chain, character].forEach(obj => {
+  setupDragAndResize(obj);
+  setupTouchHandlers(obj);
+});
 
-// Bind to change and input events
-[bgSelect, hatSelect, chainSelect, characterSelect].forEach(el =>
-  el.addEventListener('change', drawMeme)
-);
-[topTextInput, bottomTextInput].forEach(el =>
-  el.addEventListener('input', drawMeme)
-);
+[bgSelect, hatSelect, chainSelect, characterSelect].forEach(el => el.addEventListener('change', drawMeme));
+[topTextInput, bottomTextInput].forEach(el => el.addEventListener('input', drawCanvas));
 </script>
 
 <script>
   window.Jupiter.init({
     displayMode: "widget",
     endpoint: "https://api.mainnet-beta.solana.com", // Optional: specify endpoint
-    container: document.getElementById("jupiter-terminal"),
+    container: document.getElementById("jupiter-container"),
     defaultExplorer: "Solscan", // Optional
     // Optional: token pair
     defaultInputMint: "So11111111111111111111111111111111111111112", // SOL
