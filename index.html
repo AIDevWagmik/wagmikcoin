@@ -564,6 +564,13 @@ footer {
   background-size: cover;
 }
 
+#memeModal select,
+#memeModal input,
+#memeModal button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* Base Styles */
 .console-container {
   display: flex;
@@ -1110,10 +1117,18 @@ function toggleMeme() {
   const memeBtn = document.querySelector('.meme-toggle-btn');
 
   memeModal.classList.toggle('active');
-  const show = !memeModal.classList.contains('active');
-  loreBtn.style.display = show ? '' : 'none';
-  degenBtn.style.display = show ? '' : 'none';
-  memeBtn.style.display = show ? '' : 'none';
+
+  if (memeModal.classList.contains('active')) {
+    document.body.style.overflow = 'hidden'; // prevent scrolling
+    loreBtn.style.display = 'none';
+    degenBtn.style.display = 'none';
+    memeBtn.style.display = 'none';
+  } else {
+    document.body.style.overflow = ''; // restore scroll
+    loreBtn.style.display = '';
+    degenBtn.style.display = '';
+    memeBtn.style.display = '';
+  }
 }
 
 // --- Canvas Setup ---
@@ -1202,7 +1217,8 @@ function drawCanvas() {
     ctx.restore();
   });
 
-  ctx.font = 'bold 28px Impact';
+  ctx.textBaseline = 'top'; // add this
+  ctx.font = '28px Impact, sans-serif';
   ctx.textAlign = 'center';
   ctx.fillStyle = 'white';
   ctx.strokeStyle = 'black';
