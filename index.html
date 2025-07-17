@@ -775,10 +775,10 @@ canvas {
 }
 
 :root {
-  --jupiter-terminal-primary: 255, 224, 107;
-  --jupiter-terminal-background: 26, 14, 45;
-  --jupiter-terminal-primaryText: 255, 255, 255;
-  --jupiter-terminal-warning: 255, 79, 216;
+  --jupiter-terminal-primary: 199, 242, 132;
+  --jupiter-terminal-background: 0, 0, 0;
+  --jupiter-terminal-primaryText: 232, 249, 255;
+  --jupiter-terminal-warning: 251, 191, 36;
   --jupiter-terminal-interactive: 33, 42, 54;
   --jupiter-terminal-module: 16, 23, 31;
 }
@@ -997,6 +997,11 @@ canvas {
     <img src="photon.png" alt="Photon" class="app-logo" />
   </a>
 </div>
+
+<div id="integrated-terminal"
+     class="fixed bottom-[60px] left-3 z-50 w-[90vw] max-w-[384px] h-[600px] max-h-[75vh] overflow-hidden rounded-2xl shadow-lg">
+</div>
+
 
 <footer>
   Made with memes, madness, and moon math ✨<br>
@@ -1349,6 +1354,7 @@ canvas.addEventListener("wheel", (e) => {
 
   drawMeme(); // ✅ move this INSIDE
 });
+}  
 
   function setupTouchHandlers(obj) {
   let active = false;
