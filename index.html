@@ -783,6 +783,25 @@ canvas {
   --jupiter-terminal-module: 16, 23, 31;
 }
 
+@media (max-width: 768px) {
+  #rotationSliderWrapper {
+    display: none !important;
+  }
+}
+
+#integrated-terminal {
+  position: fixed;
+  left: 10px;
+  bottom: 60px;
+  width: 90vw;
+  max-width: 384px;
+  height: 600px;
+  max-height: 75vh;
+  z-index: 9999;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
 </style>
   <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
 </head>
@@ -998,10 +1017,19 @@ canvas {
   </a>
 </div>
 
-<div id="integrated-terminal"
-     class="fixed bottom-[60px] left-3 z-50 w-[90vw] max-w-[384px] h-[600px] max-h-[75vh] overflow-hidden rounded-2xl shadow-lg">
+<div id="integrated-terminal" style="
+  position: fixed;
+  left: 10px;           /* Push to left */
+  bottom: 60px;         /* Lift slightly from bottom */
+  width: 90vw;
+  max-width: 384px;
+  height: 600px;
+  max-height: 75vh;
+  z-index: 9999;        /* Ensure it's on top */
+  border-radius: 16px;
+  overflow: hidden;
+">
 </div>
-
 
 <footer>
   Made with memes, madness, and moon math ✨<br>
@@ -1119,6 +1147,7 @@ const rotationSlider = document.getElementById("rotationSlider");
 const sliderWrapper = document.getElementById("rotationSliderWrapper");
 
 let selectedObj = null;
+let activeTouchObj = null; // ⬅ global
 
 rotationSlider.addEventListener("input", () => {
   if (selectedObj) {
@@ -1227,9 +1256,6 @@ function drawMeme() {
     character.img.src = "";
     charLoaded = true;
   }
-
-  // Draw initial state for immediate feedback (optional)
-  drawCanvas();
 }
 
 function maybeDrawAll() {
@@ -1364,7 +1390,7 @@ canvas.addEventListener("wheel", (e) => {
   let initialRotation = obj.rotation;
 
   canvas.addEventListener('touchstart', (e) => {
-    if (e.touches.length === 1) {
+    if (e.touches.length === 1 && !activeTouchObj) {
       const rect = canvas.getBoundingClientRect();
       const x = e.touches[0].clientX - rect.left;
       const y = e.touches[0].clientY - rect.top;
@@ -1374,10 +1400,11 @@ canvas.addEventListener("wheel", (e) => {
       if (isInside(x, y, obj.x, obj.y, w, h)) {
         obj.dragging = true;
         active = true;
+        activeTouchObj = obj;
       }
     }
 
-    if (e.touches.length === 2) {
+    if (e.touches.length === 2 && activeTouchObj === obj) {
       const dx = e.touches[1].clientX - e.touches[0].clientX;
       const dy = e.touches[1].clientY - e.touches[0].clientY;
       initialDist = Math.hypot(dx, dy);
@@ -1388,14 +1415,14 @@ canvas.addEventListener("wheel", (e) => {
   }, { passive: false });
 
   canvas.addEventListener('touchmove', (e) => {
-    if (active && obj.dragging && e.touches.length === 1) {
+    if (active && obj.dragging && activeTouchObj === obj && e.touches.length === 1) {
       const rect = canvas.getBoundingClientRect();
       obj.x = e.touches[0].clientX - rect.left - (obj.img.width * obj.scale) / 2;
       obj.y = e.touches[0].clientY - rect.top - (obj.img.height * obj.scale) / 2;
       drawMeme();
     }
 
-    if (e.touches.length === 2) {
+    if (e.touches.length === 2 && activeTouchObj === obj) {
       const dx = e.touches[1].clientX - e.touches[0].clientX;
       const dy = e.touches[1].clientY - e.touches[0].clientY;
       const newDist = Math.hypot(dx, dy);
@@ -1410,6 +1437,7 @@ canvas.addEventListener("wheel", (e) => {
   canvas.addEventListener('touchend', () => {
     obj.dragging = false;
     active = false;
+    if (activeTouchObj === obj) activeTouchObj = null;
   }, { passive: false });
 }
   
