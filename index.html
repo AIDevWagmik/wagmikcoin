@@ -1289,6 +1289,12 @@ function setupDragAndResize(obj) {
   });
 }
 
+// Prevent mobile scroll + zoom when touching canvas
+canvas.addEventListener("touchstart", e => e.preventDefault(), { passive: false });
+canvas.addEventListener("touchmove", e => e.preventDefault(), { passive: false });
+canvas.addEventListener("touchend", e => e.preventDefault(), { passive: false });
+
+
 function setupTouchHandlers(obj) {
   let active = false;
   let initialDist = 0, initialScale = obj.scale;
