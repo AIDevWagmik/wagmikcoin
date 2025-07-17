@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>$WAGMIK – We’re All Gonna Make It… Kinda</title>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>$WAGMIK – We’re All Gonna Make It… Kinda</title>
+<style>
 
 body, .section p, .tokenomics-content li {
   text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.75);
@@ -810,229 +811,222 @@ canvas {
 }
 
 </style>
-  <script src="https://terminal.jup.ag/main-v4.js" data-preload></script>
-</head>
+<script data-preload="" src="https://terminal.jup.ag/main-v4.js"></script>
+<style>
+@media (max-width: 768px) {
+  .console-btn.preview,
+  .console-btn.download {
+    display: none !important;
+  }
+
+  .console-btn.reset {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  #memeCanvas {
+    margin-top: 10px;
+    display: block;
+  }
+
+  input#topText,
+  input#bottomText {
+    touch-action: manipulation;
+  }
+
+  body,
+  html {
+    overscroll-behavior: none;
+    touch-action: none;
+  }
+}
+</style></head>
 <body>
-
 <header>
-  <h1>$WAGMIK</h1>
-  <p>We’re All Gonna Make It… Kinda</p>
+<h1>$WAGMIK</h1>
+<p>We’re All Gonna Make It… Kinda</p>
 </header>
-  
 <div class="body-background-fade"></div>
-
 <div class="coin-fall" id="coin-fall"></div>
-
 <div class="fade-line-header-bottom"></div>
-
 <section class="section about">
-  <h2>🚀 About</h2>
-  <p>$WAGMIK is the coin for every Solana degen who bought the top, paper-handed the bottom, and still thinks memes are a valid investment strategy.
+<h2>🚀 About</h2>
+<p>$WAGMIK is the coin for every Solana degen who bought the top, paper-handed the bottom, and still thinks memes are a valid investment strategy.
   </p>
-  <div class="quote">
-    “This coin has no utility, and that’s the utility.”<br>
-    <span>– A true degen prophet</span>
-  </div>
-  <a href="https://letsbonk.fun" target="_blank" class="cta">Buy on Bonk Launchpad</a>
+<div class="quote">
+    “This coin has no utility, and that’s the utility.”<br/>
+<span>– A true degen prophet</span>
+</div>
+<a class="cta" href="https://letsbonk.fun" target="_blank">Buy on Bonk Launchpad</a>
 </section>
-
 <section class="floating-lore-wrapper">
-  <div class="floating-lore">
-    <div class="lore-chapter">In the deep shadows of Solana memecoin culture...</div>
-    <div class="lore-chapter">While BONK soared to memetic greatness, $WAGMIK sat quietly in the trenches...</div>
-    <div class="lore-chapter">He wasn’t the fastest dog. He wasn’t airdropped to influencers...</div>
-    <div class="lore-chapter">He was BONK’s underdog cousin...</div>
-    <div class="lore-chapter">But instead of giving up, he asked ChatGPT for advice...</div>
-    <div class="lore-chapter">Born from regret and refined by copium, $WAGMIK clawed into existence...</div>
-    <div class="lore-chapter">Now, $WAGMIK isn’t here to change the world...</div>
-    <div class="lore-chapter">He’s not just a token. He’s a story. A meme. A movement.</div>
-  </div>
+<div class="floating-lore">
+<div class="lore-chapter">In the deep shadows of Solana memecoin culture...</div>
+<div class="lore-chapter">While BONK soared to memetic greatness, $WAGMIK sat quietly in the trenches...</div>
+<div class="lore-chapter">He wasn’t the fastest dog. He wasn’t airdropped to influencers...</div>
+<div class="lore-chapter">He was BONK’s underdog cousin...</div>
+<div class="lore-chapter">But instead of giving up, he asked ChatGPT for advice...</div>
+<div class="lore-chapter">Born from regret and refined by copium, $WAGMIK clawed into existence...</div>
+<div class="lore-chapter">Now, $WAGMIK isn’t here to change the world...</div>
+<div class="lore-chapter">He’s not just a token. He’s a story. A meme. A movement.</div>
+</div>
 </section>
-
 <section class="section lore">
-  <h2>🧬 Lore</h2>
-  <p>Forged from chart tears and bottom buys, $WAGMIK was born in the depths of Solana Twitter and raised on hopium. Bonk was the cousin who made it. WAGMIK was left behind. Until now.</p>
+<h2>🧬 Lore</h2>
+<p>Forged from chart tears and bottom buys, $WAGMIK was born in the depths of Solana Twitter and raised on hopium. Bonk was the cousin who made it. WAGMIK was left behind. Until now.</p>
 </section>
-
 <section class="section">
-  <h2>🔥 The Bonk Tribute</h2>
-  <iframe
-    src="https://dexscreener.com/solana/ysq96dvzrrmvrassyb2vr5chfwosqdrzqrgnmrrtr1l"
-    frameborder="0"
-    style="width:100%; height:500px; border:none; border-radius:12px;"
-    allowfullscreen
-  ></iframe>
+<h2>🔥 The Bonk Tribute</h2>
+<iframe allowfullscreen="" frameborder="0" src="https://dexscreener.com/solana/ysq96dvzrrmvrassyb2vr5chfwosqdrzqrgnmrrtr1l" style="width:100%; height:500px; border:none; border-radius:12px;"></iframe>
 </section>
-
 <!-- 🚀 Meme Gallery Section -->
 <section class="section" id="meme-gallery">
-  <h2>😂 Community Memes</h2>
-  <div class="gallery-wrapper">
-    <div class="gallery-track" id="memeTrack">
-      <!-- REPLACE src with your meme file paths -->
-      <img src="meme1.png" alt="Meme 1" class="gallery-meme" />
-      <img src="meme2.png" alt="Meme 2" class="gallery-meme" />
-      <img src="meme3.png" alt="Meme 3" class="gallery-meme" />
-      <img src="meme4.png" alt="Meme 4" class="gallery-meme" />
-      <img src="meme5.png" alt="Meme 5" class="gallery-meme" />
-      <img src="meme6.png" alt="Meme 6" class="gallery-meme" />
-      <img src="meme7.png" alt="Meme 7" class="gallery-meme" />
-      <img src="meme8.png" alt="Meme 8" class="gallery-meme" />
-      <img src="meme9.png" alt="Meme 9" class="gallery-meme" />
-      <img src="meme10.png" alt="Meme 10" class="gallery-meme" />
-      <img src="meme11.png" alt="Meme 11" class="gallery-meme" />
-      <img src="meme12.png" alt="Meme 12" class="gallery-meme" />
-      <!-- Add as many as needed -->
-    </div>
-  </div>
-
-   <!-- Lightbox -->
-  <div id="lightbox" class="lightbox">
-    <img src="" alt="Zoomed Meme" id="lightbox-img" />
-  </div>
+<h2>😂 Community Memes</h2>
+<div class="gallery-wrapper">
+<div class="gallery-track" id="memeTrack">
+<!-- REPLACE src with your meme file paths -->
+<img alt="Meme 1" class="gallery-meme" src="meme1.png"/>
+<img alt="Meme 2" class="gallery-meme" src="meme2.png"/>
+<img alt="Meme 3" class="gallery-meme" src="meme3.png"/>
+<img alt="Meme 4" class="gallery-meme" src="meme4.png"/>
+<img alt="Meme 5" class="gallery-meme" src="meme5.png"/>
+<img alt="Meme 6" class="gallery-meme" src="meme6.png"/>
+<img alt="Meme 7" class="gallery-meme" src="meme7.png"/>
+<img alt="Meme 8" class="gallery-meme" src="meme8.png"/>
+<img alt="Meme 9" class="gallery-meme" src="meme9.png"/>
+<img alt="Meme 10" class="gallery-meme" src="meme10.png"/>
+<img alt="Meme 11" class="gallery-meme" src="meme11.png"/>
+<img alt="Meme 12" class="gallery-meme" src="meme12.png"/>
+<!-- Add as many as needed -->
+</div>
+</div>
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+<img alt="Zoomed Meme" id="lightbox-img" src=""/>
+</div>
 </section>
-
 <!-- Jupiter Swap Section -->
 <section class="section">
-  <h2>🛒 Use Jupiter Widget to buy $WAGMIK</h2>
+<h2>🛒 Use Jupiter Widget to buy $WAGMIK</h2>
 </section>
- 
 <section class="tokenomics-section">
-  <div class="fade-between-swap-tokenomics"></div>
-  <div class="tokenomics-content">
-    <h2>📊 Tokenomics</h2>
-    <img src="coin.png" alt="$WAGMIK Coin" class="token-logo" />
-    <ul>
-      <li><strong>Total Supply:</strong> 1,000,000,000</li>
-      <li><strong>Tax:</strong> 0%</li>
-      <li><strong>Chain:</strong> Solana</li>
-      <li><strong>Utility:</strong> Vibes, Lore & Copium</li>
-    </ul>
-    <div style="margin-top: 30px;">
-      <a href="https://x.com/wagmikdotsol" target="_blank">
-        <img src="x_image.png" alt="Twitter/X" style="width:42px; height:42px;" />
-      </a>
-    </div>
-  </div>
+<div class="fade-between-swap-tokenomics"></div>
+<div class="tokenomics-content">
+<h2>📊 Tokenomics</h2>
+<img alt="$WAGMIK Coin" class="token-logo" src="coin.png"/>
+<ul>
+<li><strong>Total Supply:</strong> 1,000,000,000</li>
+<li><strong>Tax:</strong> 0%</li>
+<li><strong>Chain:</strong> Solana</li>
+<li><strong>Utility:</strong> Vibes, Lore &amp; Copium</li>
+</ul>
+<div style="margin-top: 30px;">
+<a href="https://x.com/wagmikdotsol" target="_blank">
+<img alt="Twitter/X" src="x_image.png" style="width:42px; height:42px;"/>
+</a>
+</div>
+</div>
 </section>
-
 <div class="bottom-banner">
 <div class="fade-between-tokenomics-bottom"></div>
-  <img src="bottom-banner.png" alt="Crypto Influencers Holding WAGMIK Coins" />
-  </div>
-
+<img alt="Crypto Influencers Holding WAGMIK Coins" src="bottom-banner.png"/>
+</div>
 <!-- Lore Button & Modal -->
 <button class="floating-button lore-toggle-btn" onclick="toggleLore()">📜 Read Lore</button>
 <div class="modal" id="loreModal">
-  <button class="close-btn" onclick="toggleLore()">✖</button>
-  <div class="lore-chapter">In the deep shadows of Solana memecoin culture...</div>
-  <div class="lore-chapter">While BONK soared to memetic greatness, $WAGMIK sat quietly in the trenches...</div>
-  <div class="lore-chapter">He wasn’t the fastest dog. He wasn’t airdropped to influencers...</div>
-  <div class="lore-chapter">He was BONK’s underdog cousin...</div>
-  <div class="lore-chapter">But instead of giving up, he asked ChatGPT for advice...</div>
-  <div class="lore-chapter">Born from regret and refined by copium, $WAGMIK clawed into existence...</div>
-  <div class="lore-chapter">Now, $WAGMIK isn’t here to change the world...</div>
-  <div class="lore-chapter">He’s not just a token. He’s a story. A meme. A movement.</div>
+<button class="close-btn" onclick="toggleLore()">✖</button>
+<div class="lore-chapter">In the deep shadows of Solana memecoin culture...</div>
+<div class="lore-chapter">While BONK soared to memetic greatness, $WAGMIK sat quietly in the trenches...</div>
+<div class="lore-chapter">He wasn’t the fastest dog. He wasn’t airdropped to influencers...</div>
+<div class="lore-chapter">He was BONK’s underdog cousin...</div>
+<div class="lore-chapter">But instead of giving up, he asked ChatGPT for advice...</div>
+<div class="lore-chapter">Born from regret and refined by copium, $WAGMIK clawed into existence...</div>
+<div class="lore-chapter">Now, $WAGMIK isn’t here to change the world...</div>
+<div class="lore-chapter">He’s not just a token. He’s a story. A meme. A movement.</div>
 </div>
-
 <!-- Degen Button & Modal -->
 <button class="floating-button degen-toggle-btn" onclick="toggleDegen()">🧠 Degen Mode</button>
 <div class="modal" id="degenModal">
-  <button class="close-btn" onclick="toggleDegen()">✖</button>
-  <h2>Degen Prophecies by $WAGMIK</h2>
-  <p id="degenProphecy">Loading prophecy...</p>
+<button class="close-btn" onclick="toggleDegen()">✖</button>
+<h2>Degen Prophecies by $WAGMIK</h2>
+<p id="degenProphecy">Loading prophecy...</p>
 </div>
-
 <!-- Meme Generator Button & Modal -->
 <button class="floating-button meme-toggle-btn" onclick="toggleMeme()">🎭 Meme Generator</button>
 <div class="modal" id="memeModal">
-  <button class="close-btn" onclick="toggleMeme()">✖</button>
-  <div class="console-container">
-    <img src="console-layout.png" class="console-bg" alt="MEME Generator">
-
-    <!-- 🎛 Controls Section -->
-    <div class="console-controls">
-      <label>MEME Generator</label>
-
-      <select id="bgSelect">
-        <option value="">None</option>
-        <option value="bg-trading.png">Trading Setup</option>
-        <option value="bg-luxury.png">Luxury Lifestyle</option>
-        <option value="bg-degen.png">Degen House</option>
-        <option value="casino.png">Casino</option>
-        <option value="jet.png">Jet</option>
-      </select>
-
-      <select id="hatSelect">
-        <option value="">None</option>
-        <option value="wagmik-hat.png">WAGMIK Hat</option>
-        <option value="bonk-hat.png">BONK Hat</option>
-        <option value="degen-hat.png">DEGEN Hat</option>
-        <option value="pepe-hat.png">PEPE Hat</option>
-        <option value="bonk-hat2.png">BONK Hat2</option>
-        <option value="degen-hat2.png">Degen Hat2</option>
-      </select>
-
-      <select id="chainSelect">
-        <option value="">None</option>
-        <option value="chain-wagmik.png">WAGMIK Chain</option>
-        <option value="chain2.png">Cuban Chain</option>
-        <option value="glasses.png">Meme Glasses</option>
-      </select>
-
-      <select id="characterSelect">
-        <option value="">None</option>
-        <option value="wagmik-cheering.png">WAGMIK Cheering</option>
-        <option value="ponke.png">Ponke</option>
-        <option value="pepe.png">Pepe</option>
-        <option value="wolf.png">Wolf</option>
-        <option value="wolf-rich.png">Wolf Rich</option>
-      </select>
-
-      <input type="text" id="topText" placeholder="Top Text">
-      <input type="text" id="bottomText" placeholder="Bottom Text">
-
-      <!-- 🧠 Stylish Buttons -->
-      <div class="button-row">
-        <button onclick="drawMeme()" class="console-btn">Preview</button>
-        <button onclick="downloadMeme()" class="console-btn">Download</button>
-        <button onclick="resetMeme()" class="console-btn full-width">Reset</button>
-      </div>
-    </div>
-
-    <!-- 🖼 Preview Canvas -->
-    <canvas id="memeCanvas" class="console-canvas" width="360" height="360"></canvas>
-
-    <!-- 🔁 Rotation Slider -->
-    <div id="rotationSliderWrapper" style="display:none; margin-top: 10px;">
-      <label style="color: white;">Rotate</label>
-      <input id="rotationSlider" type="range" min="-180" max="180" value="0" />
-    </div>
-  </div>
+<button class="close-btn" onclick="toggleMeme()">✖</button>
+<div class="console-container">
+<img alt="MEME Generator" class="console-bg" src="console-layout.png"/>
+<!-- 🎛 Controls Section -->
+<div class="console-controls">
+<label>MEME Generator</label>
+<select id="bgSelect">
+<option value="">None</option>
+<option value="bg-trading.png">Trading Setup</option>
+<option value="bg-luxury.png">Luxury Lifestyle</option>
+<option value="bg-degen.png">Degen House</option>
+<option value="casino.png">Casino</option>
+<option value="jet.png">Jet</option>
+</select>
+<select id="hatSelect">
+<option value="">None</option>
+<option value="wagmik-hat.png">WAGMIK Hat</option>
+<option value="bonk-hat.png">BONK Hat</option>
+<option value="degen-hat.png">DEGEN Hat</option>
+<option value="pepe-hat.png">PEPE Hat</option>
+<option value="bonk-hat2.png">BONK Hat2</option>
+<option value="degen-hat2.png">Degen Hat2</option>
+</select>
+<select id="chainSelect">
+<option value="">None</option>
+<option value="chain-wagmik.png">WAGMIK Chain</option>
+<option value="chain2.png">Cuban Chain</option>
+<option value="glasses.png">Meme Glasses</option>
+</select>
+<select id="characterSelect">
+<option value="">None</option>
+<option value="wagmik-cheering.png">WAGMIK Cheering</option>
+<option value="ponke.png">Ponke</option>
+<option value="pepe.png">Pepe</option>
+<option value="wolf.png">Wolf</option>
+<option value="wolf-rich.png">Wolf Rich</option>
+</select>
+<input id="topText" placeholder="Top Text" type="text"/>
+<input id="bottomText" placeholder="Bottom Text" type="text"/>
+<!-- 🧠 Stylish Buttons -->
+<div class="button-row">
+<button class="console-btn" onclick="drawMeme()">Preview</button>
+<button class="console-btn" onclick="downloadMeme()">Download</button>
+<button class="console-btn full-width" onclick="resetMeme()">Reset</button>
 </div>
-
+</div>
+<!-- 🖼 Preview Canvas -->
+<canvas class="console-canvas" height="360" id="memeCanvas" width="360"></canvas>
+<!-- 🔁 Rotation Slider -->
+<div id="rotationSliderWrapper" style="display:none; margin-top: 10px;">
+<label style="color: white;">Rotate</label>
+<input id="rotationSlider" max="180" min="-180" type="range" value="0">
+</input></div>
+</div>
+</div>
 <!-- 🌐 Floating App Links (Left Center) -->
 <div class="floating-apps">
-  <a href="https://bullx.io/login?redirectUrl=" target="_blank">
-    <img src="bullx.png" alt="BullX" class="app-logo" />
-  </a>
-  <a href="https://axiom.trade/" target="_blank">
-    <img src="axiom.png" alt="Axiom" class="app-logo" />
-  </a>
-  <a href="https://photon-sol.tinyastro.io/" target="_blank">
-    <img src="photon.png" alt="Photon" class="app-logo" />
-  </a>
+<a href="https://bullx.io/login?redirectUrl=" target="_blank">
+<img alt="BullX" class="app-logo" src="bullx.png">
+</img></a>
+<a href="https://axiom.trade/" target="_blank">
+<img alt="Axiom" class="app-logo" src="axiom.png"/>
+</a>
+<a href="https://photon-sol.tinyastro.io/" target="_blank">
+<img alt="Photon" class="app-logo" src="photon.png"/>
+</a>
 </div>
-
-<div id="jupiter-container"
-     style="position: fixed; left: 10px; bottom: 60px; width: 384px; max-width: 90vw; height: 600px; max-height: 75vh; z-index: 9999; border-radius: 16px; overflow: hidden;">
+<div id="jupiter-container" style="position: fixed; left: 10px; bottom: 60px; width: 384px; max-width: 90vw; height: 600px; max-height: 75vh; z-index: 9999; border-radius: 16px; overflow: hidden;">
 </div>
-
 <footer>
-  Made with memes, madness, and moon math ✨<br>
-  &copy; 2025 $WAGMIK. No rights reserved.
+  Made with memes, madness, and moon math ✨<br/>
+  © 2025 $WAGMIK. No rights reserved.
 </footer>
-
 <script>
   function createCoin() {
     const coin = document.createElement("div");
@@ -1044,8 +1038,7 @@ canvas {
   }
   setInterval(createCoin, 400);
 </script>
-
-  <script>
+<script>
 
   // Lightbox Logic
   const lightbox = document.getElementById("lightbox");
@@ -1063,7 +1056,6 @@ canvas {
     lightbox.style.display = "none";
   });
 </script>
- 
 <script>
   const chapters = document.querySelectorAll('.lore-chapter');
 
@@ -1082,7 +1074,6 @@ canvas {
     });
   });
 </script>
-
 <script>
 // --- Modal Toggles ---
 function toggleLore() {
@@ -1354,7 +1345,6 @@ function setupTouchHandlers(obj) {
 [bgSelect, hatSelect, chainSelect, characterSelect].forEach(el => el.addEventListener('change', drawMeme));
 [topTextInput, bottomTextInput].forEach(el => el.addEventListener('input', drawCanvas));
 </script>
-
 <script>
   window.Jupiter.init({
     displayMode: "widget",
@@ -1367,6 +1357,5 @@ function setupTouchHandlers(obj) {
     // You can customize more here
   });
 </script>
-
 </body>
 </html>
