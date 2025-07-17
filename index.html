@@ -789,16 +789,17 @@ canvas {
 }
 
 #jupiter-container {
-  position: fixed;
-  left: 10px;
-  bottom: 60px;
-  width: 90vw;
-  max-width: 384px;
-  height: 600px;
-  max-height: 75vh;
-  z-index: 9999;
-  border-radius: 16px;
-  overflow: hidden;
+  position: fixed !important;
+  left: 10px !important;
+  right: auto !important;       /* <-- This is important */
+  bottom: 60px !important;
+  width: 90vw !important;
+  max-width: 384px !important;
+  height: 600px !important;
+  max-height: 75vh !important;
+  z-index: 9999 !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
 }
 
 :root {
@@ -810,22 +811,34 @@ canvas {
   --jupiter-terminal-module: 16, 23, 31;
 }
 
-</style>
-<script data-preload="" src="https://terminal.jup.ag/main-v4.js"></script>
-<style>
 @media (max-width: 768px) {
-  .console-btn.preview,
-  .console-btn.download {
-    display: none !important;
-  }
-
-  .console-btn.reset {
-    width: 100%;
-    margin-top: 10px;
+  .console-controls button:nth-child(1), /* Preview */
+  .console-controls button:nth-child(2)  /* Download */ {
+    display: none;
   }
 
   #memeCanvas {
     margin-top: 10px;
+  }
+}
+
+</style>
+  
+<script data-preload="" src="https://terminal.jup.ag/main-v4.js"></script>
+  
+<style>
+@media (max-width: 768px) {
+  .console-controls .button-row button:nth-child(1), /* Preview */
+  .console-controls .button-row button:nth-child(2)  /* Download */ {
+    display: none;
+
+  .console-controls .button-row button:nth-child(3) {
+    width: 100%;
+    margin-top: 0;
+  }
+
+  #memeCanvas {
+    margin-top: 12px;
     display: block;
   }
 
@@ -991,8 +1004,9 @@ canvas {
 <option value="wolf.png">Wolf</option>
 <option value="wolf-rich.png">Wolf Rich</option>
 </select>
-<input id="topText" placeholder="Top Text" type="text"/>
-<input id="bottomText" placeholder="Bottom Text" type="text"/>
+<input type="text" id="topText" placeholder="Top Text" inputmode="text" autocomplete="off" autocapitalize="off" />
+<input type="text" id="bottomText" placeholder="Bottom Text" inputmode="text" autocomplete="off" autocapitalize="off" />
+
 <!-- 🧠 Stylish Buttons -->
 <div class="button-row">
 <button class="console-btn" onclick="drawMeme()">Preview</button>
@@ -1077,7 +1091,12 @@ canvas {
 <script>
 // --- Modal Toggles ---
 function toggleLore() {
-  document.getElementById('loreModal').classList.toggle('active');
+  const modal = document.getElementById('loreModal');
+  modal.classList.toggle('active');
+
+  // Force reflow for mobile (iOS workaround)
+  void modal.offsetWidth;
+  modal.focus();
 }
 
 function toggleDegen() {
@@ -1094,11 +1113,17 @@ function toggleDegen() {
     "He who panics last, panics best.",
     "Trust the vibes, not the volume."
   ];
+
   if (!modal.classList.contains('active')) {
     document.getElementById('degenProphecy').textContent =
       `"${lines[Math.floor(Math.random() * lines.length)]}"`;
   }
+
   modal.classList.toggle('active');
+
+  // Force refresh/repaint for mobile
+  void modal.offsetWidth;
+  modal.focus();
 }
 
 function toggleMeme() {
@@ -1238,17 +1263,24 @@ function setupDragAndResize(obj) {
     const { left, top } = canvas.getBoundingClientRect();
     const mx = e.clientX - left;
     const my = e.clientY - top;
-    [hat, chain, character].forEach(item => {
-      const w = item.img.width * item.scale;
-      const h = item.img.height * item.scale;
-      if (isInside(mx, my, item.x, item.y, w, h)) {
-        item.dragging = true; dragging = item;
-        selectedObj = item;
-        if (!/Mobi|Android/i.test(navigator.userAgent)) {
-          sliderWrapper.style.display = 'block';
-          rotationSlider.value = (item.rotation * 180 / Math.PI).toFixed(0);
-        }
+    const items = [hat, chain, character]; // Priority: hat/chain first
+    for (let item of items) {
+    const w = item.img.width * item.scale;
+    const h = item.img.height * item.scale;
+    if (isInside(mx, my, item.x, item.y, w, h)) {
+      item.dragging = true;
+      dragging = item;
+      selectedObj = item;
+
+      // Show rotation slider (desktop only)
+      if (window.innerWidth > 768) {
+        sliderWrapper.style.display = 'block';
+        rotationSlider.value = (item.rotation * 180 / Math.PI).toFixed(0);
       }
+
+      return;
+    }
+  }
     });
     if (!dragging) {
       selectedObj = null;
@@ -1344,6 +1376,13 @@ function setupTouchHandlers(obj) {
 
 [bgSelect, hatSelect, chainSelect, characterSelect].forEach(el => el.addEventListener('change', drawMeme));
 [topTextInput, bottomTextInput].forEach(el => el.addEventListener('input', drawCanvas));
+
+// Prevent page scrolling when interacting with canvas on mobile
+['touchstart', 'touchmove', 'touchend'].forEach(event =>
+  canvas.addEventListener(event, e => {
+    if (e.target === canvas) e.preventDefault();
+  }, { passive: false })
+);
 </script>
 <script>
   window.Jupiter.init({
@@ -1359,3 +1398,4 @@ function setupTouchHandlers(obj) {
 </script>
 </body>
 </html>
+
