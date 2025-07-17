@@ -1136,6 +1136,10 @@ const sliderWrapper = document.getElementById("rotationSliderWrapper");
 
 let selectedObj = null;
 let activeTouchObj = null; // ⬅ global
+let hatLoaded = false;
+let chainLoaded = false;
+let charLoaded = false;
+let allAssetsReady = false;
 
 rotationSlider.addEventListener("input", () => {
   if (selectedObj) {
@@ -1187,19 +1191,8 @@ character.img.onload = () => {
   drawMeme();
 };
 
-let hatLoaded = false;
-let chainLoaded = false;
-let charLoaded = false;
-
-function loadAccessory(imageObj, src, callback) {
-  imageObj.onload = () => {
-    callback();
-  };
-  imageObj.src = src;
-}
-
 function drawMeme() {
-  allAssetsReady = false; // Prevent early drawCanvas calls
+  allAssetsReady = false;
 
   const bg = backgrounds[bgSelect.value];
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1208,29 +1201,53 @@ function drawMeme() {
     ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
   }
 
-  hatLoaded = chainLoaded = charLoaded = false; // reset flags
+  hatLoaded = chainLoaded = charLoaded = false;
 
   const hatVal = hatSelect.value;
   const chainVal = chainSelect.value;
   const charVal = characterSelect.value;
 
- if (hatVal && hat.img.src !== hatVal) {
-  hat.img.onload = () => { hatLoaded = true; maybeDrawAll(); };
-  hat.img.src = hatVal;
-}
-
-if (chainVal && chain.img.src !== chainVal) {
-  chain.img.onload = () => { chainLoaded = true; maybeDrawAll(); };
-  chain.img.src = chainVal;
-}
-
-if (charVal && character.img.src !== charVal) {
-  character.img.onload = () => { charLoaded = true; maybeDrawAll(); };
-  character.img.src = charVal;
+  // Hat
+  if (hatVal) {
+    if (hat.img.src !== location.origin + '/' + hatVal) {
+      hat.img.onload = () => { hatLoaded = true; maybeDrawAll(); };
+      hat.img.src = hatVal;
+    } else {
+      hatLoaded = true;
+    }
+  } else {
+    hat.img.src = "";
+    hatLoaded = true;
   }
-}
 
-let allAssetsReady = false;
+  // Chain
+  if (chainVal) {
+    if (chain.img.src !== location.origin + '/' + chainVal) {
+      chain.img.onload = () => { chainLoaded = true; maybeDrawAll(); };
+      chain.img.src = chainVal;
+    } else {
+      chainLoaded = true;
+    }
+  } else {
+    chain.img.src = "";
+    chainLoaded = true;
+  }
+
+  // Character
+  if (charVal) {
+    if (character.img.src !== location.origin + '/' + charVal) {
+      character.img.onload = () => { charLoaded = true; maybeDrawAll(); };
+      character.img.src = charVal;
+    } else {
+      charLoaded = true;
+    }
+  } else {
+    character.img.src = "";
+    charLoaded = true;
+  }
+
+  // No drawCanvas here — wait until all are loaded
+}
 
 function maybeDrawAll() {
   if (hatLoaded && chainLoaded && charLoaded) {
@@ -1238,6 +1255,7 @@ function maybeDrawAll() {
     drawCanvas();
   }
 }
+  
 
 function drawCanvas() {
   if (!allAssetsReady) return; // Prevent early/partial drawing
