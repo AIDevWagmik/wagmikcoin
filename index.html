@@ -1080,14 +1080,9 @@ input, select, textarea, button {
   });
 </script>
 <script>
-// --- Modal Toggles ---
 function toggleLore() {
   const modal = document.getElementById('loreModal');
   modal.classList.toggle('active');
-
-  // Force reflow for mobile (iOS workaround)
-  void modal.offsetWidth;
-  modal.focus();
 }
 
 function toggleDegen() {
@@ -1111,10 +1106,6 @@ function toggleDegen() {
   }
 
   modal.classList.toggle('active');
-
-  // Force refresh/repaint for mobile
-  void modal.offsetWidth;
-  modal.focus();
 }
 
 function toggleMeme() {
@@ -1125,18 +1116,24 @@ function toggleMeme() {
 
   memeModal.classList.toggle('active');
 
-  if (memeModal.classList.contains('active')) {
-  document.body.style.overflow = 'hidden';
-  loreBtn.style.visibility = 'hidden';
-  degenBtn.style.visibility = 'hidden';
-  memeBtn.style.visibility = 'hidden';
-} else {
-  document.body.style.overflow = '';
-  loreBtn.style.visibility = 'visible';
-  degenBtn.style.visibility = 'visible';
-  memeBtn.style.visibility = 'visible';
-   }
+  // ✅ Mobile-specific hiding logic
+  if (window.innerWidth < 768) {
+    if (memeModal.classList.contains('active')) {
+      loreBtn.style.display = 'none';
+      degenBtn.style.display = 'none';
+      memeBtn.style.display = 'none';
+      document.body.style.overflow = 'hidden'; // prevent scroll
+    } else {
+      loreBtn.style.display = '';
+      degenBtn.style.display = '';
+      memeBtn.style.display = '';
+      document.body.style.overflow = ''; // allow scroll
+    }
+  }
 }
+</script>
+
+<script>
 
 // --- Canvas Setup ---
 const canvas = document.getElementById('memeCanvas');
@@ -1250,32 +1247,32 @@ function isInside(mx, my, x, y, w, h) {
 
 function setupDragAndResize(obj) {
   let dragging = null;
+
   canvas.addEventListener("mousedown", (e) => {
     const { left, top } = canvas.getBoundingClientRect();
     const mx = e.clientX - left;
     const my = e.clientY - top;
-    const items = [hat, chain, character]; // Priority: hat/chain first
+    const items = [hat, chain, character]; // Prioritize hat/chain
     for (let item of items) {
-    const w = item.img.width * item.scale;
-    const h = item.img.height * item.scale;
-    if (isInside(mx, my, item.x, item.y, w, h)) {
-      item.dragging = true;
-      dragging = item;
-      selectedObj = item;
+      const w = item.img.width * item.scale;
+      const h = item.img.height * item.scale;
+      if (isInside(mx, my, item.x, item.y, w, h)) {
+        item.dragging = true;
+        dragging = item;
+        selectedObj = item;
 
-      // Show rotation slider (desktop only)
-      if (window.innerWidth > 768) {
-        sliderWrapper.style.display = 'block';
-        rotationSlider.value = (item.rotation * 180 / Math.PI).toFixed(0);
+        // Show rotation slider (desktop only)
+        if (window.innerWidth > 768) {
+          sliderWrapper.style.display = 'block';
+          rotationSlider.value = (item.rotation * 180 / Math.PI).toFixed(0);
+        }
+        return;
       }
-
-      return;
     }
-  }
-  
-    if (!dragging) {
-      selectedObj = null;
-      sliderWrapper.style.display = 'none';
+
+    // Nothing selected
+    selectedObj = null;
+    sliderWrapper.style.display = 'none';
   });
 
   canvas.addEventListener("mousemove", (e) => {
