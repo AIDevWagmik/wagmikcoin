@@ -1425,6 +1425,11 @@ rotationSlider.addEventListener("input", () => {
 });
 
 function drawMeme() {
+
+ const testImg = new Image();
+ testImg.src = "bg-degen.png";
+ testImg.onload = () => ctx.drawImage(testImg, 0, 0, canvas.width, canvas.height);
+
   allAssetsReady = false;
   hatLoaded = chainLoaded = charLoaded = false;
 
@@ -1663,11 +1668,15 @@ if (window.innerWidth < 768) {
   }, { passive: false });
 }                                                
 );
+
+window.addEventListener("load", () => {
+  drawMeme();
+});
+   
   </script>
 
  <script>
 document.addEventListener("DOMContentLoaded", () => {
-  bgSelect.value = "bg-trading.png";  // ✅ Force initial background selection
   drawMeme();                         // ✅ Now it will draw properly
 });
 </script>
