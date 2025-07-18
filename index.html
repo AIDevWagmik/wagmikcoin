@@ -589,7 +589,6 @@ footer {
   max-width: 800px;
   margin: 0 auto;
   position: relative;
-  z-index: 1;
 }
 
 .console-controls {
@@ -620,10 +619,13 @@ footer {
 }
 
 canvas#memeCanvas {
-  border: 2px dashed white;
-  margin-top: 20px;
   width: 90%;
   max-width: 360px;
+  height: auto;
+  margin: 20px auto 0;
+  display: block;
+  border: 2px dashed white;
+  touch-action: none;
 }
 
 .console-container img.console-bg {
@@ -662,11 +664,6 @@ canvas#memeCanvas {
     left: 0;
     z-index: 0;
     opacity: 0.3;
-  }
-
-  .console-canvas {
-    position: relative;
-    z-index: 2;
   }
 
   .console-controls {
@@ -712,14 +709,6 @@ canvas#memeCanvas {
   .floating-button:hover {
     opacity: 0.9;
     transform: scale(1.05);
-  }
-
-  canvas#memeCanvas {
-    width: 90%;
-    max-width: 300px;
-    height: auto;
-    margin: 20px auto 0;
-    display: block;
   }
 }
 
@@ -782,9 +771,12 @@ canvas#memeCanvas {
 }
 
 @media (min-width: 769px) {
-  .lore-toggle-btn {
-    display: none !important;
-  }
+.lore-toggle-btn,
+.degen-toggle-btn,
+.meme-toggle-btn {
+  visibility: hidden;  /* instead of display: none */
+  pointer-events: auto;
+ }
 }
 
 canvas {
@@ -843,10 +835,6 @@ canvas {
     overscroll-behavior: contain;
     touch-action: manipulation; /* allows input while preventing scroll gestures */
   }
-
-  canvas#memeCanvas {
-    touch-action: none; /* canvas remains gesture-isolated */
-  }
 }
 
 input, select, textarea, button {
@@ -871,13 +859,13 @@ input, select, textarea, button {
   .console-controls {
     position: relative;
     margin-bottom: 12px;
-    z-index: 10;
+    z-index: 2;
   }
 
   #memeCanvas {
     margin-top: 0;
     display: block;
-    z-index: 5;
+    z-index: 1;
   }
 
   canvas {
@@ -1200,14 +1188,20 @@ function toggleMeme() {
   // ✅ Mobile-specific hiding logic
   if (window.innerWidth < 768) {
     if (memeModal.classList.contains('active')) {
-      loreBtn.style.display = 'none';
-      degenBtn.style.display = 'none';
-      memeBtn.style.display = 'none';
+      loreBtn.style.visibility = 'hidden';
+      degenBtn.style.visibility = 'hidden';
+      memeBtn.style.visibility = 'hidden';
+
+      loreBtn.style.pointerEvents = 'auto';
+      degenBtn.style.pointerEvents = 'auto';
+      memeBtn.style.pointerEvents = 'auto';
+
       document.body.style.overflow = 'hidden'; // prevent scroll
     } else {
-      loreBtn.style.display = '';
-      degenBtn.style.display = '';
-      memeBtn.style.display = '';
+      loreBtn.style.visibility = '';
+      degenBtn.style.visibility = '';
+      memeBtn.style.visibility = '';
+      
       document.body.style.overflow = ''; // allow scroll
     }
   }
@@ -1449,9 +1443,9 @@ function setupTouchHandlers(obj) {
   setupTouchHandlers(obj);
 });
 
-[topTextInput, bottomTextInput].forEach(el => {
-  el.addEventListener('touchstart', e => {
-    e.stopPropagation(); // prevent canvas touch handlers
+[topTextInput, bottomTextInput].forEach(input => {
+  input.addEventListener("touchstart", () => {
+    setTimeout(() => input.focus(), 50);
   }, { passive: true });
 });
 
