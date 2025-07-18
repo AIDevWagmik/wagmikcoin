@@ -1498,7 +1498,8 @@ function resetMeme() {
   selectedObj = null;
   activeTouchObj = null;
 
-  drawMeme();
+  drawMeme();  // redraw the empty canvas
+  maybeDrawAll(); // ensure nothing is left behind
 }
 
 function isInside(mx, my, x, y, w, h) {
@@ -1652,6 +1653,7 @@ document.body.style.touchAction = "manipulation";
   canvas.addEventListener(event, e => {
     e.preventDefault(); // block page scroll
   }, { passive: false })
+ );
 
 if (window.innerWidth < 768) {
   document.body.addEventListener('touchmove', function(e) {
@@ -1660,7 +1662,7 @@ if (window.innerWidth < 768) {
     }
   }, { passive: false });
 }
-                                                
+drawMeme();                                                
 );
   </script>
   <script>
