@@ -532,6 +532,12 @@ footer {
       cursor: pointer;
     }
 
+  .modal {
+  pointer-events: auto;
+  touch-action: manipulation;
+  z-index: 9999;
+}
+
     /* Lore Modal */
     #loreModal {
       background: linear-gradient(rgba(20, 10, 40, 0.4), rgba(20, 10, 40, 0.4)), url('lore.png') center center no-repeat;
@@ -839,6 +845,26 @@ canvas {
 input, select, textarea, button {
   touch-action: manipulation !important;
 }
+
+#controlsWrapper select,
+#controlsWrapper input[type="text"] {
+  pointer-events: auto;
+  z-index: 10;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .console-container {
+    overflow-y: auto;
+    max-height: 80vh;
+  }
+
+  canvas {
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+  }
+}
   
 </style>
   
@@ -937,7 +963,7 @@ input, select, textarea, button {
 </div>
 <!-- Lore Button & Modal -->
 <button class="floating-button lore-toggle-btn" onclick="toggleLore()">📜 Read Lore</button>
-<div class="modal" id="loreModal">
+<div class="modal" id="loreModal" tabindex="-1">
 <button class="close-btn" onclick="toggleLore()">✖</button>
 <div class="lore-chapter">In the deep shadows of Solana memecoin culture...</div>
 <div class="lore-chapter">While BONK soared to memetic greatness, $WAGMIK sat quietly in the trenches...</div>
@@ -950,7 +976,7 @@ input, select, textarea, button {
 </div>
 <!-- Degen Button & Modal -->
 <button class="floating-button degen-toggle-btn" onclick="toggleDegen()">🧠 Degen Mode</button>
-<div class="modal" id="degenModal">
+<div class="modal" id="degenModal" tabindex="-1">
 <button class="close-btn" onclick="toggleDegen()">✖</button>
 <h2>Degen Prophecies by $WAGMIK</h2>
 <p id="degenProphecy">Loading prophecy...</p>
