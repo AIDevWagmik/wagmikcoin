@@ -1425,36 +1425,59 @@ rotationSlider.addEventListener("input", () => {
 });
 
 function drawMeme() {
-
- const testImg = new Image();
- testImg.src = "bg-degen.png";
- testImg.onload = () => ctx.drawImage(testImg, 0, 0, canvas.width, canvas.height);
-
   allAssetsReady = false;
   hatLoaded = chainLoaded = charLoaded = false;
+
+  const bg = backgrounds[bgSelect.value];
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (bg && bg.complete) {
+    console.log("Background loaded:", bgSelect.value);
+    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+  } else {
+    console.warn("Background not ready:", bgSelect.value);
+  }
 
   const hatVal = hatSelect.value;
   const chainVal = chainSelect.value;
   const charVal = characterSelect.value;
 
-  const load = (imgObj, val, callback) => {
-    if (val && imgObj.src !== location.origin + '/' + val) {
-      imgObj.onload = () => { callback(true); };
-      imgObj.src = val;
-    } else {
-      callback(true);
-    }
-  };
+  console.log("Selected values →", { hatVal, chainVal, charVal });
 
-  load(hat.img, hatVal, (v) => { hatLoaded = v; maybeDrawAll(); });
-  load(chain.img, chainVal, (v) => { chainLoaded = v; maybeDrawAll(); });
-  load(character.img, charVal, (v) => { charLoaded = v; maybeDrawAll(); });
-}
+  // Hat
+  if (hatVal) {
+    hat.img.onload = () => {
+      hatLoaded = true;
+      console.log("Hat loaded");
+      maybeDrawAll();
+    };
+    hat.img.src = hatVal;
+  } else {
+    hatLoaded = true;
+  }
 
-function maybeDrawAll() {
-  if (hatLoaded && chainLoaded && charLoaded) {
-    allAssetsReady = true;
-    drawCanvas();
+  // Chain
+  if (chainVal) {
+    chain.img.onload = () => {
+      chainLoaded = true;
+      console.log("Chain loaded");
+      maybeDrawAll();
+    };
+    chain.img.src = chainVal;
+  } else {
+    chainLoaded = true;
+  }
+
+  // Character
+  if (charVal) {
+    character.img.onload = () => {
+      charLoaded = true;
+      console.log("Character loaded");
+      maybeDrawAll();
+    };
+    character.img.src = charVal;
+  } else {
+    charLoaded = true;
   }
 }
 
@@ -1674,12 +1697,6 @@ window.addEventListener("load", () => {
 });
    
   </script>
-
- <script>
-document.addEventListener("DOMContentLoaded", () => {
-  drawMeme();                         // ✅ Now it will draw properly
-});
-</script>
 
  <script>
   window.Jupiter.init({
