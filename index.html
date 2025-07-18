@@ -892,13 +892,23 @@ input, select, textarea, button {
 
 @media (max-width: 768px) {
   html, body {
-    overscroll-behavior: none;
-    touch-action: none;
+    overscroll-behavior: contain;
+    touch-action: manipulation;
   }
 }
 
 @media (min-width: 768px) {
   .lore-toggle-btn {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    overflow-y: scroll;
+    scrollbar-width: none;
+  }
+  body::-webkit-scrollbar {
     display: none;
   }
 }
@@ -1147,15 +1157,8 @@ input, select, textarea, button {
   function toggleLore() {
   const modal = document.getElementById('loreModal');
   modal.classList.toggle('active');
-
-  // ✅ Force repaint fix for mobile Safari
-  if (modal.classList.contains('active')) {
-    setTimeout(() => {
-      modal.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
-  }
+  setTimeout(() => modal.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
 }
-
 
 function toggleDegen() {
   const modal = document.getElementById('degenModal');
@@ -1171,19 +1174,11 @@ function toggleDegen() {
     "He who panics last, panics best.",
     "Trust the vibes, not the volume."
   ];
-
   if (!modal.classList.contains('active')) {
-    document.getElementById('degenProphecy').textContent =
-      `"${lines[Math.floor(Math.random() * lines.length)]}"`;
+    document.getElementById('degenProphecy').textContent = `"${lines[Math.floor(Math.random() * lines.length)]}"`;
   }
-
   modal.classList.toggle('active');
-
-  // 🛠 Force repaint
-  if (modal.classList.contains('active')) {
-    modal.offsetWidth;
-    modal.focus();
-  }
+  setTimeout(() => modal.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
 }
 
 function toggleMeme() {
@@ -1311,15 +1306,21 @@ function drawCanvas() {
 
 function resetMeme() {
   [bgSelect, hatSelect, chainSelect, characterSelect].forEach(sel => sel.value = "");
-  topTextInput.value = bottomTextInput.value = "";
-  hat.img.src = chain.img.src = character.img.src = "";
-  selectedObj = null;
+  topTextInput.value = "";
+  bottomTextInput.value = "";
+  hat.img.src = "";
+  chain.img.src = "";
+  character.img.src = "";
+
   [hat, chain, character].forEach(obj => {
     obj.x = obj.y = 0;
     obj.scale = obj === character ? 1.0 : 0.7;
     obj.rotation = 0;
     obj.dragging = false;
   });
+
+  selectedObj = null;
+  activeTouchObj = null;
   drawMeme();
 }
 
@@ -1451,9 +1452,9 @@ function setupTouchHandlers(obj) {
 });
 
 [topTextInput, bottomTextInput].forEach(input => {
-  input.addEventListener("touchstart", () => {
-    setTimeout(() => input.focus(), 50);
-  }, { passive: true });
+  input.addEventListener("focus", () => {
+    setTimeout(() => window.scrollTo(0, 0), 100);
+  });
 });
 
 canvas.style.touchAction = "none";
@@ -1461,13 +1462,6 @@ document.body.style.touchAction = "manipulation";
 
 [bgSelect, hatSelect, chainSelect, characterSelect].forEach(el => el.addEventListener('change', drawMeme));
 [topTextInput, bottomTextInput].forEach(el => el.addEventListener('input', drawCanvas));
-
-// Prevent page scrolling when interacting with canvas on mobile
-['touchstart', 'touchmove', 'touchend'].forEach(event =>
-  canvas.addEventListener(event, e => {
-    e.preventDefault(); // block page scroll
-  }, { passive: false })
-);
 
 </script>
 <script>
