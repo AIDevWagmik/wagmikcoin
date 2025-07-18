@@ -518,8 +518,10 @@ footer {
     }
 
     .modal.active {
-      display: flex;
-    }
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
 
     .modal .close-btn {
       position: absolute;
@@ -1109,6 +1111,12 @@ input, select, textarea, button {
 function toggleLore() {
   const modal = document.getElementById('loreModal');
   modal.classList.toggle('active');
+
+  // 🛠 Force repaint fix for mobile Safari
+  if (modal.classList.contains('active')) {
+    modal.offsetWidth; // trigger reflow
+    modal.focus();     // needs tabindex="-1"
+  }
 }
 
 function toggleDegen() {
@@ -1132,6 +1140,12 @@ function toggleDegen() {
   }
 
   modal.classList.toggle('active');
+
+  // 🛠 Force repaint
+  if (modal.classList.contains('active')) {
+    modal.offsetWidth;
+    modal.focus();
+  }
 }
 
 function toggleMeme() {
@@ -1387,10 +1401,9 @@ function setupTouchHandlers(obj) {
   setupTouchHandlers(obj);
 });
 
-// Prevent mobile canvas blocking input focus
-[topTextInput, bottomTextInput].forEach(input => {
-  input.addEventListener('touchstart', e => {
-    e.stopPropagation();
+[topTextInput, bottomTextInput].forEach(el => {
+  el.addEventListener('touchstart', e => {
+    e.stopPropagation(); // prevent canvas touch handlers
   }, { passive: true });
 });
 
