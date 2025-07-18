@@ -741,6 +741,7 @@ canvas#memeCanvas {
   flex-direction: column;
   gap: 16px;
   z-index: 1002;
+  pointer-events: auto;
 }
 
 .app-logo {
@@ -750,6 +751,7 @@ canvas#memeCanvas {
   box-shadow: 0 4px 10px rgba(0,0,0,0.5);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
+  pointer-events: auto;
 }
 
 .app-logo:hover {
@@ -798,7 +800,7 @@ canvas {
   max-width: 384px !important;
   height: 600px !important;
   max-height: 75vh !important;
-  z-index: 9999 !important;
+  z-index: 998 !important;
   border-radius: 16px !important;
   overflow: hidden !important;
 }
@@ -902,6 +904,36 @@ input, select, textarea, button {
     display: none;
   }
 }
+
+   @media (max-width: 768px) {
+  #rotationSliderWrapper,
+  .console-btn:nth-child(1),  /* Preview */
+  .console-btn:nth-child(2) { /* Download */
+    display: none !important;
+  }
+
+  .console-btn:nth-child(3) {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .console-container {
+    overflow-y: auto;
+    max-height: 85vh;
+    touch-action: none;
+  }
+
+  #memeCanvas {
+    margin-top: 12px;
+    display: block;
+    touch-action: none;
+  }
+
+  .lore-toggle-btn {
+    display: block;
+  }
+}
+
   </style>
   <script src="https://terminal.jup.ag/main-v4.js">
   </script>
@@ -1066,7 +1098,7 @@ input, select, textarea, button {
   <button class="floating-button lore-toggle-btn" onclick="toggleLore()">
    📜 Read Lore
   </button>
-  <div class="modal" id="loreModal" tabindex="-1">
+  <div class="modal" id="loreModal" tabindex="0">
    <button class="close-btn" onclick="toggleLore()">
     ✖
    </button>
@@ -1099,7 +1131,7 @@ input, select, textarea, button {
   <button class="floating-button degen-toggle-btn" onclick="toggleDegen()">
    🧠 Degen Mode
   </button>
-  <div class="modal" id="degenModal" tabindex="-1">
+  <div class="modal" id="degenModal" tabindex="0">
    <button class="close-btn" onclick="toggleDegen()">
     ✖
    </button>
@@ -1241,8 +1273,7 @@ input, select, textarea, button {
     <img alt="Photon" class="app-logo" src="photon.png"/>
    </a>
   </div>
-  <div id="jupiter-container" style="position: fixed; left: 10px; bottom: 60px; width: 384px; max-width: 90vw; height: 600px; max-height: 75vh; z-index: 9999; border-radius: 16px; overflow: hidden;">
-  </div>
+  <div id="jupiter-container"></div>
   <footer>
    Made with memes, madness, and moon math ✨
    <br/>
@@ -1295,18 +1326,15 @@ input, select, textarea, button {
   });
   </script>
   <script>
-   function toggleLore() {
+  function toggleLore() {
   const modal = document.getElementById('loreModal');
   modal.classList.toggle('active');
 
-  // ✅ Force repaint fix for mobile Safari
-  if (modal.classList.contains('active')) {
-    setTimeout(() => {
-      modal.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
+  // 👇 Fix focus issue on mobile
+  if (window.innerWidth < 768 && modal.classList.contains('active')) {
+    modal.focus();
   }
 }
-
 
 function toggleDegen() {
   const modal = document.getElementById('degenModal');
@@ -1330,9 +1358,7 @@ function toggleDegen() {
 
   modal.classList.toggle('active');
 
-  // 🛠 Force repaint
-  if (modal.classList.contains('active')) {
-    modal.offsetWidth;
+  if (window.innerWidth < 768 && modal.classList.contains('active')) {
     modal.focus();
   }
 }
@@ -1458,16 +1484,20 @@ function drawCanvas() {
 }
 
 function resetMeme() {
-  [bgSelect, hatSelect, chainSelect, characterSelect].forEach(sel => sel.value = "");
-  topTextInput.value = bottomTextInput.value = "";
-  hat.img.src = chain.img.src = character.img.src = "";
+  bgSelect.value = "";
+  hatSelect.value = "";
+  chainSelect.value = "";
+  characterSelect.value = "";
+  topTextInput.value = "";
+  bottomTextInput.value = "";
+
+  hat.img.src = "";
+  chain.img.src = "";
+  character.img.src = "";
+
   selectedObj = null;
-  [hat, chain, character].forEach(obj => {
-    obj.x = obj.y = 0;
-    obj.scale = obj === character ? 1.0 : 0.7;
-    obj.rotation = 0;
-    obj.dragging = false;
-  });
+  activeTouchObj = null;
+
   drawMeme();
 }
 
@@ -1604,6 +1634,13 @@ function setupTouchHandlers(obj) {
   }, { passive: true });
 });
 
+document.getElementById("topText").addEventListener("touchstart", e => {
+  e.target.focus();
+});
+document.getElementById("bottomText").addEventListener("touchstart", e => {
+  e.target.focus();
+});
+
 canvas.style.touchAction = "none";
 document.body.style.touchAction = "manipulation";
 
@@ -1615,6 +1652,15 @@ document.body.style.touchAction = "manipulation";
   canvas.addEventListener(event, e => {
     e.preventDefault(); // block page scroll
   }, { passive: false })
+
+if (window.innerWidth < 768) {
+  document.body.addEventListener('touchmove', function(e) {
+    if (e.target.closest('#memeCanvas') || e.target.closest('.console-controls')) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+}
+                                                
 );
   </script>
   <script>
@@ -1627,7 +1673,18 @@ document.body.style.touchAction = "manipulation";
     defaultInputMint: "So11111111111111111111111111111111111111112", // SOL
     defaultOutputMint: "Es9vMFrzaCERBzDJbNUcGMXyQpBwwxXSwrZ4GdVYz5r9", // USDT or your WAGMIK token mint
     // You can customize more here
-  });
+  },
+  containerStyles: {
+    position: "fixed",
+    left: "10px",
+    bottom: "60px",
+    zIndex: 998,
+    width: "384px",
+    height: "600px",
+    borderRadius: "16px",
+    overflow: "hidden"
+  }
+});
   </script>
  </body>
 </html>
