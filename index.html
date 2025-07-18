@@ -667,7 +667,7 @@ canvas#memeCanvas {
   .console-controls,
   .console-canvas {
     position: relative;
-    z-index: 2;
+    z-index: 3;
   }
 
   .console-controls {
@@ -683,6 +683,8 @@ canvas#memeCanvas {
     border: none;
     font-family: inherit;
     font-weight: 600;        /* ⬅️ NEW: make labels bold for clarity */
+    pointer-events: auto !important;
+    touch-action: manipulation;
   }
 
   .button-row {
@@ -719,6 +721,11 @@ canvas#memeCanvas {
     height: auto;
     margin: 20px auto 0;
     display: block;
+  }
+
+  #memeCanvas {
+  position: relative;
+  z-index: 2;
   }
 }
 
@@ -838,9 +845,13 @@ canvas {
 }
 
 @media (max-width: 768px) {
-  html, body {
-    overscroll-behavior: none;
-    touch-action: none;
+  .console-container {
+    overscroll-behavior: contain;
+    touch-action: manipulation; /* allows input while preventing scroll gestures */
+  }
+
+  canvas#memeCanvas {
+    touch-action: none; /* canvas remains gesture-isolated */
   }
 }
 
@@ -1023,8 +1034,8 @@ input, select, textarea, button {
 <option value="wolf.png">Wolf</option>
 <option value="wolf-rich.png">Wolf Rich</option>
 </select>
-<input type="text" id="topText" placeholder="Top Text" inputmode="text" autocomplete="off" autocapitalize="off" />
-<input type="text" id="bottomText" placeholder="Bottom Text" inputmode="text" autocomplete="off" autocapitalize="off" />
+<input type="text" id="topText" tabindex="0" placeholder="Top Text" inputmode="text" autocomplete="off" autocapitalize="off" />
+<input type="text" id="bottomText" tabindex="0" placeholder="Bottom Text" inputmode="text" autocomplete="off" autocapitalize="off" />
 
 <!-- 🧠 Stylish Buttons -->
 <div class="button-row">
@@ -1114,9 +1125,9 @@ function toggleLore() {
 
   // 🛠 Force repaint fix for mobile Safari
   if (modal.classList.contains('active')) {
-    modal.offsetWidth; // trigger reflow
-    modal.focus();     // needs tabindex="-1"
-  }
+   setTimeout(() => {
+  modal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}, 100);
 }
 
 function toggleDegen() {
@@ -1340,10 +1351,17 @@ function setupDragAndResize(obj) {
 }
 
 // Prevent mobile scroll + zoom when touching canvas
-canvas.addEventListener("touchstart", e => e.preventDefault(), { passive: false });
-canvas.addEventListener("touchmove", e => e.preventDefault(), { passive: false });
-canvas.addEventListener("touchend", e => e.preventDefault(), { passive: false });
+canvas.addEventListener("touchstart", (e) => {
+  if (e.target === canvas) e.preventDefault();
+}, { passive: false });
 
+canvas.addEventListener("touchmove", (e) => {
+  if (e.target === canvas) e.preventDefault();
+}, { passive: false });
+
+canvas.addEventListener("touchend", (e) => {
+  if (e.target === canvas) e.preventDefault();
+}, { passive: false });
 
 function setupTouchHandlers(obj) {
   let active = false;
