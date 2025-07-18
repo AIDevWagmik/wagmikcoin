@@ -889,6 +889,19 @@ input, select, textarea, button {
     margin-top: 20px;
   }
 }
+
+@media (max-width: 768px) {
+  html, body {
+    overscroll-behavior: none;
+    touch-action: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .lore-toggle-btn {
+    display: none;
+  }
+}
   
 </style>
   
@@ -1052,7 +1065,7 @@ input, select, textarea, button {
 <div class="button-row">
 <button class="console-btn" onclick="drawMeme()">Preview</button>
 <button class="console-btn" onclick="downloadMeme()">Download</button>
-<button class="console-btn full-width" onclick="resetMeme()">Reset</button>
+<button class="console-btn" onclick="resetMeme()">Reset</button>
 </div>
 </div>
 <!-- 🖼 Preview Canvas -->
@@ -1182,16 +1195,14 @@ function toggleMeme() {
   memeModal.classList.toggle('active');
 
   if (window.innerWidth < 768) {
-    const show = !memeModal.classList.contains('active');
+    const isActive = memeModal.classList.contains('active');
+    const visibility = isActive ? 'hidden' : 'visible';
 
-    // ✅ Safely toggle visibility without breaking button functions
-    [loreBtn, degenBtn, memeBtn].forEach(btn => {
-      btn.style.visibility = show ? 'visible' : 'hidden';
-      btn.style.pointerEvents = 'auto';
-    });
+    loreBtn.style.visibility = visibility;
+    degenBtn.style.visibility = visibility;
+    memeBtn.style.visibility = visibility;
 
-    // Prevent or allow scroll
-    document.body.style.overflow = show ? '' : 'hidden';
+    document.body.style.overflow = isActive ? 'hidden' : '';
   }
 }
 
@@ -1454,9 +1465,10 @@ document.body.style.touchAction = "manipulation";
 // Prevent page scrolling when interacting with canvas on mobile
 ['touchstart', 'touchmove', 'touchend'].forEach(event =>
   canvas.addEventListener(event, e => {
-    if (e.target === canvas) e.preventDefault();
+    e.preventDefault(); // block page scroll
   }, { passive: false })
 );
+
 </script>
 <script>
   window.Jupiter.init({
