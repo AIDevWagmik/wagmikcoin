@@ -771,12 +771,12 @@ canvas#memeCanvas {
 }
 
 @media (min-width: 769px) {
-.lore-toggle-btn,
-.degen-toggle-btn,
-.meme-toggle-btn {
-  visibility: hidden;  /* instead of display: none */
-  pointer-events: auto;
- }
+  .lore-toggle-btn,
+  .degen-toggle-btn,
+  .meme-toggle-btn {
+    visibility: visible;   /* fix this line */
+    pointer-events: auto;
+  }
 }
 
 canvas {
@@ -823,11 +823,6 @@ canvas {
     width: 100%;
     margin-top: 0;
   }
-
-  #memeCanvas {
-    margin-top: 12px;
-    display: block;
-  }
 }
 
 @media (max-width: 768px) {
@@ -863,6 +858,7 @@ input, select, textarea, button {
   }
 
   #memeCanvas {
+    touch-action: none;
     margin-top: 0;
     display: block;
     z-index: 1;
@@ -1185,27 +1181,20 @@ function toggleMeme() {
 
   memeModal.classList.toggle('active');
 
-  // ✅ Mobile-specific hiding logic
   if (window.innerWidth < 768) {
-    if (memeModal.classList.contains('active')) {
-      loreBtn.style.visibility = 'hidden';
-      degenBtn.style.visibility = 'hidden';
-      memeBtn.style.visibility = 'hidden';
+    const show = !memeModal.classList.contains('active');
 
-      loreBtn.style.pointerEvents = 'auto';
-      degenBtn.style.pointerEvents = 'auto';
-      memeBtn.style.pointerEvents = 'auto';
+    // ✅ Safely toggle visibility without breaking button functions
+    [loreBtn, degenBtn, memeBtn].forEach(btn => {
+      btn.style.visibility = show ? 'visible' : 'hidden';
+      btn.style.pointerEvents = 'auto';
+    });
 
-      document.body.style.overflow = 'hidden'; // prevent scroll
-    } else {
-      loreBtn.style.visibility = '';
-      degenBtn.style.visibility = '';
-      memeBtn.style.visibility = '';
-      
-      document.body.style.overflow = ''; // allow scroll
-    }
+    // Prevent or allow scroll
+    document.body.style.overflow = show ? '' : 'hidden';
   }
 }
+
 </script>
 
 <script>
@@ -1313,6 +1302,13 @@ function resetMeme() {
   [bgSelect, hatSelect, chainSelect, characterSelect].forEach(sel => sel.value = "");
   topTextInput.value = bottomTextInput.value = "";
   hat.img.src = chain.img.src = character.img.src = "";
+  selectedObj = null;
+  [hat, chain, character].forEach(obj => {
+    obj.x = obj.y = 0;
+    obj.scale = obj === character ? 1.0 : 0.7;
+    obj.rotation = 0;
+    obj.dragging = false;
+  });
   drawMeme();
 }
 
@@ -1448,6 +1444,9 @@ function setupTouchHandlers(obj) {
     setTimeout(() => input.focus(), 50);
   }, { passive: true });
 });
+
+canvas.style.touchAction = "none";
+document.body.style.touchAction = "manipulation";
 
 [bgSelect, hatSelect, chainSelect, characterSelect].forEach(el => el.addEventListener('change', drawMeme));
 [topTextInput, bottomTextInput].forEach(el => el.addEventListener('input', drawCanvas));
