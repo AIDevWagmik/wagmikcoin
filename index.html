@@ -664,10 +664,9 @@ canvas#memeCanvas {
     opacity: 0.3;
   }
 
-  .console-controls,
   .console-canvas {
     position: relative;
-    z-index: 3;
+    z-index: 2;
   }
 
   .console-controls {
@@ -721,11 +720,6 @@ canvas#memeCanvas {
     height: auto;
     margin: 20px auto 0;
     display: block;
-  }
-
-  #memeCanvas {
-  position: relative;
-  z-index: 2;
   }
 }
 
@@ -868,14 +862,47 @@ input, select, textarea, button {
 
 @media (max-width: 768px) {
   .console-container {
+    flex-direction: column;
+    align-items: center;
+    max-height: unset;
     overflow-y: auto;
-    max-height: 80vh;
+  }
+
+  .console-controls {
+    position: relative;
+    margin-bottom: 12px;
+    z-index: 10;
+  }
+
+  #memeCanvas {
+    margin-top: 0;
+    display: block;
+    z-index: 5;
   }
 
   canvas {
     max-width: 100%;
     display: block;
     margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  #memeModal select,
+  #memeModal input[type="text"] {
+    pointer-events: auto !important;
+    z-index: 1000 !important;
+    position: relative;
+  }
+}
+
+@media (max-width: 768px) {
+  .console-controls {
+    order: 1;
+  }
+  .console-canvas {
+    order: 2;
+    margin-top: 20px;
   }
 }
   
@@ -1119,16 +1146,19 @@ input, select, textarea, button {
   });
 </script>
 <script>
-function toggleLore() {
+
+  function toggleLore() {
   const modal = document.getElementById('loreModal');
   modal.classList.toggle('active');
 
-  // 🛠 Force repaint fix for mobile Safari
+  // ✅ Force repaint fix for mobile Safari
   if (modal.classList.contains('active')) {
-   setTimeout(() => {
-  modal.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}, 100);
+    setTimeout(() => {
+      modal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  }
 }
+
 
 function toggleDegen() {
   const modal = document.getElementById('degenModal');
