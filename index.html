@@ -1661,32 +1661,37 @@ if (window.innerWidth < 768) {
       e.preventDefault();
     }
   }, { passive: false });
-}
-drawMeme();                                                
+}                                                
 );
   </script>
-  <script>
-   window.Jupiter.init({
-    displayMode: "widget",
-    endpoint: "https://api.mainnet-beta.solana.com", // Optional: specify endpoint
-    container: document.getElementById("jupiter-container"),
-    defaultExplorer: "Solscan", // Optional
-    // Optional: token pair
-    defaultInputMint: "So11111111111111111111111111111111111111112", // SOL
-    defaultOutputMint: "Es9vMFrzaCERBzDJbNUcGMXyQpBwwxXSwrZ4GdVYz5r9", // USDT or your WAGMIK token mint
-    // You can customize more here
-  },
-  containerStyles: {
-    position: "fixed",
-    left: "10px",
-    bottom: "60px",
-    zIndex: 998,
-    width: "384px",
-    height: "600px",
-    borderRadius: "16px",
-    overflow: "hidden"
-  }
+
+ <script>
+document.addEventListener("DOMContentLoaded", () => {
+  bgSelect.value = "bg-trading.png";  // ✅ Force initial background selection
+  drawMeme();                         // ✅ Now it will draw properly
 });
-  </script>
+</script>
+
+ <script>
+  window.Jupiter.init({
+    displayMode: "widget",
+    endpoint: "https://api.mainnet-beta.solana.com",
+    container: document.getElementById("jupiter-container"),
+    defaultExplorer: "Solscan",
+    defaultInputMint: "So11111111111111111111111111111111111111112",
+    defaultOutputMint: "Es9vMF...YourTokenHere",
+    containerStyles: {
+      position: "fixed",
+      left: "10px",
+      bottom: "60px",
+      zIndex: 9999,
+      width: "384px",
+      height: "600px",
+      borderRadius: "16px",
+      overflow: "hidden"
+    }
+  });
+</script>
+
  </body>
 </html>
