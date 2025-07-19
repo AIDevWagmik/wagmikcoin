@@ -1480,7 +1480,7 @@ document.addEventListener("DOMContentLoaded", () => {
     link.click();
   }
 
-  window.drawMeme = function draMeme () {
+  window.drawMeme = function drawMeme () {
     allAssetsReady = false;
     hatLoaded = chainLoaded = charLoaded = false;
 
@@ -1539,11 +1539,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initial draw
   drawMeme();
-});
 
 document.getElementById("drawButton").addEventListener("click", drawMeme);
 document.getElementById("downloadButton").addEventListener("click", downloadMeme);
 document.getElementById("resetButton").addEventListener("click", resetMeme);
+ 
+});
 
 </script>
 
