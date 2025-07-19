@@ -793,27 +793,19 @@ canvas {
 
 #jupiter-container {
   position: fixed !important;
-  bottom: 60px !important;
   left: 10px !important;
   right: auto !important;
-  z-index: 1000 !important;
+  bottom: 60px !important;
   width: 384px !important;
   height: 600px !important;
   max-height: 75vh !important;
+  z-index: 1000 !important;
+  border-radius: 16px !important;
   overflow: hidden !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  transform: none !important;
   display: block !important;
-}
-
-:root {
-  --jupiter-terminal-primary: 199, 242, 132;
-  --jupiter-terminal-background: 0, 0, 0;
-  --jupiter-terminal-primaryText: 232, 249, 255;
-  --jupiter-terminal-warning: 251, 191, 36;
-  --jupiter-terminal-interactive: 33, 42, 54;
-  --jupiter-terminal-module: 16, 23, 31;
+  margin: 0 !important;
+  transform: none !important;
+  pointer-events: auto !important;
 }
 
 @media (max-width: 768px) {
@@ -944,6 +936,26 @@ body, html {
     overflow-y: auto !important;
     display: flex !important;
     flex-direction: column;
+  }
+}
+
+ @media (max-width: 768px) {
+  #memeModal.modal.active {
+    max-height: 100vh;
+    overflow-y: auto;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-bottom: 24px; /* 🩹 Make room for canvas */
+  }
+
+  #memeCanvas {
+    margin-bottom: 16px; /* 👟 Give canvas breathing room */
+  }
+
+  .console-container {
+    padding-bottom: 24px; /* extra scroll space on small viewports */
+    box-sizing: border-box;
   }
 }
 
@@ -1290,25 +1302,25 @@ function toggleMeme() {
 }
   </script>
 
-  <script>
+ <script>
   window.Jupiter.init({
     displayMode: "widget",
-    endpoint: "https://api.mainnet-beta.solana.com",
-    container: document.getElementById("jupiter-container"),
     defaultExplorer: "Solscan",
-    defaultInputMint: "So11111111111111111111111111111111111111112",
-    defaultOutputMint: "Es9vMFrzaCERBzDJbNUcGMXyQpBwwxXSwrZ4GdVYz5r9",
+    formProps: {
+      fixedMint: "So11111111111111111111111111111111111111112"
+    },
+    container: document.getElementById("jupiter-container"),
     containerStyles: {
-       position: "fixed",
-       left: "10px",            // ✅ Ensures it's left aligned
-       right: "auto",           // ✅ Prevents default right alignment
-       bottom: "60px",
-       zIndex: 1000,            // ✅ Keep below floating buttons
-       width: "384px",
-       height: "600px",
-       borderRadius: "16px",
-       overflow: "hidden"
-}
+      position: "fixed",
+      left: "10px",
+      bottom: "60px",
+      right: "auto",
+      zIndex: 1000,
+      width: "384px",
+      height: "600px",
+      borderRadius: "16px",
+      overflow: "hidden"
+    }
   });
 </script>
 
@@ -1447,6 +1459,18 @@ function drawMeme() {
 function maybeDrawAll() {
   if (hatLoaded && chainLoaded && charLoaded) {
     allAssetsReady = true;
+
+  if (window.innerWidth < 768) {
+  // Default center all objects in canvas
+  [character, hat, chain].forEach(obj => {
+    if (obj.img.complete && obj.img.src) {
+      const w = obj.img.width * obj.scale;
+      const h = obj.img.height * obj.scale;
+      obj.x = (canvas.width - w) / 2;
+      obj.y = (canvas.height - h) / 2;
+    }
+  });
+}  
     drawCanvas();
   }
 }
@@ -1534,9 +1558,20 @@ function setupDragAndResize(obj) {
   canvas.addEventListener("wheel", (e) => {
     if (!dragging) return;
     e.preventDefault();
-    dragging.scale += e.deltaY < 0 ? 0.05 : -0.05;
-    dragging.scale = Math.max(0.2, Math.min(2.5, dragging.scale));
-    drawCanvas();
+   
+   // 🔧 Desktop scroll to scale
+let zoomStep = 0.02; // 👈 Smaller, smoother zoom increments
+canvas.addEventListener("wheel", (e) => {
+  if (!dragging) return;
+  e.preventDefault();
+
+  // Scale up or down based on wheel direction
+  dragging.scale += e.deltaY < 0 ? zoomStep : -zoomStep;
+
+  // Clamp to more flexible range
+  dragging.scale = Math.max(0.05, Math.min(4.0, dragging.scale)); // 👈 More flexible
+
+  drawCanvas();
   });
 }
 
