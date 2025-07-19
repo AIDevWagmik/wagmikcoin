@@ -804,13 +804,6 @@ canvas {
   }
 }
 
-@media (max-width: 768px) {
-  .console-container {
-    overscroll-behavior: contain;
-    touch-action: manipulation; /* allows input while preventing scroll gestures */
-  }
-}
-
 input, select, textarea, button {
   touch-action: manipulation !important;
 }
@@ -828,19 +821,26 @@ input, select, textarea, button {
     align-items: center;
     max-height: unset;
     overflow-y: auto;
+    padding-bottom: 80px;
+    overscroll-behavior: contain;
+    touch-action: manipulation; /* allows input while preventing scroll gestures */
   }
 
   .console-controls {
     position: relative;
-    margin-bottom: 12px;
+    margin-bottom: 0;
     z-index: 2;
   }
 
   #memeCanvas {
     touch-action: none;
-    margin-top: 0;
+    margin-top: 0 auto 16px auto;
     display: block;
     z-index: 1;
+    max-width: 100%;
+    height: auto;
+    box-sizing: border-box;
+    touch-action: none;
   }
 
   canvas {
@@ -894,12 +894,6 @@ input, select, textarea, button {
     touch-action: none;
   }
 
-  #memeCanvas {
-    margin-top: 12px;
-    display: block;
-    touch-action: none;
-  }
-
   .lore-toggle-btn {
     display: block;
   }
@@ -932,28 +926,9 @@ body, html {
     padding-bottom: 24px; /* 🩹 Make room for canvas */
   }
 
-  #memeCanvas {
-    margin-bottom: 16px; /* 👟 Give canvas breathing room */
-  }
-
   .console-container {
     padding-bottom: 24px; /* extra scroll space on small viewports */
     box-sizing: border-box;
-  }
-}
-
-@media (max-width: 768px) {
-  #memeCanvas {
-    display: block;
-    margin: 16px auto 80px auto; /* bottom space to prevent cut-off */
-    max-width: 100%;
-    height: auto;
-    box-sizing: border-box;
-  }
-
-  .console-container {
-    padding-bottom: 100px; /* ⬅️ room for canvas + buttons */
-    overflow-y: auto;
   }
 }
 
