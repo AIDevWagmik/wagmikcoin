@@ -744,12 +744,6 @@ canvas#memeCanvas {
   pointer-events: auto;
 }
 
- #mememodal {
-  overflow-y: auto;
-  max-height: 90vh;
-  -webkit-overflow-scrolling: touch;
-  }
-
 .app-logo {
   width: 44px;
   height: 44px;
@@ -798,17 +792,19 @@ canvas {
 }
 
 #jupiter-container {
-  position: fixed !important;
-  left: 10px !important;
-  right: auto !important;       /* <-- This is important */
-  bottom: 60px !important;
-  width: 90vw !important;
-  max-width: 384px !important;
-  height: 600px !important;
-  max-height: 75vh !important;
-  z-index: 998 !important;
-  border-radius: 16px !important;
-  overflow: hidden !important;
+  position: fixed !important;
+  bottom: 60px !important;
+  left: 10px !important;
+  right: auto !important;
+  z-index: 1000 !important;
+  width: 384px !important;
+  height: 600px !important;
+  max-height: 75vh !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
 }
 
 :root {
@@ -898,12 +894,6 @@ input, select, textarea, button {
   }
 }
 
-@media (max-width: 768px) {
-  html, body {
-    overscroll-behavior: none;
-    touch-action: none;
-  }
-}
 
 @media (min-width: 768px) {
   .lore-toggle-btn {
@@ -938,6 +928,14 @@ input, select, textarea, button {
   .lore-toggle-btn {
     display: block;
   }
+}
+
+canvas#memeCanvas {
+  touch-action: none; /* allow full drag behavior */
+}
+
+body, html {
+  touch-action: auto !important; /* reset global block if it lingers */
 }
 
   </style>
@@ -1295,7 +1293,7 @@ function toggleMeme() {
       position: "fixed",
       left: "10px",
       bottom: "60px",
-      zIndex: 9999,
+      zIndex: 1000,
       width: "384px",
       height: "600px",
       borderRadius: "16px",
@@ -1355,6 +1353,28 @@ function toggleMeme() {
 // --- Canvas Setup ---
 const canvas = document.getElementById('memeCanvas');
 const ctx = canvas.getContext('2d');
+
+// Only block gestures if touches are inside canvas bounds
+function shouldBlockCanvasGesture(e) {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.touches[0]?.clientX;
+  const y = e.touches[0]?.clientY;
+  return (
+    x >= rect.left &&
+    x <= rect.right &&
+    y >= rect.top &&
+    y <= rect.bottom
+  );
+}
+
+// ✅ Attach listeners to canvas touch events
+["touchstart", "touchmove", "touchend"].forEach(eventType => {
+  canvas.addEventListener(eventType, (e) => {
+    if (shouldBlockCanvasGesture(e)) {
+      e.preventDefault(); // ⛔ prevent browser from hijacking gesture
+    }
+  }, { passive: false });
+});
 
 const bgSelect = document.getElementById('bgSelect');
 const hatSelect = document.getElementById('hatSelect');
@@ -1510,10 +1530,13 @@ function setupDragAndResize(obj) {
   });
 }
 
-// Prevent mobile scroll + zoom when touching canvas
-canvas.addEventListener("touchstart", e => e.preventDefault(), { passive: false });
-canvas.addEventListener("touchmove", e => e.preventDefault(), { passive: false });
-canvas.addEventListener("touchend", e => e.preventDefault(), { passive: false });
+["touchstart", "touchmove", "touchend"].forEach(eventType => {
+  canvas.addEventListener(eventType, (e) => {
+    if (shouldBlockCanvasGesture(e)) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+});
 
 
 function setupTouchHandlers(obj) {
