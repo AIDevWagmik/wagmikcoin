@@ -1489,7 +1489,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const charVal = characterSelect.value;
 
     const load = (imgObj, val, callback) => {
-      if (val && imgObj.src !== location.origin + '/' + val) {
+      if (val && imgObj.src !== val) {
         imgObj.onload = () => callback(true);
         imgObj.src = val;
       } else {
