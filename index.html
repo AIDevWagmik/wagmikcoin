@@ -1278,6 +1278,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const bottomTextInput = document.getElementById('bottomText');
   const rotationSlider = document.getElementById("rotationSlider");
   const sliderWrapper = document.getElementById("rotationSliderWrapper");
+ 
+  console.log({ bgSelect, hatSelect, chainSelect, characterSelect });
 
   let selectedObj = null;
   let activeTouchObj = null;
@@ -1503,13 +1505,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Setup input bindings
-  [bgSelect, hatSelect, chainSelect, characterSelect].forEach(el =>
-    el.addEventListener('change', drawMeme)
-  );
+  [bgSelect, hatSelect, chainSelect, characterSelect].forEach(el => {
+  if (el) el.addEventListener('change', drawMeme);
+});
 
-  [topTextInput, bottomTextInput].forEach(el =>
-    el.addEventListener('input', drawCanvas)
-  );
+  [topTextInput, bottomTextInput].forEach(el => {
+  if (el) el.addEventListener('input', drawCanvas);
+});
 
   topTextInput.addEventListener("touchstart", () => {
     setTimeout(() => topTextInput.focus(), 50);
