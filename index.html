@@ -1569,8 +1569,10 @@ function setupTouchHandlers(obj) {
 
   initialDist = Math.hypot(dx, dy);
   initialAngle = Math.atan2(dy, dx);
+
   initialScale = obj.scale;
-  initialRotation = obj.rotation;
+  initialRotation = obj.rotation; // ✅ Use current rotation here
+  obj.gestureActive = true;
 
   const rect = canvas.getBoundingClientRect();
   const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
@@ -1622,7 +1624,9 @@ function setupTouchHandlers(obj) {
 
   canvas.addEventListener('touchend', () => {
     obj.dragging = false; active = false;
-    if (activeTouchObj === obj) activeTouchObj = null;
+    if (activeTouchObj === obj) {
+    activeTouchObj.gestureActive = false;
+    activeTouchObj = null;
   }, { passive: false });
 }
 
