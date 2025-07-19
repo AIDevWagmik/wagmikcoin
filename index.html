@@ -791,10 +791,6 @@ canvas {
   }
 }
 
-#jupiter-container {
-  z-index: 1000;
-}
-
 @media (max-width: 768px) {
   .console-controls .button-row button:nth-child(1), /* Preview */
   .console-controls .button-row button:nth-child(2)  /* Download */ {
@@ -1289,24 +1285,27 @@ function toggleMeme() {
 }
   </script>
 
-  <script>
-
- window.Jupiter.init({
-  displayMode: "widget",
-  widgetStyle: {
-    position: "bottom-left",  // ✅ THIS controls position now
-    size: "default"
-  },
-  formProps: {
-    fixedMint: "So11111111111111111111111111111111111111112"
-  },
-  container: document.getElementById("jupiter-container"),
-  containerStyles: {
-    zIndex: 1000  // ✅ only this needed here
-  }
+ <script>
+window.Jupiter.init({
+  displayMode: "widget",
+  widgetStyle: {
+    position: "bottom-left",
+    size: "default"
+  },
+  endpoint: "https://api.mainnet-beta.solana.com",
+  formProps: { fixedMint: "So11111111111111111111111111111111111111112" },
+  containerStyles: {
+    zIndex: 1000,
+    borderRadius: "16px",
+    overflow: "hidden"
+  },
+  onSuccess: (e) => console.log("swapped", e),
+  onSwapError: (e) => console.log("error", e)
 });
+</script>
 
 <script>
+
 // --- Modal Toggles ---
 function toggleLore() {
   document.getElementById('loreModal').classList.toggle('active');
@@ -1443,16 +1442,16 @@ function maybeDrawAll() {
     allAssetsReady = true;
 
   if (window.innerWidth < 768) {
-  // Default center all objects in canvas
-  [character, hat, chain].forEach(obj => {
-    if (obj.img.complete && obj.img.src) {
-      const w = obj.img.width * obj.scale;
-      const h = obj.img.height * obj.scale;
-      obj.x = (canvas.width - w) / 2;
-      obj.y = (canvas.height - h) / 2;
-    }
-  });
-}  
+  [character, hat, chain].forEach(obj => {
+    if (obj.img.complete && obj.img.src) {
+      const w = obj.img.width * obj.scale, h = obj.img.height * obj.scale;
+      obj.x = (canvas.width - w)/2;
+      obj.y = (canvas.height - h)/2;
+      obj.initialScale = obj.scale;
+      obj.initialRotation = obj.rotation;
+    }
+  });
+}
     drawCanvas();
   }
 }
@@ -1537,20 +1536,16 @@ function setupDragAndResize(obj) {
     });
   });
 
-   // 🔧 Desktop scroll to scale
-let zoomStep = 0.02; // 👈 Smaller, smoother zoom increments
-canvas.addEventListener("wheel", (e) => {
-  if (!dragging) return;
-  e.preventDefault();
-
-  // Scale up or down based on wheel direction
-  dragging.scale += e.deltaY < 0 ? zoomStep : -zoomStep;
-
-  // Clamp to more flexible range
-  dragging.scale = Math.max(0.05, Math.min(4.0, dragging.scale)); // 👈 More flexible
-
-  drawCanvas();
+  canvas.addEventListener("wheel", (e) => {
+  if (!dragging) return;
+  e.preventDefault();
+  
+  const zoomStep = 0.02; // smooth desktop zoom
+  dragging.scale += e.deltaY < 0 ? zoomStep : -zoomStep;
+  dragging.scale = Math.max(0.05, Math.min(4.0, dragging.scale));
+  drawCanvas();
   });
+}
 
 ["touchstart", "touchmove", "touchend"].forEach(eventType => {
   canvas.addEventListener(eventType, (e) => {
