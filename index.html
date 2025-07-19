@@ -1462,7 +1462,7 @@ function setupDragAndResize(obj) {
     const { left, top } = canvas.getBoundingClientRect();
     const mx = e.clientX - left;
     const my = e.clientY - top;
-    [hat, chain, character].forEach(item => {
+    [character, chain, hat].forEach(item => {
       const w = item.img.width * item.scale;
       const h = item.img.height * item.scale;
       if (isInside(mx, my, item.x, item.y, w, h)) {
