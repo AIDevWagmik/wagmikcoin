@@ -744,6 +744,12 @@ canvas#memeCanvas {
   pointer-events: auto;
 }
 
+ #mememodal {
+  overflow-y: auto;
+  max-height: 90vh;
+  -webkit-overflow-scrolling: touch;
+  }
+
 .app-logo {
   width: 44px;
   height: 44px;
@@ -1442,7 +1448,7 @@ function drawCanvas() {
   const top = topTextInput.value.toUpperCase();
   const bot = bottomTextInput.value.toUpperCase();
   if (top) { ctx.fillText(top, canvas.width / 2, 40); ctx.strokeText(top, canvas.width / 2, 40); }
-  if (bot) { ctx.fillText(bot, canvas.width / 2, canvas.height - 20); ctx.strokeText(bot, canvas.width / 2, canvas.height - 20); }
+  if (bot) { ctx.fillText(bot, canvas.width / 2, canvas.height - 40); ctx.strokeText(bot, canvas.width / 2, canvas.height - 40); }
 }
 
 function resetMeme() {
