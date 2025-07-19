@@ -499,23 +499,24 @@ footer {
   }
 
     /* Modal Base */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(20, 10, 40, 0.92);
-      backdrop-filter: blur(6px);
-      z-index: 1000;
-      padding: 40px 20px;
-      overflow-y: auto;
-      box-sizing: border-box;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
+   .modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  max-height: 100vh; /* ✅ NEW */
+  background: rgba(20, 10, 40, 0.92);
+  backdrop-filter: blur(6px);
+  z-index: 1000;
+  padding: 40px 20px;
+  overflow-y: auto;
+  box-sizing: border-box; /* ✅ NEW */
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
 
     .modal.active {
   z-index: 9999;
@@ -800,11 +801,11 @@ canvas {
   width: 384px !important;
   height: 600px !important;
   max-height: 75vh !important;
-  border-radius: 16px !important;
   overflow: hidden !important;
   margin: 0 !important;
   padding: 0 !important;
   transform: none !important;
+  display: block !important;
 }
 
 :root {
@@ -936,6 +937,15 @@ canvas#memeCanvas {
 
 body, html {
   touch-action: auto !important; /* reset global block if it lingers */
+}
+
+@media (max-width: 768px) {
+  .modal.active {
+    max-height: 100vh !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column;
+  }
 }
 
   </style>
@@ -1290,15 +1300,16 @@ function toggleMeme() {
     defaultInputMint: "So11111111111111111111111111111111111111112",
     defaultOutputMint: "Es9vMFrzaCERBzDJbNUcGMXyQpBwwxXSwrZ4GdVYz5r9",
     containerStyles: {
-      position: "fixed",
-      left: "10px",
-      bottom: "60px",
-      zIndex: 1000,
-      width: "384px",
-      height: "600px",
-      borderRadius: "16px",
-      overflow: "hidden"
-    }
+       position: "fixed",
+       left: "10px",            // ✅ Ensures it's left aligned
+       right: "auto",           // ✅ Prevents default right alignment
+       bottom: "60px",
+       zIndex: 1000,            // ✅ Keep below floating buttons
+       width: "384px",
+       height: "600px",
+       borderRadius: "16px",
+       overflow: "hidden"
+}
   });
 </script>
 
