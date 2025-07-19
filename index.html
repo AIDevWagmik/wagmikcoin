@@ -942,6 +942,21 @@ body, html {
   }
 }
 
+@media (max-width: 768px) {
+  #memeCanvas {
+    display: block;
+    margin: 16px auto 80px auto; /* bottom space to prevent cut-off */
+    max-width: 100%;
+    height: auto;
+    box-sizing: border-box;
+  }
+
+  .console-container {
+    padding-bottom: 100px; /* ⬅️ room for canvas + buttons */
+    overflow-y: auto;
+  }
+}
+
   </style>
   
   <script src="https://terminal.jup.ag/main-v4.js"></script>
@@ -1292,15 +1307,16 @@ window.Jupiter.init({
     position: "bottom-left",
     size: "default"
   },
-  endpoint: "https://api.mainnet-beta.solana.com",
-  formProps: { fixedMint: "So11111111111111111111111111111111111111112" },
-  containerStyles: {
-    zIndex: 1000,
-    borderRadius: "16px",
-    overflow: "hidden"
+  formProps: {
+    fixedMint: "So11111111111111111111111111111111111111112"
   },
-  onSuccess: (e) => console.log("swapped", e),
-  onSwapError: (e) => console.log("error", e)
+  endpoint: "https://api.mainnet-beta.solana.com",
+  containerStyles: {
+    zIndex: 99999, // 🔼 highest layer
+    borderRadius: "16px",
+    overflow: "hidden",
+    boxShadow: "0 0 16px rgba(0, 0, 0, 0.5)" // optional polish
+  }
 });
 </script>
 
@@ -1591,13 +1607,32 @@ function setupTouchHandlers(obj) {
       drawCanvas();
     }
     if (e.touches.length === 2 && activeTouchObj === obj) {
-      const dx = e.touches[1].clientX - e.touches[0].clientX;
-      const dy = e.touches[1].clientY - e.touches[0].clientY;
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+
+      const dx = touch1.clientX - touch2.clientX;
+      const dy = touch1.clientY - touch2.clientY;
       const newDist = Math.hypot(dx, dy);
       const newAngle = Math.atan2(dy, dx);
-      obj.scale = Math.max(0.2, Math.min(2.5, initialScale * newDist / initialDist));
-      obj.rotation = initialRotation + (newAngle - initialAngle);
-      drawCanvas();
+
+      // Apply scale and rotation
+     const minScale = window.innerWidth < 768 ? 0.05 : 0.2; // Allow smaller zoom on mobile
+     const maxScale = 2.5;
+     
+     activeTouchObj.scale = Math.max(minScale, Math.min(maxScale, initialScale * newDist / initialDist));
+     activeTouchObj.rotation = initialRotation + (newAngle - initialAngle);
+
+     // ✅ RECENTER around midpoint during gesture
+     const centerX = (touch1.clientX + touch2.clientX) / 2;
+     const centerY = (touch1.clientY + touch2.clientY) / 2;
+
+     const w = activeTouchObj.img.width * activeTouchObj.scale;
+     const h = activeTouchObj.img.height * activeTouchObj.scale;
+
+     activeTouchObj.x = centerX - w / 2;
+     activeTouchObj.y = centerY - h / 2;
+
+drawCanvas();
     }
   }, { passive: false });
 
