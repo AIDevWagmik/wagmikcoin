@@ -1627,8 +1627,8 @@ function setupTouchHandlers(obj) {
     if (activeTouchObj === obj) {
     activeTouchObj.gestureActive = false;
     activeTouchObj = null;
-  }, { passive: false });
 }
+   }, { passive: false });
 
 [hat, chain, character].forEach(obj => {
   setupDragAndResize(obj);
