@@ -205,7 +205,7 @@ html, body {
   .floating-lore {
     position: absolute;
     top: -60px;
-    right: 40px;
+    right: 15px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -228,7 +228,7 @@ html, body {
     border-radius: 16px;
     display: inline-block;
     backdrop-filter: blur(4px);
-    max-width: 280px;
+    max-width: 220px;
     word-wrap: break-word;
     white-space: normal;
     text-shadow:
@@ -792,20 +792,7 @@ canvas {
 }
 
 #jupiter-container {
-  position: fixed !important;
-  left: 10px !important;
-  right: auto !important;
-  bottom: 60px !important;
-  width: 384px !important;
-  height: 600px !important;
-  max-height: 75vh !important;
-  z-index: 1000 !important;
-  border-radius: 16px !important;
-  overflow: hidden !important;
-  display: block !important;
-  margin: 0 !important;
-  transform: none !important;
-  pointer-events: auto !important;
+  z-index: 1000;
 }
 
 @media (max-width: 768px) {
@@ -1302,27 +1289,22 @@ function toggleMeme() {
 }
   </script>
 
- <script>
-  window.Jupiter.init({
-    displayMode: "widget",
-    defaultExplorer: "Solscan",
-    formProps: {
-      fixedMint: "So11111111111111111111111111111111111111112"
-    },
-    container: document.getElementById("jupiter-container"),
-    containerStyles: {
-      position: "fixed",
-      left: "10px",
-      bottom: "60px",
-      right: "auto",
-      zIndex: 1000,
-      width: "384px",
-      height: "600px",
-      borderRadius: "16px",
-      overflow: "hidden"
-    }
-  });
-</script>
+  <script>
+
+ window.Jupiter.init({
+  displayMode: "widget",
+  widgetStyle: {
+    position: "bottom-left",  // ✅ THIS controls position now
+    size: "default"
+  },
+  formProps: {
+    fixedMint: "So11111111111111111111111111111111111111112"
+  },
+  container: document.getElementById("jupiter-container"),
+  containerStyles: {
+    zIndex: 1000  // ✅ only this needed here
+  }
+});
 
 <script>
 // --- Modal Toggles ---
@@ -1555,10 +1537,6 @@ function setupDragAndResize(obj) {
     });
   });
 
-  canvas.addEventListener("wheel", (e) => {
-    if (!dragging) return;
-    e.preventDefault();
-   
    // 🔧 Desktop scroll to scale
 let zoomStep = 0.02; // 👈 Smaller, smoother zoom increments
 canvas.addEventListener("wheel", (e) => {
@@ -1573,7 +1551,6 @@ canvas.addEventListener("wheel", (e) => {
 
   drawCanvas();
   });
-}
 
 ["touchstart", "touchmove", "touchend"].forEach(eventType => {
   canvas.addEventListener(eventType, (e) => {
