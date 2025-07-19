@@ -498,25 +498,24 @@ footer {
     }
   }
 
-    /* Modal Base */
-   .modal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  max-height: 100vh; /* ✅ NEW */
-  background: rgba(20, 10, 40, 0.92);
-  backdrop-filter: blur(6px);
-  z-index: 1000;
-  padding: 40px 20px;
-  overflow-y: auto;
-  box-sizing: border-box; /* ✅ NEW */
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
+   /* Modal Base */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(20, 10, 40, 0.92);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      padding: 40px 20px;
+      overflow-y: auto;
+      box-sizing: border-box;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
 
     .modal.active {
   z-index: 9999;
