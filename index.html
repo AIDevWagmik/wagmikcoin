@@ -1122,9 +1122,9 @@ input, select, textarea, button {
 
       <!-- 🧠 Stylish Buttons -->
       <div class="button-row">
-        <button onclick="drawMeme()" class="console-btn">Preview</button>
-        <button onclick="downloadMeme()" class="console-btn">Download</button>
-        <button onclick="resetMeme()" class="console-btn">Reset</button>
+        <button id="drawButton" class="console-btn">Preview</button>
+        <button id="downloadButton" class="console-btn">Download</button>
+        <button id="resetButton" class="console-btn">Reset</button>
       </div>
     </div>
 
@@ -1456,7 +1456,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupDragAndTouch(obj);
   });
 
-  window.resetMeme = function () {
+  window.resetMeme = function resetMeme () {
     bgSelect.value = "";
     hatSelect.value = "";
     chainSelect.value = "";
@@ -1473,14 +1473,14 @@ document.addEventListener("DOMContentLoaded", () => {
     drawMeme();
   }
 
-  window.downloadMeme = function () {
+  window.downloadMeme = function downloadMeme () {
     const link = document.createElement('a');
     link.download = 'meme.png';
     link.href = canvas.toDataURL();
     link.click();
   }
 
-  window.function drawMeme() {
+  window.drawMeme = function draMeme () {
     allAssetsReady = false;
     hatLoaded = chainLoaded = charLoaded = false;
 
@@ -1540,6 +1540,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initial draw
   drawMeme();
 });
+
+document.getElementById("drawButton").addEventListener("click", drawMeme);
+document.getElementById("downloadButton").addEventListener("click", downloadMeme);
+document.getElementById("resetButton").addEventListener("click", resetMeme);
+
 </script>
 
  <script>
