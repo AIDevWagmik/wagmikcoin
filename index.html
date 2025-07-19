@@ -1264,6 +1264,27 @@ function toggleMeme() {
 }
   </script>
 
+  <script>
+  window.Jupiter.init({
+    displayMode: "widget",
+    endpoint: "https://api.mainnet-beta.solana.com",
+    container: document.getElementById("jupiter-container"),
+    defaultExplorer: "Solscan",
+    defaultInputMint: "So11111111111111111111111111111111111111112",
+    defaultOutputMint: "Es9vMFrzaCERBzDJbNUcGMXyQpBwwxXSwrZ4GdVYz5r9",
+    containerStyles: {
+      position: "fixed",
+      left: "10px",
+      bottom: "60px",
+      zIndex: 9999,
+      width: "384px",
+      height: "600px",
+      borderRadius: "16px",
+      overflow: "hidden"
+    }
+  });
+</script>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   // --- Canvas Setup ---
@@ -1548,27 +1569,6 @@ document.getElementById("resetButton").addEventListener("click", resetMeme);
  
 });
 
-</script>
-
- <script>
-  window.Jupiter.init({
-    displayMode: "widget",
-    endpoint: "https://api.mainnet-beta.solana.com",
-    container: document.getElementById("jupiter-container"),
-    defaultExplorer: "Solscan",
-    defaultInputMint: "So11111111111111111111111111111111111111112",
-    defaultOutputMint: "Es9vMFrzaCERBzDJbNUcGMXyQpBwwxXSwrZ4GdVYz5r9",
-    containerStyles: {
-      position: "fixed",
-      left: "10px",
-      bottom: "60px",
-      zIndex: 9999,
-      width: "384px",
-      height: "600px",
-      borderRadius: "16px",
-      overflow: "hidden"
-    }
-  });
 </script>
 
  </body>
