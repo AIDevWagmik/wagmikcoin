@@ -1447,6 +1447,9 @@ function maybeDrawAll() {
   }
 }
 
+let activeTouchObj = null;
+let active = false;
+
 function drawCanvas() {
   if (!allAssetsReady) return;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1547,20 +1550,24 @@ function setupDragAndResize(obj) {
 });
 
 function setupTouchHandlers(obj) {
-  let active = false;
   let initialDist = 0, initialScale = obj.scale;
   let initialAngle = 0, initialRotation = obj.rotation;
 
   canvas.addEventListener('touchstart', (e) => {
+    const rect = canvas.getBoundingClientRect();
+
     if (e.touches.length === 1) {
-      const rect = canvas.getBoundingClientRect();
       const x = e.touches[0].clientX - rect.left;
       const y = e.touches[0].clientY - rect.top;
       const w = obj.img.width * obj.scale;
       const h = obj.img.height * obj.scale;
 
-      if (x >= obj.x && x <= obj.x + w && y >= obj.y && y <= obj.y + h) {
+      if (
+        x >= obj.x && x <= obj.x + w &&
+        y >= obj.y && y <= obj.y + h
+      ) {
         obj.dragging = true;
+        activeTouchObj = obj;
         active = true;
       }
     }
@@ -1568,41 +1575,54 @@ function setupTouchHandlers(obj) {
     if (e.touches.length === 2) {
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
-      const dx = touch2.clientX - touch1.clientX;
-      const dy = touch2.clientY - touch1.clientY;
 
-      initialDist = Math.hypot(dx, dy);
-      initialAngle = Math.atan2(dy, dx);
-      initialScale = obj.scale;
-      initialRotation = obj.rotation;
-
-      const rect = canvas.getBoundingClientRect();
       const centerX = (touch1.clientX + touch2.clientX) / 2;
       const centerY = (touch1.clientY + touch2.clientY) / 2;
 
       const w = obj.img.width * obj.scale;
       const h = obj.img.height * obj.scale;
 
-      const objCenterX = obj.x + w / 2;
-      const objCenterY = obj.y + h / 2;
+      const x = obj.x;
+      const y = obj.y;
 
-      obj.offsetX = objCenterX - (centerX - rect.left);
-      obj.offsetY = objCenterY - (centerY - rect.top);
-      obj.gestureActive = true;
+      // Only trigger gesture if center is inside object bounds
+      if (
+        centerX >= rect.left + x &&
+        centerX <= rect.left + x + w &&
+        centerY >= rect.top + y &&
+        centerY <= rect.top + y + h
+      ) {
+        activeTouchObj = obj;
+        obj.gestureActive = true;
+
+        const dx = touch2.clientX - touch1.clientX;
+        const dy = touch2.clientY - touch1.clientY;
+
+        initialDist = Math.hypot(dx, dy);
+        initialAngle = Math.atan2(dy, dx);
+        initialScale = obj.scale;
+        initialRotation = obj.rotation;
+
+        const objCenterX = x + w / 2;
+        const objCenterY = y + h / 2;
+
+        obj.offsetX = objCenterX - centerX + rect.left;
+        obj.offsetY = objCenterY - centerY + rect.top;
+      }
     }
   }, { passive: false });
 
   canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
 
-    if (active && obj.dragging && e.touches.length === 1) {
+    if (active && obj === activeTouchObj && obj.dragging && e.touches.length === 1) {
       const rect = canvas.getBoundingClientRect();
       obj.x = e.touches[0].clientX - rect.left - (obj.img.width * obj.scale) / 2;
       obj.y = e.touches[0].clientY - rect.top - (obj.img.height * obj.scale) / 2;
       drawCanvas();
     }
 
-    if (e.touches.length === 2 && obj.gestureActive) {
+    if (e.touches.length === 2 && obj === activeTouchObj && obj.gestureActive) {
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
       const dx = touch2.clientX - touch1.clientX;
@@ -1619,24 +1639,26 @@ function setupTouchHandlers(obj) {
 
       const centerX = (touch1.clientX + touch2.clientX) / 2;
       const centerY = (touch1.clientY + touch2.clientY) / 2;
-      const rect = canvas.getBoundingClientRect();
 
       const w = obj.img.width * obj.scale;
       const h = obj.img.height * obj.scale;
 
-      obj.x = centerX - rect.left - w / 2 + obj.offsetX;
-      obj.y = centerY - rect.top - h / 2 + obj.offsetY;
+      obj.x = centerX - w / 2 + obj.offsetX - rect.left;
+      obj.y = centerY - h / 2 + obj.offsetY - rect.top;
 
       drawCanvas();
     }
   }, { passive: false });
 
   canvas.addEventListener('touchend', () => {
-    obj.dragging = false;
-    active = false;
-    obj.gestureActive = false;
+    if (obj === activeTouchObj) {
+      obj.dragging = false;
+      obj.gestureActive = false;
+      active = false;
+      activeTouchObj = null;
+    }
   }, { passive: false });
- }
+}
 
 [hat, chain, character].forEach(obj => {
   setupDragAndResize(obj);
