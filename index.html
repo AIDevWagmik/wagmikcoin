@@ -1488,15 +1488,27 @@ function drawCanvas() {
   if (bg && bg.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
   fixedDrawOrder.forEach(obj => {
-    if (!obj.img.src) return;
-    const w = obj.img.width * obj.scale;
-    const h = obj.img.height * obj.scale;
-    ctx.save();
-    ctx.translate(obj.x + w / 2, obj.y + h / 2);
-    ctx.rotate(obj.rotation);
-    ctx.drawImage(obj.img, -w / 2, -h / 2, w, h);
-    ctx.restore();
-  });
+  if (!obj.img.src) return;
+
+  const w = obj.img.width * obj.scale;
+  const h = obj.img.height * obj.scale;
+
+  ctx.save();
+  ctx.translate(obj.x + w / 2, obj.y + h / 2);
+  ctx.rotate(obj.rotation);
+  ctx.drawImage(obj.img, -w / 2, -h / 2, w, h);
+
+  // ✅ Mobile-only highlight
+  if (window.innerWidth < 768 && obj === activeTouchObj) {
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 4]); // dashed effect
+    ctx.strokeRect(-w / 2, -h / 2, w, h);
+    ctx.setLineDash([]); // reset pattern
+  }
+
+  ctx.restore();
+});
 
   ctx.textBaseline = 'top'; // add this
   ctx.font = '28px Impact, sans-serif';
