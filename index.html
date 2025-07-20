@@ -1021,7 +1021,7 @@ body, html {
 <!-- Jupiter Swap Section -->
 <section class="section">
   <h2>🛒 Use Jupiter to Buy $WAGMIK</h2>
-  <button onclick="openJupiterModal()">Launch Swap Modal</button>
+  <div id="jupiter-terminal"></div>
 </section>
  
 <section class="tokenomics-section">
@@ -1285,20 +1285,26 @@ function toggleMeme() {
 }
   </script>
 
- <script>
-  function openJupiterModal() {
-    window.Jupiter.openModal({
-      defaultExplorer: "SolanaFM",
-      endpoint: "https://api.mainnet-beta.solana.com",
-      defaultInputMint: "So11111111111111111111111111111111111111112",
-      defaultOutputMint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", // Replace this
-      containerStyles: {
-        zIndex: 99999
-      }
-    });
-  }
+<script>
+  window.Jupiter.init({
+    displayMode: "integrated",
+    integratedTargetId: "jupiter-terminal", // 👈 attaches to your div
+    endpoint: "https://api.mainnet-beta.solana.com",
+    formProps: {
+      fixedOutputMint: "EPjFWdd5AufqSSqeM2qN1xzxybapC8G4wEGGkZwyTDt1", // ⬅️ Replace with actual WAGMIK mint
+      initialAmount: "1"
+    },
+    containerStyles: {
+      width: "100%",
+      maxWidth: "400px",
+      margin: "0 auto",
+      borderRadius: "12px",
+      zIndex: 9999,
+      boxShadow: "0 0 12px rgba(0,0,0,0.3)",
+      overflow: "hidden"
+    }
+  });
 </script>
-
 
 <script>
 
