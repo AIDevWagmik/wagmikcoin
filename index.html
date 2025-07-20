@@ -939,6 +939,8 @@ body, html {
  </head>
  
  <body>
+
+  <div id="jupiter-container"></div>
   
 <header>
   <h1>$WAGMIK</h1>
@@ -1173,8 +1175,6 @@ body, html {
     <img src="photon.png" alt="Photon" class="app-logo" />
   </a>
 </div>
-
-<div id="jupiter-container"></div>
   
   <footer>
    Made with memes, madness, and moon math ✨
@@ -1289,6 +1289,7 @@ function toggleMeme() {
  <script>
 window.Jupiter.init({
   displayMode: "widget",
+  container: "#jupiter-container",
   widgetStyle: {
     position: "bottom-left",
     size: "default"
@@ -1563,59 +1564,56 @@ function setupDragAndResize(obj) {
   }, { passive: false });
 });
 
-let lockedObj = null;
-
 function setupTouchHandlers(obj) {
   let initialDist = 0, initialScale = obj.scale;
   let initialAngle = 0, initialRotation = obj.rotation;
 
-  canvas.addEventListener('touchstart', (e) => {
-  const rect = canvas.getBoundingClientRect();
-  const x = e.touches[0].clientX - rect.left;
-  const y = e.touches[0].clientY - rect.top;
-  const w = obj.img.width * obj.scale;
-  const h = obj.img.height * obj.scale;
+ canvas.addEventListener('touchstart', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.touches[0].clientX - rect.left;
+  const y = e.touches[0].clientY - rect.top;
+  const w = obj.img.width * obj.scale;
+  const h = obj.img.height * obj.scale;
 
-  const isTouched = (
-    x >= obj.x && x <= obj.x + w &&
-    y >= obj.y && y <= obj.y + h
-  );
+  const isTouched = (
+    x >= obj.x && x <= obj.x + w &&
+    y >= obj.y && y <= obj.y + h
+  );
 
-  if (!isTouched && e.touches.length === 1) return; // prevent false lock
+  // Only lock if touch actually hits this object
+  if (e.touches.length === 1 && isTouched) {
+    if (!lockedObj || lockedObj === obj) {
+      lockedObj = obj;
+      obj.dragging = true;
+      activeTouchObj = obj;
+    } else {
+      return; // another object is locked
+    }
+  }
 
-  if (!lockedObj || lockedObj === obj) {
-    lockedObj = obj;
-  } else {
-    return;
-  }
+  // Two-finger gestures
+  if (e.touches.length === 2 && (!lockedObj || lockedObj === obj)) {
+    lockedObj = obj;
+    obj.gestureActive = true;
+    const [t1, t2] = [e.touches[0], e.touches[1]];
+    const dx = t2.clientX - t1.clientX;
+    const dy = t2.clientY - t1.clientY;
 
-    if (e.touches.length === 2) {
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
-      const dx = touch2.clientX - touch1.clientX;
-      const dy = touch2.clientY - touch1.clientY;
+    initialDist = Math.hypot(dx, dy);
+    initialAngle = Math.atan2(dy, dx);
+    initialScale = obj.scale;
+    initialRotation = obj.rotation;
 
-      initialDist = Math.hypot(dx, dy);
-      initialAngle = Math.atan2(dy, dx);
-      initialScale = obj.scale;
-      initialRotation = obj.rotation;
+    const centerX = (t1.clientX + t2.clientX) / 2;
+    const centerY = (t1.clientY + t2.clientY) / 2;
 
-      const rect = canvas.getBoundingClientRect();
-      const centerX = (touch1.clientX + touch2.clientX) / 2;
-      const centerY = (touch1.clientY + touch2.clientY) / 2;
+    const objCenterX = obj.x + w / 2;
+    const objCenterY = obj.y + h / 2;
 
-      const w = obj.img.width * obj.scale;
-      const h = obj.img.height * obj.scale;
-
-      const objCenterX = obj.x + w / 2;
-      const objCenterY = obj.y + h / 2;
-
-      obj.offsetX = objCenterX - (centerX - rect.left);
-      obj.offsetY = objCenterY - (centerY - rect.top);
-      activeTouchObj = obj;
-      obj.gestureActive = true;
-    }
-  }, { passive: false });
+    obj.offsetX = objCenterX - (centerX - rect.left);
+    obj.offsetY = objCenterY - (centerY - rect.top);
+  }
+}, { passive: false });
 
   canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
@@ -1661,7 +1659,7 @@ function setupTouchHandlers(obj) {
     obj.dragging = false;
     obj.gestureActive = false;
     activeTouchObj = null;
-    
+    lockedObj = null;
   }
  }, { passive: false });
 }
