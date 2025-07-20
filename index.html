@@ -1398,11 +1398,9 @@ let selectedTouchTarget = null;
 let hatLoaded = false, chainLoaded = false, charLoaded = false;
 let allAssetsReady = false;
 
-const hat = { img: new Image(), x: 0, y: 0, scale: 0.7, dragging: false, rotation: 0 };
-const chain = { img: new Image(), x: 0, y: 0, scale: 0.8, dragging: false, rotation: 0 };
-const character = { img: new Image(), x: 0, y: 0, scale: 1.0, dragging: false, rotation: 0 };
-
-const fixedDrawOrder = [character, chain, hat];
+const hats = [];
+const chains = [];
+const characters = [];
 
 const backgrounds = {
   "bg-trading.png": new Image(),
@@ -1442,9 +1440,38 @@ function drawMeme() {
     }
   };
 
-  load(hat.img, hatVal, (v) => { hatLoaded = v; maybeDrawAll(); });
-  load(chain.img, chainVal, (v) => { chainLoaded = v; maybeDrawAll(); });
-  load(character.img, charVal, (v) => { charLoaded = v; maybeDrawAll(); });
+createAccessory('hat', el.value, 0.7); // Adjust scale for each
+createAccessory('chain', el.value, 0.8);
+createAccessory('character', el.value, 1.0);
+}
+
+function createAccessory(type, imgSrc, scale = 1.0) {
+  const img = new Image();
+  img.src = imgSrc;
+
+  const obj = {
+    img,
+    x: 0,
+    y: 0,
+    scale,
+    rotation: 0,
+    dragging: false,
+    gestureActive: false,
+    offsetX: 0,
+    offsetY: 0,
+    initialScale: scale,
+    initialRotation: 0,
+  };
+
+  // Push to correct array
+  if (type === 'hat') hats.push(obj);
+  if (type === 'chain') chains.push(obj);
+  if (type === 'character') characters.push(obj);
+
+  setupDragAndResize(obj);
+  setupTouchHandlers(obj);
+
+  img.onload = drawCanvas;
 }
 
 function maybeDrawAll() {
@@ -1478,16 +1505,16 @@ function drawCanvas() {
   const bg = backgrounds[bgSelect.value];
   if (bg && bg.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
-  fixedDrawOrder.forEach(obj => {
-  if (!obj.img.src) return;
+ [...characters, ...chains, ...hats].forEach(obj => {
+  if (!obj.img || !obj.img.src) return;
 
-  const w = obj.img.width * obj.scale;
-  const h = obj.img.height * obj.scale;
+  const w = obj.img.width * obj.scale;
+  const h = obj.img.height * obj.scale;
 
-  ctx.save();
-  ctx.translate(obj.x + w / 2, obj.y + h / 2);
-  ctx.rotate(obj.rotation);
-  ctx.drawImage(obj.img, -w / 2, -h / 2, w, h);
+  ctx.save();
+  ctx.translate(obj.x + w / 2, obj.y + h / 2);
+  ctx.rotate(obj.rotation);
+  ctx.drawImage(obj.img, -w / 2, -h / 2, w, h);
 
   // ✅ Mobile-only highlight
   if (window.innerWidth < 768 && obj === activeTouchObj) {
@@ -1515,10 +1542,13 @@ function drawCanvas() {
 }
 
 function resetMeme() {
-  [bgSelect, hatSelect, chainSelect, characterSelect].forEach(sel => sel.value = "");
-  topTextInput.value = bottomTextInput.value = "";
-  hat.img.src = chain.img.src = character.img.src = "";
-  drawMeme();
+  hats.length = 0;
+  chains.length = 0;
+  characters.length = 0;
+  activeTouchObj = null;
+  lockedObj = null;
+  selectedTouchTarget = null;
+  drawCanvas();
 }
 
 function isInside(mx, my, x, y, w, h) {
