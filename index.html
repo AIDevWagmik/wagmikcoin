@@ -932,28 +932,13 @@ body, html {
   }
 }
 
- #jupiter-container {
-  position: fixed !important;
-  bottom: 24px;
-  left: 16px;
-  z-index: 99999 !important;
-  pointer-events: auto;
-}
-
-@media (max-width: 768px) {
-  #jupiter-container {
-    bottom: 80px; /* Raise it above bottom buttons */
-    left: 12px;
-  }
-}   
-
   </style>
-  
-  <script src="https://terminal.jup.ag/main-v4.js"></script>
   
  </head>
  
  <body>
+
+  <div id="jupiter-container"></div>
   
 <header>
   <h1>$WAGMIK</h1>
@@ -1300,26 +1285,20 @@ function toggleMeme() {
   </script>
 
  <script>
-  
-window.Jupiter.init({
-  displayMode: "widget",
-  widgetStyle: {
-    position: "bottom-left",
-    size: "default"
-  },
-  formProps: {
-    fixedMint: "So11111111111111111111111111111111111111112"
-  },
-  endpoint: "https://api.mainnet-beta.solana.com",
-  container: "#jupiter-container", // ✅ This tells it to mount inside your div
-  containerStyles: {
-    zIndex: 99999,
-    borderRadius: "16px",
-    overflow: "hidden",
-    boxShadow: "0 0 16px rgba(0, 0, 0, 0.5)"
-  }
-});
-
+  window.Jupiter.init({
+    displayMode: "widget",
+    widgetStyle: { position: "bottom-left", size: "default" },
+    endpoint: "https://api.mainnet-beta.solana.com",
+    // Ensures widget container uses your div
+    integratedTargetId: "jupiter-container", // optional but safe
+    containerStyles: {
+      zIndex: 99999,
+      position: "fixed",     // keep it on top
+      bottom: "16px",        // spacing from bottom
+      left: "16px",          // spacing from left
+      overflow: "visible"
+    }
+  });
 </script>
 
 <script>
@@ -1710,8 +1689,6 @@ function setupTouchHandlers(obj) {
 [bgSelect, hatSelect, chainSelect, characterSelect].forEach(el => el.addEventListener('change', drawMeme));
 [topTextInput, bottomTextInput].forEach(el => el.addEventListener('input', drawCanvas));
 </script>
-
- <div id="jupiter-container"></div>
 
  </body>
 </html>
