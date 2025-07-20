@@ -1570,22 +1570,24 @@ function setupTouchHandlers(obj) {
   let initialAngle = 0, initialRotation = obj.rotation;
 
   canvas.addEventListener('touchstart', (e) => {
-    if (lockedObj && lockedObj !== obj) return;
-   
-    lockedObj = obj;
-   
-    if (e.touches.length === 1) {
-      const rect = canvas.getBoundingClientRect();
-      const x = e.touches[0].clientX - rect.left;
-      const y = e.touches[0].clientY - rect.top;
-      const w = obj.img.width * obj.scale;
-      const h = obj.img.height * obj.scale;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.touches[0].clientX - rect.left;
+  const y = e.touches[0].clientY - rect.top;
+  const w = obj.img.width * obj.scale;
+  const h = obj.img.height * obj.scale;
 
-      if (x >= obj.x && x <= obj.x + w && y >= obj.y && y <= obj.y + h) {
-        obj.dragging = true;
-        activeTouchObj = obj;
-      }
-    }
+  const isTouched = (
+    x >= obj.x && x <= obj.x + w &&
+    y >= obj.y && y <= obj.y + h
+  );
+
+  if (!isTouched && e.touches.length === 1) return; // prevent false lock
+
+  if (!lockedObj || lockedObj === obj) {
+    lockedObj = obj;
+  } else {
+    return;
+  }
 
     if (e.touches.length === 2) {
       const touch1 = e.touches[0];
@@ -1659,7 +1661,7 @@ function setupTouchHandlers(obj) {
     obj.dragging = false;
     obj.gestureActive = false;
     activeTouchObj = null;
-    lockedObj = null;
+    
   }
  }, { passive: false });
 }
