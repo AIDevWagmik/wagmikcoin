@@ -1623,12 +1623,18 @@ function setupTouchHandlers(obj) {
   }, { passive: false });
 
   canvas.addEventListener('touchend', () => {
-    obj.dragging = false; active = false;
-    if (activeTouchObj === obj) {
+  obj.dragging = false;
+  active = false;
+
+  if (activeTouchObj === obj) {
+    // ✅ Update state for next gesture
+    obj.initialScale = obj.scale;
+    obj.initialRotation = obj.rotation;
+
     activeTouchObj.gestureActive = false;
     activeTouchObj = null;
-}
-   }, { passive: false });
+  }
+}, { passive: false });
 
 [hat, chain, character].forEach(obj => {
   setupDragAndResize(obj);
