@@ -1473,14 +1473,9 @@ function createAccessory(type, imgSrc, scale = 1.0) {
 }
 
 function drawCanvas() {
-  const bg = backgrounds[bgSelect.value];
-  const hasObjects = [...hats, ...chains, ...characters].some(obj => obj.img && obj.img.src);
-
-  // ✅ Only skip drawing if no background AND no objects
-  if (!bgSelect.value && !hasObjects) return;
-
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  const bg = backgrounds[bgSelect.value];
   if (bg && bg.complete) {
     ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
   }
@@ -1710,6 +1705,7 @@ function setupTouchHandlers(obj) {
 });
 
 [bgSelect, hatSelect, chainSelect, characterSelect].forEach(el => el.addEventListener('change', drawMeme));
+bgSelect.addEventListener('change', drawCanvas);
 [topTextInput, bottomTextInput].forEach(el => el.addEventListener('input', drawCanvas));
 </script>
 
