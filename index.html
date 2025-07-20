@@ -1552,6 +1552,8 @@ function setupTouchHandlers(obj) {
   let initialAngle = 0, initialRotation = obj.rotation;
 
   canvas.addEventListener('touchstart', (e) => {
+    if (activeTouchObj && activeTouchObj !== obj) return;
+   
     if (e.touches.length === 1) {
       const rect = canvas.getBoundingClientRect();
       const x = e.touches[0].clientX - rect.left;
@@ -1632,10 +1634,12 @@ function setupTouchHandlers(obj) {
   }, { passive: false });
 
   canvas.addEventListener('touchend', () => {
+  if (obj === activeTouchObj) {
     obj.dragging = false;
-    active = false;
     obj.gestureActive = false;
-  }, { passive: false });
+    activeTouchObj = null;
+  }
+ }, { passive: false });
 }
 
 [hat, chain, character].forEach(obj => {
