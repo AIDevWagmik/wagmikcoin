@@ -1548,102 +1548,81 @@ function setupDragAndResize(obj) {
 
 
 function setupTouchHandlers(obj) {
-  let active = false;
-  let initialDist = 0, initialScale = obj.scale;
-  let initialAngle = 0, initialRotation = obj.rotation;
+  let activeTouchObj = null;
+  let initialScale = 1, initialRotation = 0, initialDist = 0, initialAngle = 0;
+  let offsetX = 0, offsetY = 0;
 
-  canvas.addEventListener('touchstart', (e) => {
-  if (e.touches.length === 1) {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.touches[0].clientX - rect.left;
-    const y = e.touches[0].clientY - rect.top;
+canvas.addEventListener('touchstart', (e) => {
+  if (e.touches.length === 1) {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.touches[0].clientX - rect.left;
+    const y = e.touches[0].clientY - rect.top;
 
-    [character, hat, chain].forEach(obj => {
-      const w = obj.img.width * obj.scale;
-      const h = obj.img.height * obj.scale;
+    [character, hat, chain].forEach(obj => {
+      const w = obj.img.width * obj.scale;
+      const h = obj.img.height * obj.scale;
+      if (
+        x >= obj.x && x <= obj.x + w &&
+        y >= obj.y && y <= obj.y + h
+      ) {
+        activeTouchObj = obj;
+        obj.dragging = true;
+        active = true;
+        offsetX = x - obj.x;
+        offsetY = y - obj.y;
+      }
+    });
+  }
 
-      if (
-        x >= obj.x && x <= obj.x + w &&
-        y >= obj.y && y <= obj.y + h
-      ) {
-        obj.dragging = true;
-        activeTouchObj = obj;
-        active = true;
-      }
-    });
-  }
+  if (e.touches.length === 2 && activeTouchObj) {
+    const dx = e.touches[1].clientX - e.touches[0].clientX;
+    const dy = e.touches[1].clientY - e.touches[0].clientY;
 
-  if (e.touches.length === 2 && activeTouchObj) {
-    const dx = e.touches[1].clientX - e.touches[0].clientX;
-    const dy = e.touches[1].clientY - e.touches[0].clientY;
-    initialDist = Math.hypot(dx, dy);
-    initialAngle = Math.atan2(dy, dx);
-
-    activeTouchObj.initialScale = activeTouchObj.scale;
-    activeTouchObj.initialRotation = activeTouchObj.rotation;
-    activeTouchObj.gestureActive = true;
-
-    const rect = canvas.getBoundingClientRect();
-    const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-    const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-
-    const w = activeTouchObj.img.width * activeTouchObj.scale;
-    const h = activeTouchObj.img.height * activeTouchObj.scale;
-
-    activeTouchObj.offsetX = activeTouchObj.x - (centerX - rect.left - w / 2);
-    activeTouchObj.offsetY = activeTouchObj.y - (centerY - rect.top - h / 2);
-  }
+    initialDist = Math.hypot(dx, dy);
+    initialAngle = Math.atan2(dy, dx);
+    initialScale = activeTouchObj.scale;
+    initialRotation = activeTouchObj.rotation;
+  }
 }, { passive: false });
 
-  canvas.addEventListener('touchmove', (e) => {
-  e.preventDefault();
+canvas.addEventListener('touchmove', (e) => {
+  e.preventDefault();
 
-  if (active && activeTouchObj && activeTouchObj.dragging && e.touches.length === 1) {
-    const rect = canvas.getBoundingClientRect();
-    activeTouchObj.x = e.touches[0].clientX - rect.left - (activeTouchObj.img.width * activeTouchObj.scale) / 2;
-    activeTouchObj.y = e.touches[0].clientY - rect.top - (activeTouchObj.img.height * activeTouchObj.scale) / 2;
-    drawCanvas();
-  }
+  if (!activeTouchObj) return;
 
-  if (e.touches.length === 2 && activeTouchObj?.gestureActive) {
-    const touch1 = e.touches[0];
-    const touch2 = e.touches[1];
+  const rect = canvas.getBoundingClientRect();
 
-    const dx = touch1.clientX - touch2.clientX;
-    const dy = touch1.clientY - touch2.clientY;
-    const newDist = Math.hypot(dx, dy);
-    const newAngle = Math.atan2(dy, dx);
+  if (e.touches.length === 1 && activeTouchObj.dragging) {
+    const x = e.touches[0].clientX - rect.left;
+    const y = e.touches[0].clientY - rect.top;
+    activeTouchObj.x = x - offsetX;
+    activeTouchObj.y = y - offsetY;
+    drawCanvas();
+  }
 
-    const minScale = window.innerWidth < 768 ? 0.05 : 0.2;
-    const maxScale = 2.5;
+  if (e.touches.length === 2) {
+    const dx = e.touches[1].clientX - e.touches[0].clientX;
+    const dy = e.touches[1].clientY - e.touches[0].clientY;
+    const newDist = Math.hypot(dx, dy);
+    const newAngle = Math.atan2(dy, dx);
 
-    activeTouchObj.scale = Math.max(minScale, Math.min(maxScale, activeTouchObj.initialScale * newDist / initialDist));
-    activeTouchObj.rotation = activeTouchObj.initialRotation + (newAngle - initialAngle);
+    const minScale = window.innerWidth < 768 ? 0.05 : 0.2;
+    const maxScale = 2.5;
 
-    const centerX = (touch1.clientX + touch2.clientX) / 2;
-    const centerY = (touch1.clientY + touch2.clientY) / 2;
-    const rect = canvas.getBoundingClientRect();
+    activeTouchObj.scale = Math.max(minScale, Math.min(maxScale, initialScale * newDist / initialDist));
+    activeTouchObj.rotation = initialRotation + (newAngle - initialAngle);
 
-    const w = activeTouchObj.img.width * activeTouchObj.scale;
-    const h = activeTouchObj.img.height * activeTouchObj.scale;
-
-    activeTouchObj.x = centerX - rect.left - w / 2 + activeTouchObj.offsetX;
-    activeTouchObj.y = centerY - rect.top - h / 2 + activeTouchObj.offsetY;
-
-    drawCanvas();
-  }
+    drawCanvas();
+  }
 }, { passive: false });
 
-  canvas.addEventListener('touchend', () => {
-  if (activeTouchObj) {
-    activeTouchObj.dragging = false;
-    activeTouchObj.gestureActive = false;
-    activeTouchObj.initialScale = activeTouchObj.scale;
-    activeTouchObj.initialRotation = activeTouchObj.rotation;
-    activeTouchObj = null;
-  }
-  active = false;
- }, { passive: false });
+canvas.addEventListener('touchend', () => {
+  if (activeTouchObj) {
+    activeTouchObj.dragging = false;
+    active = false;
+    activeTouchObj = null;
+  }
+}, { passive: false });
 }
 
 [hat, chain, character].forEach(obj => {
