@@ -1403,6 +1403,7 @@ const sliderWrapper = document.getElementById("rotationSliderWrapper");
 let selectedObj = null;
 let activeTouchObj = null;
 let lockedObj = null;
+let selectedTouchTarget = null;
 let hatLoaded = false, chainLoaded = false, charLoaded = false;
 let allAssetsReady = false;
 
@@ -1459,16 +1460,22 @@ function maybeDrawAll() {
   if (hatLoaded && chainLoaded && charLoaded) {
     allAssetsReady = true;
 
-  if (window.innerWidth < 768) {
-  [character, hat, chain].forEach(obj => {
-    if (obj.img.complete && obj.img.src) {
-      const w = obj.img.width * obj.scale, h = obj.img.height * obj.scale;
-      obj.x = (canvas.width - w)/2;
-      obj.y = (canvas.height - h)/2;
-      obj.initialScale = obj.scale;
-      obj.initialRotation = obj.rotation;
-    }
-  });
+ if (window.innerWidth < 768) {
+  [character, hat, chain].forEach(obj => {
+    if (
+      obj.img.complete &&
+      obj.img.src &&
+      obj.x === 0 &&
+      obj.y === 0
+    ) {
+      const w = obj.img.width * obj.scale;
+      const h = obj.img.height * obj.scale;
+      obj.x = (canvas.width - w) / 2;
+      obj.y = (canvas.height - h) / 2;
+      obj.initialScale = obj.scale;
+      obj.initialRotation = obj.rotation;
+    }
+  });
 }
     drawCanvas();
   }
@@ -1592,11 +1599,14 @@ function setupTouchHandlers(obj) {
     // 🟢 One-finger drag start
     if (e.touches.length === 1 && isTouched) {
       if (!lockedObj || lockedObj === obj) {
-        lockedObj = obj;
-        obj.dragging = true;
-        activeTouchObj = obj;
-      }
-    }
+      if (selectedTouchTarget && selectedTouchTarget !== obj) return;
+      selectedTouchTarget = obj;
+
+      lockedObj = obj;
+      obj.dragging = true;
+      activeTouchObj = obj;
+    }
+   }
 
     // 🟢 Two-finger gesture start
     if (e.touches.length === 2 && (!lockedObj || lockedObj === obj)) {
@@ -1668,6 +1678,7 @@ function setupTouchHandlers(obj) {
       obj.gestureActive = false;
       activeTouchObj = null;
       lockedObj = null;
+      selectedTouchTarget = null;
     }
   }, { passive: false });
 }
