@@ -1382,6 +1382,7 @@ const sliderWrapper = document.getElementById("rotationSliderWrapper");
 
 let selectedObj = null;
 let activeTouchObj = null;
+let active = false; 
 let hatLoaded = false, chainLoaded = false, charLoaded = false;
 let allAssetsReady = false;
 
@@ -1446,9 +1447,6 @@ function maybeDrawAll() {
     drawCanvas();
   }
 }
-
-let activeTouchObj = null;
-let active = false;
 
 function drawCanvas() {
   if (!allAssetsReady) return;
