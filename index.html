@@ -1402,6 +1402,7 @@ const sliderWrapper = document.getElementById("rotationSliderWrapper");
 
 let selectedObj = null;
 let activeTouchObj = null;
+let lockedObj = null;
 let hatLoaded = false, chainLoaded = false, charLoaded = false;
 let allAssetsReady = false;
 
@@ -1576,57 +1577,57 @@ function setupTouchHandlers(obj) {
   let initialDist = 0, initialScale = obj.scale;
   let initialAngle = 0, initialRotation = obj.rotation;
 
- canvas.addEventListener('touchstart', (e) => {
-  const rect = canvas.getBoundingClientRect();
-  const x = e.touches[0].clientX - rect.left;
-  const y = e.touches[0].clientY - rect.top;
-  const w = obj.img.width * obj.scale;
-  const h = obj.img.height * obj.scale;
+  canvas.addEventListener('touchstart', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.touches[0].clientX - rect.left;
+    const y = e.touches[0].clientY - rect.top;
+    const w = obj.img.width * obj.scale;
+    const h = obj.img.height * obj.scale;
 
-  const isTouched = (
-    x >= obj.x && x <= obj.x + w &&
-    y >= obj.y && y <= obj.y + h
-  );
+    const isTouched = (
+      x >= obj.x && x <= obj.x + w &&
+      y >= obj.y && y <= obj.y + h
+    );
 
-  // Only lock if touch actually hits this object
-  if (e.touches.length === 1 && isTouched) {
-    if (!lockedObj || lockedObj === obj) {
-      lockedObj = obj;
-      obj.dragging = true;
-      activeTouchObj = obj;
-    } else {
-      return; // another object is locked
-    }
-  }
+    // 🟢 One-finger drag start
+    if (e.touches.length === 1 && isTouched) {
+      if (!lockedObj || lockedObj === obj) {
+        lockedObj = obj;
+        obj.dragging = true;
+        activeTouchObj = obj;
+      }
+    }
 
-  // Two-finger gestures
-  if (e.touches.length === 2 && (!lockedObj || lockedObj === obj)) {
-    lockedObj = obj;
-    obj.gestureActive = true;
-    const [t1, t2] = [e.touches[0], e.touches[1]];
-    const dx = t2.clientX - t1.clientX;
-    const dy = t2.clientY - t1.clientY;
+    // 🟢 Two-finger gesture start
+    if (e.touches.length === 2 && (!lockedObj || lockedObj === obj)) {
+      lockedObj = obj;
+      obj.gestureActive = true;
+      activeTouchObj = obj; // ✅ critical so move events work
 
-    initialDist = Math.hypot(dx, dy);
-    initialAngle = Math.atan2(dy, dx);
-    initialScale = obj.scale;
-    initialRotation = obj.rotation;
+      const [t1, t2] = [e.touches[0], e.touches[1]];
+      const dx = t2.clientX - t1.clientX;
+      const dy = t2.clientY - t1.clientY;
 
-    const centerX = (t1.clientX + t2.clientX) / 2;
-    const centerY = (t1.clientY + t2.clientY) / 2;
+      initialDist = Math.hypot(dx, dy);
+      initialAngle = Math.atan2(dy, dx);
+      initialScale = obj.scale;
+      initialRotation = obj.rotation;
 
-    const objCenterX = obj.x + w / 2;
-    const objCenterY = obj.y + h / 2;
+      const centerX = (t1.clientX + t2.clientX) / 2;
+      const centerY = (t1.clientY + t2.clientY) / 2;
 
-    obj.offsetX = objCenterX - (centerX - rect.left);
-    obj.offsetY = objCenterY - (centerY - rect.top);
-  }
-}, { passive: false });
+      const objCenterX = obj.x + w / 2;
+      const objCenterY = obj.y + h / 2;
+
+      obj.offsetX = objCenterX - (centerX - rect.left);
+      obj.offsetY = objCenterY - (centerY - rect.top);
+    }
+  }, { passive: false });
 
   canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
 
-    if (obj === activeTouchObj && obj.dragging && e.touches.length === 1) {
+    if (e.touches.length === 1 && obj === activeTouchObj && obj.dragging) {
       const rect = canvas.getBoundingClientRect();
       obj.x = e.touches[0].clientX - rect.left - (obj.img.width * obj.scale) / 2;
       obj.y = e.touches[0].clientY - rect.top - (obj.img.height * obj.scale) / 2;
@@ -1634,8 +1635,7 @@ function setupTouchHandlers(obj) {
     }
 
     if (e.touches.length === 2 && obj === activeTouchObj && obj.gestureActive) {
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
+      const [touch1, touch2] = [e.touches[0], e.touches[1]];
       const dx = touch2.clientX - touch1.clientX;
       const dy = touch2.clientY - touch1.clientY;
 
@@ -1663,13 +1663,13 @@ function setupTouchHandlers(obj) {
   }, { passive: false });
 
   canvas.addEventListener('touchend', () => {
-  if (obj === activeTouchObj) {
-    obj.dragging = false;
-    obj.gestureActive = false;
-    activeTouchObj = null;
-    lockedObj = null;
-  }
- }, { passive: false });
+    if (obj === activeTouchObj) {
+      obj.dragging = false;
+      obj.gestureActive = false;
+      activeTouchObj = null;
+      lockedObj = null;
+    }
+  }, { passive: false });
 }
 
 [hat, chain, character].forEach(obj => {
