@@ -1389,6 +1389,8 @@ const hat = { img: new Image(), x: 0, y: 0, scale: 0.7, dragging: false, rotatio
 const chain = { img: new Image(), x: 0, y: 0, scale: 0.8, dragging: false, rotation: 0 };
 const character = { img: new Image(), x: 0, y: 0, scale: 1.0, dragging: false, rotation: 0 };
 
+let drawOrder = [character, chain, hat];
+
 const backgrounds = {
   "bg-trading.png": new Image(),
   "bg-luxury.png": new Image(),
@@ -1453,7 +1455,7 @@ function drawCanvas() {
   const bg = backgrounds[bgSelect.value];
   if (bg && bg.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
-  [character, chain, hat].forEach(obj => {
+  drawOrder.forEach(obj => {
     if (!obj.img.src) return;
     const w = obj.img.width * obj.scale;
     const h = obj.img.height * obj.scale;
@@ -1563,6 +1565,8 @@ function setupTouchHandlers(obj) {
       if (x >= obj.x && x <= obj.x + w && y >= obj.y && y <= obj.y + h) {
         obj.dragging = true;
         activeTouchObj = obj;
+       // Move selected object to top of draw order
+        drawOrder = drawOrder.filter(o => o !== obj).concat(obj);
       }
     }
 
