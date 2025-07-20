@@ -1087,16 +1087,24 @@ body, html {
         <option value="bg-degen.png">Degen House</option>
         <option value="casino.png">Casino</option>
         <option value="jet.png">Jet</option>
+        <option value="Liberty.png">Liberty Statue</option>
+        <option value="GTA 6.png">GTA 6</option>
+        <option value="dubai.png">Dubai</option>
+        <option value="Office.png">Office</option>
       </select>
 
       <select id="hatSelect">
         <option value="">None</option>
         <option value="wagmik-hat.png">WAGMIK Hat</option>
+        <option value="WAGMIK-mask.png">WAGMIK Mask</option>
         <option value="bonk-hat.png">BONK Hat</option>
-        <option value="degen-hat.png">DEGEN Hat</option>
-        <option value="pepe-hat.png">PEPE Hat</option>
         <option value="bonk-hat2.png">BONK Hat2</option>
-        <option value="degen-hat2.png">Degen Hat2</option>
+        <option value="bonk-mask.png">BONK Mask</option>
+        <option value="degen-hat.png">DEGEN Hat</option>
+        <option value="degen-hat2.png">DEGEN Hat2</option>
+        <option value="pepe-hat.png">PEPE Hat</option>
+        <option value="Pepe-mask.png">PEPE Mask</option>
+        <option value="tom-mask.png">TOM Mask</option>
       </select>
 
       <select id="chainSelect">
@@ -1113,6 +1121,9 @@ body, html {
         <option value="pepe.png">Pepe</option>
         <option value="wolf.png">Wolf</option>
         <option value="wolf-rich.png">Wolf Rich</option>
+        <option value="ansem.png">Ansem</option>
+        <option value="mert">Mert</option>
+        <option value="bossman">Bossman</option>
       </select>
 
      <input autocapitalize="off" autocomplete="off" id="topText" inputmode="text" placeholder="Top Text" tabindex="0" type="text"/>
@@ -1389,7 +1400,7 @@ const hat = { img: new Image(), x: 0, y: 0, scale: 0.7, dragging: false, rotatio
 const chain = { img: new Image(), x: 0, y: 0, scale: 0.8, dragging: false, rotation: 0 };
 const character = { img: new Image(), x: 0, y: 0, scale: 1.0, dragging: false, rotation: 0 };
 
-let drawOrder = [character, chain, hat];
+const fixedDrawOrder = [character, chain, hat];
 
 const backgrounds = {
   "bg-trading.png": new Image(),
@@ -1397,6 +1408,10 @@ const backgrounds = {
   "bg-degen.png": new Image(),
   "casino.png": new Image(),
   "jet.png": new Image()
+  "Liberty.png": new Image()
+  "GTA 6.png": new Image()
+  "dubai.png": new Image()
+  "Office.png": new Image()
 };
 
 Object.keys(backgrounds).forEach(key => backgrounds[key].src = key);
@@ -1455,7 +1470,7 @@ function drawCanvas() {
   const bg = backgrounds[bgSelect.value];
   if (bg && bg.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
-  drawOrder.forEach(obj => {
+  fixedDrawOrder.forEach(obj => {
     if (!obj.img.src) return;
     const w = obj.img.width * obj.scale;
     const h = obj.img.height * obj.scale;
@@ -1548,12 +1563,16 @@ function setupDragAndResize(obj) {
   }, { passive: false });
 });
 
+let lockedObj = null;
+
 function setupTouchHandlers(obj) {
   let initialDist = 0, initialScale = obj.scale;
   let initialAngle = 0, initialRotation = obj.rotation;
 
   canvas.addEventListener('touchstart', (e) => {
-    if (activeTouchObj && activeTouchObj !== obj) return;
+    if (lockedObj && lockedObj !== obj) return;
+   
+    lockedObj = obj;
    
     if (e.touches.length === 1) {
       const rect = canvas.getBoundingClientRect();
@@ -1565,8 +1584,6 @@ function setupTouchHandlers(obj) {
       if (x >= obj.x && x <= obj.x + w && y >= obj.y && y <= obj.y + h) {
         obj.dragging = true;
         activeTouchObj = obj;
-       // Move selected object to top of draw order
-        drawOrder = drawOrder.filter(o => o !== obj).concat(obj);
       }
     }
 
@@ -1642,6 +1659,7 @@ function setupTouchHandlers(obj) {
     obj.dragging = false;
     obj.gestureActive = false;
     activeTouchObj = null;
+    lockedObj = null;
   }
  }, { passive: false });
 }
