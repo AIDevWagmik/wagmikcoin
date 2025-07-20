@@ -1395,8 +1395,6 @@ let selectedObj = null;
 let activeTouchObj = null;
 let lockedObj = null;
 let selectedTouchTarget = null;
-let hatLoaded = false, chainLoaded = false, charLoaded = false;
-let allAssetsReady = false;
 
 const hats = [];
 const chains = [];
@@ -1474,33 +1472,8 @@ function createAccessory(type, imgSrc, scale = 1.0) {
   img.onload = drawCanvas;
 }
 
-function maybeDrawAll() {
-  if (hatLoaded && chainLoaded && charLoaded) {
-    allAssetsReady = true;
-
- if (window.innerWidth < 768) {
-  [character, hat, chain].forEach(obj => {
-    if (
-      obj.img.complete &&
-      obj.img.src &&
-      obj.x === 0 &&
-      obj.y === 0
-    ) {
-      const w = obj.img.width * obj.scale;
-      const h = obj.img.height * obj.scale;
-      obj.x = (canvas.width - w) / 2;
-      obj.y = (canvas.height - h) / 2;
-      obj.initialScale = obj.scale;
-      obj.initialRotation = obj.rotation;
-    }
-  });
-}
-    drawCanvas();
-  }
-}
-
 function drawCanvas() {
-  if (!allAssetsReady) return;
+  if (![...hats, ...chains, ...characters].some(obj => obj.img && obj.img.src)) return;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const bg = backgrounds[bgSelect.value];
   if (bg && bg.complete) ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
