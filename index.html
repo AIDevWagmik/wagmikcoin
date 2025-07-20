@@ -1552,6 +1552,8 @@ function setupTouchHandlers(obj) {
   let initialAngle = 0, initialRotation = obj.rotation;
 
   canvas.addEventListener('touchstart', (e) => {
+   if (activeTouchObj && activeTouchObj !== obj) return;
+
     const rect = canvas.getBoundingClientRect();
 
     if (e.touches.length === 1) {
