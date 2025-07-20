@@ -1473,13 +1473,18 @@ function createAccessory(type, imgSrc, scale = 1.0) {
 }
 
 function drawCanvas() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const bg = backgrounds[bgSelect.value];
+  const hasObjects = [...hats, ...chains, ...characters].some(obj => obj.img && obj.img.src);
 
-const bg = backgrounds[bgSelect.value];
-if (bg && bg.complete) {
-  ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
-}
+  // ✅ Only skip drawing if no background AND no objects
+  if (!bgSelect.value && !hasObjects) return;
 
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (bg && bg.complete) {
+    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+  }
+ 
  [...characters, ...chains, ...hats].forEach(obj => {
   if (!obj.img || !obj.img.src) return;
 
@@ -1517,17 +1522,21 @@ if (bg && bg.complete) {
 }
 
 function resetMeme() {
-  hats.length = 0;
-  chains.length = 0;
-  characters.length = 0;
+  hats.length = 0;
+  chains.length = 0;
+  characters.length = 0;
 
-  selectedObj = null;
-  activeTouchObj = null;
-  lockedObj = null;
-  selectedTouchTarget = null;
+  // Reset selections
+  hatSelect.value = "";
+  chainSelect.value = "";
+  characterSelect.value = "";
+  bgSelect.value = "";
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height); // clear canvas immediately
-  drawCanvas(); // redraw everything
+  activeTouchObj = null;
+  lockedObj = null;
+  selectedTouchTarget = null;
+
+  drawCanvas();
 }
 
 function isInside(mx, my, x, y, w, h) {
@@ -1573,15 +1582,15 @@ function setupDragAndResize(obj) {
     });
   });
 
-  canvas.addEventListener("wheel", (e) => {
+ canvas.addEventListener("wheel", (e) => {
   if (!dragging) return;
   e.preventDefault();
-  
-  const zoomStep = 0.01; // smooth desktop zoom
-  dragging.scale += e.deltaY < 0 ? zoomStep : -zoomStep;
+
+  const zoomFactor = 1.05;
+  dragging.scale *= e.deltaY < 0 ? zoomFactor : 1 / zoomFactor;
   dragging.scale = Math.max(0.05, Math.min(4.0, dragging.scale));
   drawCanvas();
-  });
+});
 }
 
 ["touchstart", "touchmove", "touchend"].forEach(eventType => {
