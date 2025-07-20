@@ -1716,7 +1716,7 @@ function setupTouchHandlers(obj) {
   }, { passive: false });
 }
 
-[hat, chain, character].forEach(obj => {
+[...hats, ...chains, ...characters].forEach(obj => {
   setupDragAndResize(obj);
   setupTouchHandlers(obj);
 });
