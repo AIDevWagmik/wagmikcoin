@@ -1756,7 +1756,6 @@ function setupTouchHandlers(obj) {
   // ✅ Bind and store
   canvas.addEventListener('touchstart', touchStartHandler, { passive: false });
   obj._touchStartHandler = touchStartHandler;
-}
 
   canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
