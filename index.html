@@ -1552,22 +1552,27 @@ if (window.innerWidth >= 768) {
   if (bot) { ctx.fillText(bot, canvas.width / 2, canvas.height - 40); ctx.strokeText(bot, canvas.width / 2, canvas.height - 40); }
 }
 
-function resetMeme() {
-  hats.length = 0;
-  chains.length = 0;
-  characters.length = 0;
+if (e.touches.length === 1 && obj.deleteBtnBounds) {
+  const touch = e.touches[0];
+  const rect = canvas.getBoundingClientRect();
 
-  // Reset selections
-  hatSelect.value = "";
-  chainSelect.value = "";
-  characterSelect.value = "";
-  bgSelect.value = "";
+  const tx = touch.clientX - rect.left;
+  const ty = touch.clientY - rect.top;
 
-  activeTouchObj = null;
-  lockedObj = null;
-  selectedTouchTarget = null;
+  const { centerX, centerY, size } = obj.deleteBtnBounds;
 
-  drawCanvas();
+  const dx = tx - centerX;
+  const dy = ty - centerY;
+
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  if (distance <= size / 2) {
+    e.preventDefault();
+    selectedObj = obj; // ✅ make sure this is set
+    if (activeTouchObj === obj) activeTouchObj = null;
+    deleteSelectedObject();
+    return;
+  }
 }
 
 function deleteSelectedObject() {
@@ -1660,6 +1665,25 @@ function setupTouchHandlers(obj) {
 
   canvas.addEventListener('touchstart', (e) => {
   const rect = canvas.getBoundingClientRect();
+
+  if (e.touches.length === 1 && obj.deleteBtnBounds) {
+  const touch = e.touches[0];
+  const tx = touch.clientX - rect.left;
+  const ty = touch.clientY - rect.top;
+  const { centerX, centerY, size } = obj.deleteBtnBounds;
+
+  const dx = tx - centerX;
+  const dy = ty - centerY;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  console.log('🟡 Tap at:', tx, ty, '| Distance to center:', distance);
+
+  if (distance <= size / 2) {
+    console.log('✅ TAP inside delete circle for:', obj.img?.src);
+  } else {
+    console.log('❌ Tap missed delete circle');
+  }
+}
 
   // 🔴 Check if tapped X button
   if (e.touches.length === 1 && obj.deleteBtnBounds) {
