@@ -1590,6 +1590,15 @@ function resetMeme() {
 
   drawCanvas();
 
+ // ✅ Reattach dropdown event listeners after canvas reset
+[hatSelect, chainSelect, characterSelect].forEach(el => {
+  el.removeEventListener('change', drawMeme); // prevent duplicates
+  el.addEventListener('change', drawMeme);
+});
+
+bgSelect.removeEventListener('change', drawCanvas);
+bgSelect.addEventListener('change', drawCanvas);
+
  [...hats, ...chains, ...characters].forEach(obj => {
   setupDragAndResize(obj);
   setupTouchHandlers(obj);
