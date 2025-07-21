@@ -1524,10 +1524,12 @@ function drawCanvas() {
 
   // Save position to check on touch
   obj.deleteBtnBounds = {
-  x: obj.x + btnX + 5,  // slight horizontal nudge
-  y: obj.y + btnY + 5,  // slight vertical nudge
-  size: btnSize
-  };
+  x: obj.x + btnX,
+  y: obj.y + btnY,
+  size: btnSize,
+  centerX: obj.x + btnX + btnSize / 2,
+  centerY: obj.y + btnY + btnSize / 2
+ };
 }
 
 if (window.innerWidth >= 768) {
@@ -1661,22 +1663,27 @@ function setupTouchHandlers(obj) {
 
   // 🔴 Check if tapped X button
   if (e.touches.length === 1 && obj.deleteBtnBounds) {
-    const touch = e.touches[0];
-    const { x, y, size } = obj.deleteBtnBounds;
-    const tx = touch.clientX - rect.left;
-    const ty = touch.clientY - rect.top;
+  const touch = e.touches[0];
+  const rect = canvas.getBoundingClientRect();
 
-    const dx = tx - x;
-    const dy = ty - y;
+  const tx = touch.clientX - rect.left;
+  const ty = touch.clientY - rect.top;
 
-  if (Math.sqrt(dx * dx + dy * dy) <= size / 2) {
-  e.preventDefault();
-  selectedObj = obj; // ✅ Set this before deleting
-  if (activeTouchObj === obj) activeTouchObj = null;
-  deleteSelectedObject();
-  return;
+  const { centerX, centerY, size } = obj.deleteBtnBounds;
+
+  const dx = tx - centerX;
+  const dy = ty - centerY;
+
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  if (distance <= size / 2) {
+    e.preventDefault();
+    selectedObj = obj; // ✅ make sure this is set
+    if (activeTouchObj === obj) activeTouchObj = null;
+    deleteSelectedObject();
+    return;
+  }
 }
-  }
 
   const x = e.touches[0].clientX - rect.left;
   const y = e.touches[0].clientY - rect.top;
