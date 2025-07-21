@@ -1092,17 +1092,18 @@ body, html {
         <option value="GTA 6.png">GTA 6</option>
         <option value="dubai.png">Dubai</option>
         <option value="Office.png">Office</option>
+        <option value="elon-meme.png">Elon</option>
       </select>
 
       <select id="hatSelect">
         <option value="">None</option>
         <option value="wagmik-hat.png">WAGMIK Hat</option>
         <option value="WAGMIK-mask.png">WAGMIK Mask</option>
-        <option value="bonk-hat.png">BONK Hat</option>
-        <option value="bonk-hat2.png">BONK Hat2</option>
+        <option value="bonk-hat2.png">BONK Hat</option>
         <option value="bonk-mask.png">BONK Mask</option>
         <option value="degen-hat.png">DEGEN Hat</option>
         <option value="degen-hat2.png">DEGEN Hat2</option>
+        <option value="wif-hat.png">WIF Hat</option>
         <option value="pepe-hat.png">PEPE Hat</option>
         <option value="Pepe-mask.png">PEPE Mask</option>
         <option value="tom-mask.png">TOM Mask</option>
@@ -1113,6 +1114,11 @@ body, html {
         <option value="chain-wagmik.png">WAGMIK Chain</option>
         <option value="chain2.png">Cuban Chain</option>
         <option value="glasses.png">Meme Glasses</option>
+        <option value="bro-look.png">Bro look</option>
+        <option value="god-candle.png">God Candle</option>
+        <option value="wojak.png">Wojak</option>
+        <option value="wojak-mystery.png">Wojak Mystery</option>
+        <option value="wojak-boomer.png">Wojak Boomer</option>
       </select>
 
       <select id="characterSelect">
@@ -1125,6 +1131,9 @@ body, html {
         <option value="ansem.png">Ansem</option>
         <option value="mert">Mert</option>
         <option value="bossman">Bossman</option>
+        <option value="DJ.png">DJ</option>
+        <option value="goku-ui.png">Goku UI</option>
+        <option value="saitama.png">Saitama</option>
       </select>
 
      <input autocapitalize="off" autocomplete="off" id="topText" inputmode="text" placeholder="Top Text" tabindex="0" type="text"/>
@@ -1410,7 +1419,8 @@ const backgrounds = {
   "Liberty.png": new Image(),
   "GTA 6.png": new Image(),
   "dubai.png": new Image(),
-  "Office.png": new Image()
+  "Office.png": new Image(),
+  "elon-meme.png": new Image()
 };
 
 Object.keys(backgrounds).forEach(key => backgrounds[key].src = key);
@@ -1655,12 +1665,13 @@ function setupTouchHandlers(obj) {
     const dx = tx - x;
     const dy = ty - y;
 
-    if (Math.sqrt(dx * dx + dy * dy) <= size / 2) {
-      e.preventDefault();
-      if (activeTouchObj === obj) activeTouchObj = null;
-      deleteSelectedObject();
-      return;
-    }
+   if (Math.sqrt(dx * dx + dy * dy) <= size / 2) {
+  e.preventDefault();
+  selectedObj = obj;
+  if (activeTouchObj === obj) activeTouchObj = null;
+  deleteSelectedObject();
+  return;
+    }
   }
 
   const x = e.touches[0].clientX - rect.left;
@@ -1677,10 +1688,11 @@ function setupTouchHandlers(obj) {
   if (e.touches.length === 1 && isTouched) {
     if (!lockedObj || lockedObj === obj) {
       if (selectedTouchTarget && selectedTouchTarget !== obj) return;
-      selectedTouchTarget = obj;
-      lockedObj = obj;
-      obj.dragging = true;
-      activeTouchObj = obj;
+      selectedObj = obj;
+      selectedTouchTarget = obj;
+      lockedObj = obj;
+      obj.dragging = true;
+      activeTouchObj = obj;
     }
   }
 
