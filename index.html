@@ -1422,54 +1422,38 @@ rotationSlider.addEventListener("input", () => {
 });
 
 function drawMeme() {
-  allAssetsReady = false;
-  hatLoaded = chainLoaded = charLoaded = false;
-
-  const hatVal = hatSelect.value;
-  const chainVal = chainSelect.value;
-  const charVal = characterSelect.value;
-
-  const load = (imgObj, val, callback) => {
-    if (val && imgObj.src !== location.origin + '/' + val) {
-      imgObj.onload = () => { callback(true); };
-      imgObj.src = val;
-    } else {
-      callback(true);
-    }
-  };
-
 createAccessory('hat', hatSelect.value, 0.7);
 createAccessory('chain', chainSelect.value, 0.8);
 createAccessory('character', characterSelect.value, 1.0);
 }
 
 function createAccessory(type, imgSrc, scale = 1.0) {
-  const img = new Image();
-  img.src = imgSrc;
+  // 🧼 Check for existing instance of this imageSrc
+  const targetArray = type === 'hat' ? hats : type === 'chain' ? chains : characters;
+  if (targetArray.some(obj => obj.img.src === imgSrc)) return;
 
-  const obj = {
-    img,
-    x: 0,
-    y: 0,
-    scale,
-    rotation: 0,
-    dragging: false,
-    gestureActive: false,
-    offsetX: 0,
-    offsetY: 0,
-    initialScale: scale,
-    initialRotation: 0,
-  };
+  const img = new Image();
+  img.src = imgSrc;
 
-  // Push to correct array
-  if (type === 'hat') hats.push(obj);
-  if (type === 'chain') chains.push(obj);
-  if (type === 'character') characters.push(obj);
+  const obj = {
+    img,
+    x: 0,
+    y: 0,
+    scale,
+    rotation: 0,
+    dragging: false,
+    gestureActive: false,
+    offsetX: 0,
+    offsetY: 0,
+    initialScale: scale,
+    initialRotation: 0,
+  };
 
-  setupDragAndResize(obj);
-  setupTouchHandlers(obj);
+  targetArray.push(obj);
+  setupDragAndResize(obj);
+  setupTouchHandlers(obj);
 
-  img.onload = drawCanvas;
+  img.onload = drawCanvas;
 }
 
 function drawCanvas() {
