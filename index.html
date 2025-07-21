@@ -1145,6 +1145,7 @@ body, html {
     <div id="rotationSliderWrapper" style="display:none; margin-top: 10px;">
       <label style="color: white;">Rotate</label>
       <input id="rotationSlider" type="range" min="-180" max="180" value="0" />
+      <button id="deleteBtn" style="margin-top: 8px;">🗑 Delete</button>
     </div>
   </div>
 </div>
@@ -1421,6 +1422,8 @@ rotationSlider.addEventListener("input", () => {
   }
 });
 
+document.getElementById('deleteBtn').addEventListener('click', deleteSelectedObject);
+
 function drawMeme() {
   const hatVal = hatSelect.value;
   const chainVal = chainSelect.value;
@@ -1487,15 +1490,40 @@ function drawCanvas() {
   ctx.rotate(obj.rotation);
   ctx.drawImage(obj.img, -w / 2, -h / 2, w, h);
 
-  // ✅ Mobile-only highlight
   if (window.innerWidth < 768 && obj === activeTouchObj) {
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([6, 4]); // dashed effect
-    ctx.strokeRect(-w / 2, -h / 2, w, h);
-    ctx.setLineDash([]); // reset pattern
-  }
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.strokeRect(-w / 2, -h / 2, w, h);
+  ctx.setLineDash([]);
 
+  // Draw ❌ button
+  const btnSize = 24;
+  const btnX = -w / 2 - btnSize / 2;
+  const btnY = -h / 2 - btnSize / 2;
+
+  ctx.fillStyle = 'red';
+  ctx.beginPath();
+  ctx.arc(btnX + btnSize / 2, btnY + btnSize / 2, btnSize / 2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = 'white';
+  ctx.font = '16px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('✕', btnX + btnSize / 2, btnY + btnSize / 2);
+
+  // Save position to check on touch
+  obj.deleteBtnBounds = {
+    x: obj.x + btnX,
+    y: obj.y + btnY,
+    size: btnSize
+  };
+}
+
+if (window.innerWidth >= 768) {
+  delete obj.deleteBtnBounds; // Clean up desktop mode
+}
+ 
   ctx.restore();
 });
 
@@ -1528,6 +1556,24 @@ function resetMeme() {
   selectedTouchTarget = null;
 
   drawCanvas();
+}
+
+function deleteSelectedObject() {
+  if (!selectedObj) return;
+
+  // Remove selectedObj from its corresponding array
+  [hats, chains, characters].forEach(arr => {
+    const index = arr.indexOf(selectedObj);
+    if (index !== -1) arr.splice(index, 1);
+  });
+
+  selectedObj = null;
+  activeTouchObj = null;
+  lockedObj = null;
+  selectedTouchTarget = null;
+
+  sliderWrapper.style.display = 'none'; // hide desktop slider
+  drawCanvas();
 }
 
 function isInside(mx, my, x, y, w, h) {
@@ -1608,6 +1654,24 @@ function setupTouchHandlers(obj) {
       y >= obj.y && y <= obj.y + h
     );
 
+    if (e.touches.length === 1 && obj.deleteBtnBounds) {
+  const touch = e.touches[0];
+  const { x, y, size } = obj.deleteBtnBounds;
+  const rect = canvas.getBoundingClientRect();
+  const tx = touch.clientX - rect.left;
+  const ty = touch.clientY - rect.top;
+
+  const dx = tx - x;
+  const dy = ty - y;
+
+  if (Math.sqrt(dx * dx + dy * dy) <= size / 2) {
+    // Tapped delete circle
+    e.preventDefault();
+    if (activeTouchObj === obj) activeTouchObj = null;
+    deleteSelectedObject();
+    return;
+  }
+}
     // 🟢 One-finger drag start
     if (e.touches.length === 1 && isTouched) {
       if (!lockedObj || lockedObj === obj) {
