@@ -1129,8 +1129,8 @@ body, html {
         <option value="wolf.png">Wolf</option>
         <option value="wolf-rich.png">Wolf Rich</option>
         <option value="ansem.png">Ansem</option>
-        <option value="mert">Mert</option>
-        <option value="bossman">Bossman</option>
+        <option value="mert.png">Mert</option>
+        <option value="bossman.png">Bossman</option>
         <option value="DJ.png">DJ</option>
         <option value="goku-ui.png">Goku UI</option>
         <option value="saitama.png">Saitama</option>
@@ -1665,13 +1665,13 @@ function setupTouchHandlers(obj) {
     const dx = tx - x;
     const dy = ty - y;
 
-   if (Math.sqrt(dx * dx + dy * dy) <= size / 2) {
+  if (Math.sqrt(dx * dx + dy * dy) <= size / 2) {
   e.preventDefault();
-  selectedObj = obj;
+  selectedObj = obj; // ✅ Set this before deleting
   if (activeTouchObj === obj) activeTouchObj = null;
   deleteSelectedObject();
   return;
-    }
+}
   }
 
   const x = e.touches[0].clientX - rect.left;
