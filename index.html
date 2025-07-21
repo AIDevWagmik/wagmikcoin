@@ -1524,10 +1524,10 @@ function drawCanvas() {
 
   // Save position to check on touch
   obj.deleteBtnBounds = {
-    x: obj.x + btnX,
-    y: obj.y + btnY,
-    size: btnSize
-  };
+  x: obj.x + btnX + 5,  // slight horizontal nudge
+  y: obj.y + btnY + 5,  // slight vertical nudge
+  size: btnSize
+  };
 }
 
 if (window.innerWidth >= 768) {
@@ -1569,21 +1569,25 @@ function resetMeme() {
 }
 
 function deleteSelectedObject() {
-  if (!selectedObj) return;
+  if (!selectedObj) {
+    console.log('Nothing selected to delete');  // 🧪 add this too
+    return;
+  }
 
-  // Remove selectedObj from its corresponding array
-  [hats, chains, characters].forEach(arr => {
-    const index = arr.indexOf(selectedObj);
-    if (index !== -1) arr.splice(index, 1);
-  });
+  console.log('Deleted', selectedObj);  // 🧪
 
-  selectedObj = null;
-  activeTouchObj = null;
-  lockedObj = null;
-  selectedTouchTarget = null;
+  [hats, chains, characters].forEach(arr => {
+    const index = arr.indexOf(selectedObj);
+    if (index !== -1) arr.splice(index, 1);
+  });
 
-  sliderWrapper.style.display = 'none'; // hide desktop slider
-  drawCanvas();
+  selectedObj = null;
+  activeTouchObj = null;
+  lockedObj = null;
+  selectedTouchTarget = null;
+
+  sliderWrapper.style.display = 'none';
+  drawCanvas();
 }
 
 function isInside(mx, my, x, y, w, h) {
