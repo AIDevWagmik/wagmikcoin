@@ -1571,7 +1571,12 @@ function resetMeme() {
   selectedTouchTarget = null;
 
   drawCanvas();
-}
+
+ [...hats, ...chains, ...characters].forEach(obj => {
+  setupDragAndResize(obj);
+  setupTouchHandlers(obj);
+  });
+ }
 
 function deleteSelectedObject() {
   if (!selectedObj) return;
