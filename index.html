@@ -1092,18 +1092,17 @@ body, html {
         <option value="GTA 6.png">GTA 6</option>
         <option value="dubai.png">Dubai</option>
         <option value="Office.png">Office</option>
-        <option value="elon-meme.png">Elon</option>
       </select>
 
       <select id="hatSelect">
         <option value="">None</option>
         <option value="wagmik-hat.png">WAGMIK Hat</option>
         <option value="WAGMIK-mask.png">WAGMIK Mask</option>
-        <option value="bonk-hat2.png">BONK Hat</option>
+        <option value="bonk-hat.png">BONK Hat</option>
+        <option value="bonk-hat2.png">BONK Hat2</option>
         <option value="bonk-mask.png">BONK Mask</option>
         <option value="degen-hat.png">DEGEN Hat</option>
         <option value="degen-hat2.png">DEGEN Hat2</option>
-        <option value="wif-hat.png">WIF Hat</option>
         <option value="pepe-hat.png">PEPE Hat</option>
         <option value="Pepe-mask.png">PEPE Mask</option>
         <option value="tom-mask.png">TOM Mask</option>
@@ -1114,11 +1113,6 @@ body, html {
         <option value="chain-wagmik.png">WAGMIK Chain</option>
         <option value="chain2.png">Cuban Chain</option>
         <option value="glasses.png">Meme Glasses</option>
-        <option value="bro-look.png">Bro look</option>
-        <option value="god-candle.png">God Candle</option>
-        <option value="wojak.png">Wojak</option>
-        <option value="wojak-mystery.png">Wojak Mystery</option>
-        <option value="wojak-boomer.png">Wojak Boomer</option>
       </select>
 
       <select id="characterSelect">
@@ -1129,11 +1123,8 @@ body, html {
         <option value="wolf.png">Wolf</option>
         <option value="wolf-rich.png">Wolf Rich</option>
         <option value="ansem.png">Ansem</option>
-        <option value="mert.png">Mert</option>
-        <option value="bossman.png">Bossman</option>
-        <option value="DJ.png">DJ</option>
-        <option value="goku-ui.png">Goku UI</option>
-        <option value="saitama.png">Saitama</option>
+        <option value="mert">Mert</option>
+        <option value="bossman">Bossman</option>
       </select>
 
      <input autocapitalize="off" autocomplete="off" id="topText" inputmode="text" placeholder="Top Text" tabindex="0" type="text"/>
@@ -1419,8 +1410,7 @@ const backgrounds = {
   "Liberty.png": new Image(),
   "GTA 6.png": new Image(),
   "dubai.png": new Image(),
-  "Office.png": new Image(),
-  "elon-meme.png": new Image()
+  "Office.png": new Image()
 };
 
 Object.keys(backgrounds).forEach(key => backgrounds[key].src = key);
@@ -1509,8 +1499,8 @@ function drawCanvas() {
 
   // Draw ❌ button
   const btnSize = 24;
-  const btnX = w - btnSize;
-  const btnY = 0;
+  const btnX = -w / 2 - btnSize / 2;
+  const btnY = -h / 2 - btnSize / 2;
 
   ctx.fillStyle = 'red';
   ctx.beginPath();
@@ -1524,12 +1514,10 @@ function drawCanvas() {
 
   // Save position to check on touch
   obj.deleteBtnBounds = {
-  x: obj.x + btnX,
-  y: obj.y + btnY,
-  size: btnSize,
-  centerX: obj.x + btnX + btnSize / 2,
-  centerY: obj.y + btnY + btnSize / 2
- };
+    x: obj.x + btnX,
+    y: obj.y + btnY,
+    size: btnSize
+  };
 }
 
 if (window.innerWidth >= 768) {
@@ -1550,28 +1538,42 @@ if (window.innerWidth >= 768) {
   const bot = bottomTextInput.value.toUpperCase();
   if (top) { ctx.fillText(top, canvas.width / 2, 40); ctx.strokeText(top, canvas.width / 2, 40); }
   if (bot) { ctx.fillText(bot, canvas.width / 2, canvas.height - 40); ctx.strokeText(bot, canvas.width / 2, canvas.height - 40); }
- }
+}
 
-function deleteSelectedObject() {
-  if (!selectedObj) {
-    console.log('Nothing selected to delete');  // 🧪 add this too
-    return;
-  }
+function resetMeme() {
+  hats.length = 0;
+  chains.length = 0;
+  characters.length = 0;
 
-  console.log('Deleted', selectedObj);  // 🧪
+  // Reset selections
+  hatSelect.value = "";
+  chainSelect.value = "";
+  characterSelect.value = "";
+  bgSelect.value = "";
 
-  [hats, chains, characters].forEach(arr => {
-    const index = arr.indexOf(selectedObj);
-    if (index !== -1) arr.splice(index, 1);
-  });
-
-  selectedObj = null;
   activeTouchObj = null;
   lockedObj = null;
   selectedTouchTarget = null;
 
-  sliderWrapper.style.display = 'none';
   drawCanvas();
+}
+
+function deleteSelectedObject() {
+  if (!selectedObj) return;
+
+  // Remove selectedObj from its corresponding array
+  [hats, chains, characters].forEach(arr => {
+    const index = arr.indexOf(selectedObj);
+    if (index !== -1) arr.splice(index, 1);
+  });
+
+  selectedObj = null;
+  activeTouchObj = null;
+  lockedObj = null;
+  selectedTouchTarget = null;
+
+  sliderWrapper.style.display = 'none'; // hide desktop slider
+  drawCanvas();
 }
 
 function isInside(mx, my, x, y, w, h) {
@@ -1642,40 +1644,39 @@ function setupTouchHandlers(obj) {
 
   canvas.addEventListener('touchstart', (e) => {
   const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
 
-  const tx = touch.clientX - rect.left;
-  const ty = touch.clientY - rect.top;
+  // 🔴 Check if tapped X button
+  if (e.touches.length === 1 && obj.deleteBtnBounds) {
+    const touch = e.touches[0];
+    const { x, y, size } = obj.deleteBtnBounds;
+    const tx = touch.clientX - rect.left;
+    const ty = touch.clientY - rect.top;
 
+    const dx = tx - x;
+    const dy = ty - y;
+
+    if (Math.sqrt(dx * dx + dy * dy) <= size / 2) {
+      e.preventDefault();
+      if (activeTouchObj === obj) activeTouchObj = null;
+      deleteSelectedObject();
+      return;
+    }
+  }
+
+  const x = e.touches[0].clientX - rect.left;
+  const y = e.touches[0].clientY - rect.top;
   const w = obj.img.width * obj.scale;
   const h = obj.img.height * obj.scale;
 
-  const btnSize = 24;
-  const btnX = obj.x + w - btnSize; // ✅ top-right corner
-  const btnY = obj.y;
+  const isTouched = (
+    x >= obj.x && x <= obj.x + w &&
+    y >= obj.y && y <= obj.y + h
+  );
 
-  const centerX = btnX + btnSize / 2;
-  const centerY = btnY + btnSize / 2;
-
-  const dx = tx - centerX;
-  const dy = ty - centerY;
-
-  // 🟥 1. Tap inside ❌?
-  if (Math.sqrt(dx * dx + dy * dy) <= btnSize / 2) {
-    e.preventDefault();
-    selectedObj = obj;
-    deleteSelectedObject();
-    return;
-  }
-
-  // 🟩 2. Regular one-finger drag
-  const isTouched =
-    tx >= obj.x && tx <= obj.x + w &&
-    ty >= obj.y && ty <= obj.y + h;
-
+  // ✅ One-finger drag
   if (e.touches.length === 1 && isTouched) {
     if (!lockedObj || lockedObj === obj) {
-      selectedObj = obj;
+      if (selectedTouchTarget && selectedTouchTarget !== obj) return;
       selectedTouchTarget = obj;
       lockedObj = obj;
       obj.dragging = true;
@@ -1683,8 +1684,12 @@ function setupTouchHandlers(obj) {
     }
   }
 
-  // 🟦 3. Two-finger gesture
+  // ✅ Two-finger pinch/rotate
   if (e.touches.length === 2 && (!lockedObj || lockedObj === obj)) {
+    lockedObj = obj;
+    obj.gestureActive = true;
+    activeTouchObj = obj;
+
     const [t1, t2] = [e.touches[0], e.touches[1]];
     const dx = t2.clientX - t1.clientX;
     const dy = t2.clientY - t1.clientY;
@@ -1696,16 +1701,11 @@ function setupTouchHandlers(obj) {
 
     const centerX = (t1.clientX + t2.clientX) / 2;
     const centerY = (t1.clientY + t2.clientY) / 2;
-
     const objCenterX = obj.x + w / 2;
     const objCenterY = obj.y + h / 2;
 
     obj.offsetX = objCenterX - (centerX - rect.left);
     obj.offsetY = objCenterY - (centerY - rect.top);
-
-    lockedObj = obj;
-    obj.gestureActive = true;
-    activeTouchObj = obj;
   }
 }, { passive: false });
 
@@ -1756,30 +1756,6 @@ function setupTouchHandlers(obj) {
       selectedTouchTarget = null;
     }
   }, { passive: false });
-}
-
-function resetMeme() {
-  // Clear all objects
-  hats.length = 0;
-  chains.length = 0;
-  characters.length = 0;
-
-  // Clear state
-  selectedObj = null;
-  activeTouchObj = null;
-  lockedObj = null;
-  selectedTouchTarget = null;
-
-  // Hide rotation slider
-  sliderWrapper.style.display = 'none';
-
-  // Clear background
-  bgSelect.value = "";
-  drawCanvas();
-
-  // Clear text
-  topTextInput.value = "";
-  bottomTextInput.value = "";
 }
 
 [...hats, ...chains, ...characters].forEach(obj => {
