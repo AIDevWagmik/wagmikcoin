@@ -1509,8 +1509,8 @@ function drawCanvas() {
 
   // Draw ❌ button
   const btnSize = 24;
-  const btnX = -w / 2 - btnSize / 2;
-  const btnY = -h / 2 - btnSize / 2;
+  const btnX = w - btnSize;
+  const btnY = 0;
 
   ctx.fillStyle = 'red';
   ctx.beginPath();
@@ -1642,78 +1642,49 @@ function setupTouchHandlers(obj) {
 
   canvas.addEventListener('touchstart', (e) => {
   const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0];
 
-  if (e.touches.length === 1 && obj.deleteBtnBounds) {
-  const touch = e.touches[0];
-  const tx = touch.clientX - rect.left;
-  const ty = touch.clientY - rect.top;
-  const { centerX, centerY, size } = obj.deleteBtnBounds;
+  const tx = touch.clientX - rect.left;
+  const ty = touch.clientY - rect.top;
 
-  const dx = tx - centerX;
-  const dy = ty - centerY;
-  const distance = Math.sqrt(dx * dx + dy * dy);
-
-  console.log('🟡 Tap at:', tx, ty, '| Distance to center:', distance);
-
-  if (distance <= size / 2) {
-    console.log('✅ TAP inside delete circle for:', obj.img?.src);
-  } else {
-    console.log('❌ Tap missed delete circle');
-  }
-}
-
-  // 🔴 Check if tapped X button
-  if (e.touches.length === 1 && obj.deleteBtnBounds) {
-  const touch = e.touches[0];
-  const rect = canvas.getBoundingClientRect();
-
-  const tx = touch.clientX - rect.left;
-  const ty = touch.clientY - rect.top;
-
-  const { centerX, centerY, size } = obj.deleteBtnBounds;
-
-  const dx = tx - centerX;
-  const dy = ty - centerY;
-
-  const distance = Math.sqrt(dx * dx + dy * dy);
-
-  if (distance <= size / 2) {
-    e.preventDefault();
-    selectedObj = obj; // ✅ make sure this is set
-    if (activeTouchObj === obj) activeTouchObj = null;
-    deleteSelectedObject();
-    return;
-  }
-}
-
-  const x = e.touches[0].clientX - rect.left;
-  const y = e.touches[0].clientY - rect.top;
   const w = obj.img.width * obj.scale;
   const h = obj.img.height * obj.scale;
 
-  const isTouched = (
-    x >= obj.x && x <= obj.x + w &&
-    y >= obj.y && y <= obj.y + h
-  );
+  const btnSize = 24;
+  const btnX = obj.x + w - btnSize; // ✅ top-right corner
+  const btnY = obj.y;
 
-  // ✅ One-finger drag
+  const centerX = btnX + btnSize / 2;
+  const centerY = btnY + btnSize / 2;
+
+  const dx = tx - centerX;
+  const dy = ty - centerY;
+
+  // 🟥 1. Tap inside ❌?
+  if (Math.sqrt(dx * dx + dy * dy) <= btnSize / 2) {
+    e.preventDefault();
+    selectedObj = obj;
+    deleteSelectedObject();
+    return;
+  }
+
+  // 🟩 2. Regular one-finger drag
+  const isTouched =
+    tx >= obj.x && tx <= obj.x + w &&
+    ty >= obj.y && ty <= obj.y + h;
+
   if (e.touches.length === 1 && isTouched) {
     if (!lockedObj || lockedObj === obj) {
-      if (selectedTouchTarget && selectedTouchTarget !== obj) return;
       selectedObj = obj;
-      selectedTouchTarget = obj;
-      lockedObj = obj;
-      obj.dragging = true;
-      activeTouchObj = obj;
+      selectedTouchTarget = obj;
+      lockedObj = obj;
+      obj.dragging = true;
+      activeTouchObj = obj;
     }
   }
 
-  // ✅ Two-finger pinch/rotate
+  // 🟦 3. Two-finger gesture
   if (e.touches.length === 2 && (!lockedObj || lockedObj === obj)) {
-    lockedObj = obj;
-    obj.gestureActive = true;
-    activeTouchObj = obj;
-
     const [t1, t2] = [e.touches[0], e.touches[1]];
     const dx = t2.clientX - t1.clientX;
     const dy = t2.clientY - t1.clientY;
@@ -1725,11 +1696,16 @@ function setupTouchHandlers(obj) {
 
     const centerX = (t1.clientX + t2.clientX) / 2;
     const centerY = (t1.clientY + t2.clientY) / 2;
+
     const objCenterX = obj.x + w / 2;
     const objCenterY = obj.y + h / 2;
 
     obj.offsetX = objCenterX - (centerX - rect.left);
     obj.offsetY = objCenterY - (centerY - rect.top);
+
+    lockedObj = obj;
+    obj.gestureActive = true;
+    activeTouchObj = obj;
   }
 }, { passive: false });
 
@@ -1780,6 +1756,30 @@ function setupTouchHandlers(obj) {
       selectedTouchTarget = null;
     }
   }, { passive: false });
+}
+
+function resetMeme() {
+  // Clear all objects
+  hats.length = 0;
+  chains.length = 0;
+  characters.length = 0;
+
+  // Clear state
+  selectedObj = null;
+  activeTouchObj = null;
+  lockedObj = null;
+  selectedTouchTarget = null;
+
+  // Hide rotation slider
+  sliderWrapper.style.display = 'none';
+
+  // Clear background
+  bgSelect.value = "";
+  drawCanvas();
+
+  // Clear text
+  topTextInput.value = "";
+  bottomTextInput.value = "";
 }
 
 [...hats, ...chains, ...characters].forEach(obj => {
