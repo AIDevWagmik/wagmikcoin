@@ -1642,78 +1642,73 @@ function setupTouchHandlers(obj) {
   let initialDist = 0, initialScale = obj.scale;
   let initialAngle = 0, initialRotation = obj.rotation;
 
- canvas.addEventListener('touchstart', (e) => {
-  const rect = canvas.getBoundingClientRect();
-  const x = e.touches[0].clientX - rect.left;
-  const y = e.touches[0].clientY - rect.top;
+canvas.addEventListener('touchstart', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    
+  if (e.touches.length === 1 && obj.deleteBtnBounds) {
+    const touch = e.touches[0];
+    const { x, y, size } = obj.deleteBtnBounds;
+    const rect = canvas.getBoundingClientRect();
+    const tx = touch.clientX - rect.left;
+    const ty = touch.clientY - rect.top;
 
-  const w = obj.img.width * obj.scale;
-  const h = obj.img.height * obj.scale;
+    const dx = tx - x;
+    const dy = ty - y;
 
-  const isTouched = (
-    x >= obj.x && x <= obj.x + w &&
-    y >= obj.y && y <= obj.y + h
-  );
-
-  // 🔴 Step 1: Cancel if locked by another object
-  if (lockedObj && lockedObj !== obj) return;
-
-  // 🔴 Step 2: Detect mobile delete tap
-  if (e.touches.length === 1 && obj.deleteBtnBounds) {
-    const tx = e.touches[0].clientX - rect.left;
-    const ty = e.touches[0].clientY - rect.top;
-    const dx = tx - obj.deleteBtnBounds.x;
-    const dy = ty - obj.deleteBtnBounds.y;
-
-    if (Math.sqrt(dx * dx + dy * dy) <= obj.deleteBtnBounds.size / 2) {
-      e.preventDefault(); // Stop accidental drag
-      if (activeTouchObj === obj) activeTouchObj = null;
-      deleteSelectedObject();
-      return;
-    }
-  }
-
-  // ✅ One-finger drag
-  if (e.touches.length === 1 && isTouched) {
-    lockedObj = obj;
-    obj.dragging = true;
-    activeTouchObj = obj;
-    selectedTouchTarget = obj;
+  if (Math.sqrt(dx * dx + dy * dy) <= size / 2) {
+    // Tapped delete circle
+    e.preventDefault();
+    if (activeTouchObj === obj) activeTouchObj = null;
+    deleteSelectedObject();
     return;
   }
+}
 
-  // ✅ Two-finger gesture
-  if (e.touches.length === 2 && isTouched) {
-    const [t1, t2] = [e.touches[0], e.touches[1]];
-    const dx = t2.clientX - t1.clientX;
-    const dy = t2.clientY - t1.clientY;
+    const x = e.touches[0].clientX - rect.left;
+    const y = e.touches[0].clientY - rect.top;
+    const w = obj.img.width * obj.scale;
+    const h = obj.img.height * obj.scale;
 
-    lockedObj = obj;
-    obj.gestureActive = true;
-    activeTouchObj = obj;
+    const isTouched = (
+      x >= obj.x && x <= obj.x + w &&
+      y >= obj.y && y <= obj.y + h
+    );
 
-    initialDist = Math.hypot(dx, dy);
-    initialAngle = Math.atan2(dy, dx);
-    initialScale = obj.scale;
-    initialRotation = obj.rotation;
+    // 🟢 One-finger drag start
+    if (e.touches.length === 1 && isTouched) {
+      if (!lockedObj || lockedObj === obj) {
+      if (selectedTouchTarget && selectedTouchTarget !== obj) return;
+      selectedTouchTarget = obj;
 
-    const centerX = (t1.clientX + t2.clientX) / 2;
-    const centerY = (t1.clientY + t2.clientY) / 2;
-    const objCenterX = obj.x + w / 2;
-    const objCenterY = obj.y + h / 2;
+      lockedObj = obj;
+      obj.dragging = true;
+      activeTouchObj = obj;
+    }
+   }
 
-    obj.offsetX = objCenterX - (centerX - rect.left);
-    obj.offsetY = objCenterY - (centerY - rect.top);
-  }
-}, { passive: false });
+    // 🟢 Two-finger gesture start
+    if (e.touches.length === 2 && (!lockedObj || lockedObj === obj)) {
+      lockedObj = obj;
+      obj.gestureActive = true;
+      activeTouchObj = obj; // ✅ critical so move events work
 
-  canvas.addEventListener('touchend', () => {
-    if (obj === activeTouchObj) {
-      obj.dragging = false;
-      obj.gestureActive = false;
-      activeTouchObj = null;
-      lockedObj = null;
-      selectedTouchTarget = null;
+      const [t1, t2] = [e.touches[0], e.touches[1]];
+      const dx = t2.clientX - t1.clientX;
+      const dy = t2.clientY - t1.clientY;
+
+      initialDist = Math.hypot(dx, dy);
+      initialAngle = Math.atan2(dy, dx);
+      initialScale = obj.scale;
+      initialRotation = obj.rotation;
+
+      const centerX = (t1.clientX + t2.clientX) / 2;
+      const centerY = (t1.clientY + t2.clientY) / 2;
+
+      const objCenterX = obj.x + w / 2;
+      const objCenterY = obj.y + h / 2;
+
+      obj.offsetX = objCenterX - (centerX - rect.left);
+      obj.offsetY = objCenterY - (centerY - rect.top);
     }
   }, { passive: false });
 }
