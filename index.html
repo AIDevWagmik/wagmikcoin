@@ -1543,7 +1543,7 @@ obj.deleteBtnBounds = {
   centerX: btnCenterX,
   centerY: btnCenterY
  };
-}
+} 
 
 if (window.innerWidth >= 768) {
   delete obj.deleteBtnBounds; // Clean up desktop mode
@@ -1566,33 +1566,35 @@ if (window.innerWidth >= 768) {
 }
 
 function resetMeme() {
-  // Clear object arrays
-  hats.length = 0;
-  chains.length = 0;
-  characters.length = 0;
+  // Clear object arrays
+  hats.length = 0;
+  chains.length = 0;
+  characters.length = 0;
 
-  // Reset all gesture-related state
-  selectedObj = null;
-  activeTouchObj = null;
-  lockedObj = null;
-  selectedTouchTarget = null;
+  // Clear all selection references
+  selectedObj = null;
+  activeTouchObj = null;
+  lockedObj = null;
+  selectedTouchTarget = null;
 
-  // Also reset any ghost gesture states still on canvas
-  canvas.releasePointerCapture?.(0); // optional if used
-  canvas.style.touchAction = 'none'; // ensure no system gestures interfere
+  // Reset dropdowns to index 0 (which should be "None")
+  bgSelect.selectedIndex = 0;
+  hatSelect.selectedIndex = 0;
+  chainSelect.selectedIndex = 0;
+  characterSelect.selectedIndex = 0;
 
-  // Reset dropdowns to "None"
-  bgSelect.selectedIndex = 0;
-  hatSelect.selectedIndex = 0;
-  chainSelect.selectedIndex = 0;
-  characterSelect.selectedIndex = 0;
+  // Explicitly clear .value in case options didn’t trigger a 'change' event
+  bgSelect.value = "";
+  hatSelect.value = "";
+  chainSelect.value = "";
+  characterSelect.value = "";
 
-  // Hide rotation slider
-  sliderWrapper.style.display = 'none';
+  // Hide the rotation slider (if visible)
+  sliderWrapper.style.display = 'none';
 
-  // Redraw the blank canvas (background if selected)
-  drawCanvas();
-} 
+  // Force redraw to clear canvas contents
+  drawCanvas();
+}
 
 function deleteSelectedObject() {
   if (!selectedObj) return;
