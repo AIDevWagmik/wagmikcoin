@@ -1566,42 +1566,32 @@ if (window.innerWidth >= 768) {
 }
 
 function resetMeme() {
-  // Step 1: Replace canvas safely
-  canvas.replaceWith(canvas.cloneNode(true));
-  canvas = document.getElementById("memeCanvas");
-  ctx = canvas.getContext("2d");
-
-  // Step 2: Clear data
+  // 1. Clear arrays
   hats.length = 0;
   chains.length = 0;
   characters.length = 0;
 
-  // Step 3: Reset dropdowns + state
-  hatSelect.value = chainSelect.value = characterSelect.value = bgSelect.value = "";
-  hatSelect.selectedIndex = chainSelect.selectedIndex = characterSelect.selectedIndex = 0;
-
+  // 2. Clear selection + UI
+  selectedObj = null;
   activeTouchObj = null;
   lockedObj = null;
   selectedTouchTarget = null;
+  rotationSlider.value = 0;
+  sliderWrapper.style.display = "none";
 
-  // Step 4: Wait a frame, then re-bind everything
-  requestAnimationFrame(() => {
-    // Re-attach dropdown listeners
-    [hatSelect, chainSelect, characterSelect].forEach(el => {
-      el.removeEventListener('change', drawMeme);
-      el.addEventListener('change', drawMeme);
-    });
-    bgSelect.removeEventListener('change', drawCanvas);
-    bgSelect.addEventListener('change', drawCanvas);
+  // 3. Reset dropdowns
+  hatSelect.value = "";
+  chainSelect.value = "";
+  characterSelect.value = "";
+  bgSelect.value = "";
+  topTextInput.value = "";
+  bottomTextInput.value = "";
 
-    // Re-apply interaction handlers to existing (empty, but safe)
-    [...hats, ...chains, ...characters].forEach(obj => {
-      setupDragAndResize(obj);
-      setupTouchHandlers(obj);
-    });
+  // ✅ 4. Just clear canvas (no replacing)
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    drawCanvas(); // Redraw last, after all is stable
-  });
+  // ✅ 5. Redraw clean state
+  drawCanvas();
 }
 
 function deleteSelectedObject() {
