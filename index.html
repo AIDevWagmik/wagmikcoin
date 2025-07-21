@@ -1092,14 +1092,15 @@ body, html {
         <option value="GTA 6.png">GTA 6</option>
         <option value="dubai.png">Dubai</option>
         <option value="Office.png">Office</option>
+        <option value="elon-meme.png">Elon</option>
       </select>
 
       <select id="hatSelect">
         <option value="">None</option>
         <option value="wagmik-hat.png">WAGMIK Hat</option>
         <option value="WAGMIK-mask.png">WAGMIK Mask</option>
-        <option value="bonk-hat.png">BONK Hat</option>
-        <option value="bonk-hat2.png">BONK Hat2</option>
+        <option value="wif-hat.png">WIF Hat</option>
+        <option value="bonk-hat2.png">BONK Hat</option>
         <option value="bonk-mask.png">BONK Mask</option>
         <option value="degen-hat.png">DEGEN Hat</option>
         <option value="degen-hat2.png">DEGEN Hat2</option>
@@ -1113,6 +1114,11 @@ body, html {
         <option value="chain-wagmik.png">WAGMIK Chain</option>
         <option value="chain2.png">Cuban Chain</option>
         <option value="glasses.png">Meme Glasses</option>
+        <option value="god-candle.png">God Candle</option>
+        <option value="bro-look.png">Bro Look</option>
+        <option value="wojak.png">Wojak</option>
+        <option value="wojak-mystery.png">Wojak 2</option>
+        <option value="wojak-boomer.png">Wojak Boomer</option>
       </select>
 
       <select id="characterSelect">
@@ -1125,6 +1131,9 @@ body, html {
         <option value="ansem.png">Ansem</option>
         <option value="mert.png">Mert</option>
         <option value="bossman.png">Bossman</option>
+        <option value="DJ.png">DJ</option>
+        <option value="goku-ui.png">Goku UI</option>
+        <option value="saitama.png">Saitama</option>
       </select>
 
      <input autocapitalize="off" autocomplete="off" id="topText" inputmode="text" placeholder="Top Text" tabindex="0" type="text"/>
@@ -1410,7 +1419,8 @@ const backgrounds = {
   "Liberty.png": new Image(),
   "GTA 6.png": new Image(),
   "dubai.png": new Image(),
-  "Office.png": new Image()
+  "Office.png": new Image(),
+  "elon-meme.png": new Image()
 };
 
 Object.keys(backgrounds).forEach(key => backgrounds[key].src = key);
@@ -1569,6 +1579,10 @@ function resetMeme() {
   chainSelect.value = "";
   characterSelect.value = "";
   bgSelect.value = "";
+
+  hatSelect.selectedIndex = 0;
+  chainSelect.selectedIndex = 0;
+  characterSelect.selectedIndex = 0;
 
   activeTouchObj = null;
   lockedObj = null;
