@@ -1566,44 +1566,43 @@ if (window.innerWidth >= 768) {
 }
 
 function resetMeme() {
- canvas.replaceWith(canvas.cloneNode(true));
- canvas = document.getElementById('memeCanvas');
- ctx = canvas.getContext('2d');
+  // Step 1: Replace canvas safely
+  canvas.replaceWith(canvas.cloneNode(true));
+  canvas = document.getElementById("memeCanvas");
+  ctx = canvas.getContext("2d");
 
-  hats.length = 0;
-  chains.length = 0;
-  characters.length = 0;
+  // Step 2: Clear data
+  hats.length = 0;
+  chains.length = 0;
+  characters.length = 0;
 
-  // Reset selections
-  hatSelect.value = "";
-  chainSelect.value = "";
-  characterSelect.value = "";
-  bgSelect.value = "";
+  // Step 3: Reset dropdowns + state
+  hatSelect.value = chainSelect.value = characterSelect.value = bgSelect.value = "";
+  hatSelect.selectedIndex = chainSelect.selectedIndex = characterSelect.selectedIndex = 0;
 
-  hatSelect.selectedIndex = 0;
-  chainSelect.selectedIndex = 0;
-  characterSelect.selectedIndex = 0;
+  activeTouchObj = null;
+  lockedObj = null;
+  selectedTouchTarget = null;
 
-  activeTouchObj = null;
-  lockedObj = null;
-  selectedTouchTarget = null;
+  // Step 4: Wait a frame, then re-bind everything
+  requestAnimationFrame(() => {
+    // Re-attach dropdown listeners
+    [hatSelect, chainSelect, characterSelect].forEach(el => {
+      el.removeEventListener('change', drawMeme);
+      el.addEventListener('change', drawMeme);
+    });
+    bgSelect.removeEventListener('change', drawCanvas);
+    bgSelect.addEventListener('change', drawCanvas);
 
-  drawCanvas();
+    // Re-apply interaction handlers to existing (empty, but safe)
+    [...hats, ...chains, ...characters].forEach(obj => {
+      setupDragAndResize(obj);
+      setupTouchHandlers(obj);
+    });
 
- // ✅ Reattach dropdown event listeners after canvas reset
-[hatSelect, chainSelect, characterSelect].forEach(el => {
-  el.removeEventListener('change', drawMeme); // prevent duplicates
-  el.addEventListener('change', drawMeme);
-});
-
-bgSelect.removeEventListener('change', drawCanvas);
-bgSelect.addEventListener('change', drawCanvas);
-
- [...hats, ...chains, ...characters].forEach(obj => {
-  setupDragAndResize(obj);
-  setupTouchHandlers(obj);
-  });
- }
+    drawCanvas(); // Redraw last, after all is stable
+  });
+}
 
 function deleteSelectedObject() {
   if (!selectedObj) return;
