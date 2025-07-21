@@ -1550,29 +1550,7 @@ if (window.innerWidth >= 768) {
   const bot = bottomTextInput.value.toUpperCase();
   if (top) { ctx.fillText(top, canvas.width / 2, 40); ctx.strokeText(top, canvas.width / 2, 40); }
   if (bot) { ctx.fillText(bot, canvas.width / 2, canvas.height - 40); ctx.strokeText(bot, canvas.width / 2, canvas.height - 40); }
-}
-
-if (e.touches.length === 1 && obj.deleteBtnBounds) {
-  const touch = e.touches[0];
-  const rect = canvas.getBoundingClientRect();
-
-  const tx = touch.clientX - rect.left;
-  const ty = touch.clientY - rect.top;
-
-  const { centerX, centerY, size } = obj.deleteBtnBounds;
-
-  const dx = tx - centerX;
-  const dy = ty - centerY;
-
-  const distance = Math.sqrt(dx * dx + dy * dy);
-
-  if (distance <= size / 2) {
-    e.preventDefault();
-    selectedObj = obj; // ✅ make sure this is set
-    if (activeTouchObj === obj) activeTouchObj = null;
-    deleteSelectedObject();
-    return;
-  }
+ }
 }
 
 function deleteSelectedObject() {
