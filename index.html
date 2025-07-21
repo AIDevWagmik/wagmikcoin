@@ -1468,7 +1468,11 @@ function createAccessory(type, imgSrc, scale = 1.0) {
   setupDragAndResize(obj);
   setupTouchHandlers(obj);
 
-  img.onload = drawCanvas;
+  img.onload = () => {
+  setupDragAndResize(obj);
+  setupTouchHandlers(obj);
+  drawCanvas();
+ };
 }
 
 function drawCanvas() {
