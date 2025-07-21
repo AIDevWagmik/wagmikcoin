@@ -1566,33 +1566,33 @@ if (window.innerWidth >= 768) {
 }
 
 function resetMeme() {
-  // 1. Clear arrays
+  // Clear object arrays
   hats.length = 0;
   chains.length = 0;
   characters.length = 0;
 
-  // 2. Clear selection + UI
+  // Reset all gesture-related state
   selectedObj = null;
   activeTouchObj = null;
   lockedObj = null;
   selectedTouchTarget = null;
-  rotationSlider.value = 0;
-  sliderWrapper.style.display = "none";
 
-  // 3. Reset dropdowns
-  hatSelect.value = "";
-  chainSelect.value = "";
-  characterSelect.value = "";
-  bgSelect.value = "";
-  topTextInput.value = "";
-  bottomTextInput.value = "";
+  // Also reset any ghost gesture states still on canvas
+  canvas.releasePointerCapture?.(0); // optional if used
+  canvas.style.touchAction = 'none'; // ensure no system gestures interfere
 
-  // ✅ 4. Just clear canvas (no replacing)
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Reset dropdowns to "None"
+  bgSelect.selectedIndex = 0;
+  hatSelect.selectedIndex = 0;
+  chainSelect.selectedIndex = 0;
+  characterSelect.selectedIndex = 0;
 
-  // ✅ 5. Redraw clean state
+  // Hide rotation slider
+  sliderWrapper.style.display = 'none';
+
+  // Redraw the blank canvas (background if selected)
   drawCanvas();
-}
+} 
 
 function deleteSelectedObject() {
   if (!selectedObj) return;
