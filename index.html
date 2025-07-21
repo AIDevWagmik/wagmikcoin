@@ -1513,11 +1513,22 @@ function drawCanvas() {
   ctx.fillText('✕', btnX + btnSize / 2, btnY + btnSize / 2);
 
   // Save position to check on touch
-  obj.deleteBtnBounds = {
-    x: obj.x + btnX,
-    y: obj.y + btnY,
-    size: btnSize
-  };
+  const cos = Math.cos(obj.rotation);
+  const sin = Math.sin(obj.rotation);
+
+  const centerX = obj.x + (obj.img.width * obj.scale) / 2;
+  const centerY = obj.y + (obj.img.height * obj.scale) / 2;
+
+  const btnCenterX = centerX + (btnX * cos - btnY * sin);
+  const btnCenterY = centerY + (btnX * sin + btnY * cos);
+
+obj.deleteBtnBounds = {
+  x: btnCenterX - btnSize / 2,
+  y: btnCenterY - btnSize / 2,
+  size: btnSize,
+  centerX: btnCenterX,
+  centerY: btnCenterY
+ };
 }
 
 if (window.innerWidth >= 768) {
@@ -1644,37 +1655,40 @@ function setupTouchHandlers(obj) {
 
   canvas.addEventListener('touchstart', (e) => {
   const rect = canvas.getBoundingClientRect();
+
+  // 🔴 Check if tapped X button
+ if (e.touches.length === 1 && obj.deleteBtnBounds) {
   const touch = e.touches[0];
   const tx = touch.clientX - rect.left;
   const ty = touch.clientY - rect.top;
+  const { x, y, size } = obj.deleteBtnBounds;
 
-  // 🔴 STEP 1: Detect tap on delete circle first
-  if (e.touches.length === 1 && obj.deleteBtnBounds) {
-    const { centerX, centerY, size } = obj.deleteBtnBounds;
-    const dx = tx - centerX;
-    const dy = ty - centerY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
+  const dx = tx - x - size / 2;
+  const dy = ty - y - size / 2;
+  const dist = Math.sqrt(dx * dx + dy * dy);
 
-    if (dist <= size / 2) {
-      selectedObj = obj;
-      deleteSelectedObject();
-      return;
-    }
+  if (dist <= size / 2) {
+    e.preventDefault(); // block drag
+    selectedObj = obj;  // ✅ make sure we point to this
+    deleteSelectedObject();
+    return;
   }
+}
 
+  const x = e.touches[0].clientX - rect.left;
+  const y = e.touches[0].clientY - rect.top;
   const w = obj.img.width * obj.scale;
   const h = obj.img.height * obj.scale;
 
   const isTouched = (
-    tx >= obj.x && tx <= obj.x + w &&
-    ty >= obj.y && ty <= obj.y + h
+    x >= obj.x && x <= obj.x + w &&
+    y >= obj.y && y <= obj.y + h
   );
 
-  // ✅ STEP 2: One-finger drag
+  // ✅ One-finger drag
   if (e.touches.length === 1 && isTouched) {
     if (!lockedObj || lockedObj === obj) {
       if (selectedTouchTarget && selectedTouchTarget !== obj) return;
-      selectedObj = obj;
       selectedTouchTarget = obj;
       lockedObj = obj;
       obj.dragging = true;
@@ -1682,7 +1696,7 @@ function setupTouchHandlers(obj) {
     }
   }
 
-  // ✅ STEP 3: Two-finger pinch + rotate
+  // ✅ Two-finger pinch/rotate
   if (e.touches.length === 2 && (!lockedObj || lockedObj === obj)) {
     lockedObj = obj;
     obj.gestureActive = true;
@@ -1699,7 +1713,6 @@ function setupTouchHandlers(obj) {
 
     const centerX = (t1.clientX + t2.clientX) / 2;
     const centerY = (t1.clientY + t2.clientY) / 2;
-
     const objCenterX = obj.x + w / 2;
     const objCenterY = obj.y + h / 2;
 
