@@ -1422,9 +1422,21 @@ rotationSlider.addEventListener("input", () => {
 });
 
 function drawMeme() {
-createAccessory('hat', hatSelect.value, 0.7);
-createAccessory('chain', chainSelect.value, 0.8);
-createAccessory('character', characterSelect.value, 1.0);
+  const hatVal = hatSelect.value;
+  const chainVal = chainSelect.value;
+  const charVal = characterSelect.value;
+
+  if (hatVal && !hats.some(obj => obj.img.src.includes(hatVal))) {
+    createAccessory('hat', hatVal, 0.7);
+  }
+
+  if (chainVal && !chains.some(obj => obj.img.src.includes(chainVal))) {
+    createAccessory('chain', chainVal, 0.8);
+  }
+
+  if (charVal && !characters.some(obj => obj.img.src.includes(charVal))) {
+    createAccessory('character', charVal, 1.0);
+  }
 }
 
 function createAccessory(type, imgSrc, scale = 1.0) {
