@@ -932,22 +932,6 @@ body, html {
   }
 }
 
-  .share-rules {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 12px;
-  border-radius: 12px;
-  color: #ffe06b;
-  font-size: 0.95em;
-  margin-top: 10px;
-}
-.share-rules ul {
-  list-style: none;
-  padding-left: 0;
-}
-.share-rules li {
-  margin: 6px 0;
-}
-
 .button-container {
   display: flex;
   flex-wrap: wrap;
@@ -972,6 +956,68 @@ body, html {
     flex: initial;
     width: auto;
   }
+}
+
+/* === Share Modal Styles === */
+.modal.hidden {
+  display: none;
+}
+
+.modal {
+  position: fixed;
+  z-index: 9999;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}
+
+.modal-content {
+  background: #1a1a1a;
+  color: white;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 320px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(255,255,255,0.2);
+}
+
+.modal-content h3 {
+  margin-top: 0;
+}
+
+.modal-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+  text-align: left;
+}
+
+.modal-content li {
+  margin-bottom: 8px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 10px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(to right, #ff00cc, #ffcc00);
+  color: black;
+  cursor: pointer;
 }
 
   </style>
@@ -1190,16 +1236,23 @@ body, html {
       </div>
     </div>
 
-   <div class="share-rules">
-  <p>📣 Share your meme to win $WAGMIK!</p>
-  <ul>
-    <li>✅ Tag <strong>@wagmikdotsol</strong></li>
-    <li>✅ Use our ticker <strong>$WAGMIK</strong></li>
-    <li>✅ Follow <strong>@wagmikdotsol</strong></li>
-    <li>✅ Attach the meme that auto-downloads</li>
-  </ul>
+    <!-- 📢 Share Rules Modal -->
+<div id="shareModal" class="modal hidden">
+  <div class="modal-content">
+    <h3>📢 Before You Share</h3>
+    <ul>
+      <li>✅ Tag <strong>@wagmikdotsol</strong></li>
+      <li>✅ Use our ticker <strong>$WAGMIK</strong></li>
+      <li>✅ Follow <strong>@wagmikdotsol</strong></li>
+      <li>✅ Attach your meme image (auto-downloaded)</li>
+    </ul>
+    <div class="modal-actions">
+      <button id="cancelShare">Cancel</button>
+      <button id="confirmShare">Continue</button>
+    </div>
+  </div>
 </div>
-
+   
     <!-- 🖼 Preview Canvas -->
     <canvas id="memeCanvas" class="console-canvas" width="360" height="360"></canvas>
 
@@ -1683,26 +1736,46 @@ function isInside(mx, my, x, y, w, h) {
 }
 
 function shareToX() {
-  // Step 1: Download meme image
-  const link = document.createElement('a');
-  link.download = 'wagmik-meme.png';
-  link.href = canvas.toDataURL('image/png');
-  link.click();
+ // 🚀 SHARE BUTTON LOGIC
+document.getElementById("shareBtn").addEventListener("click", async () => {
+  // Step 1: Save image locally
+  canvas.toBlob(async (blob) => {
+    if (!blob) return;
 
-  // Step 2: Pre-fill tweet content
-  const top = topTextInput.value.trim();
-  const bottom = bottomTextInput.value.trim();
-  const memeText = `${top} ${bottom}`.replace(/\s+/g, ' ').trim();
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const link = document.createElement("a");
+      link.href = reader.result;
+      link.download = "wagmik-meme.png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
-  const tweetText = `${memeText}\n\nI just made a $WAGMIK meme! 💀🔥 Try it 👉 https://wagmik.xyz @wagmikdotsol 🚀\n⬆️ Meme auto-downloaded — attach & post!`;
+      // ✅ Step 2: Show modal
+      document.getElementById("shareModal").classList.remove("hidden");
+    };
+    reader.readAsDataURL(blob);
+  });
+});
 
-  // Step 3: Open tweet
-  const tweetURL = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+// 🧠 Cancel
+document.getElementById("cancelShare").onclick = () => {
+  document.getElementById("shareModal").classList.add("hidden");
+};
 
-  alert("Meme image downloaded! You can now upload it in the tweet 🐸🖼️");
- 
-  window.open(tweetURL, '_blank');
-}
+// ✅ Confirm & Open X
+document.getElementById("confirmShare").onclick = () => {
+  document.getElementById("shareModal").classList.add("hidden");
+
+  const top = topTextInput.value.trim();
+  const bottom = bottomTextInput.value.trim();
+  const memeText = `${top} ${bottom}`.replace(/\s+/g, ' ').trim();
+
+  const tweetText = `${memeText}\n\nI just made a $WAGMIK meme! 💀🔥 Try it 👉 https://aidevwagmik.github.io\n📌 Meme auto-downloaded — attach & post!`;
+  const tweetURL = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+
+  window.open(tweetURL, '_blank');
+ };
 
 function setupDragAndResize(obj) {
   let dragging = null;
@@ -1899,10 +1972,6 @@ bgSelect.addEventListener('change', drawCanvas);
 </script>
 
 <script>
-  // ... all your other functions ...
-
-  document.getElementById("resetBtn").onclick = resetMeme;
-  document.getElementById("downloadBtn").onclick = downloadMeme;
 
   // ✅ Now paste the Share button logic exactly here:
   document.getElementById("shareBtn").addEventListener("click", async () => {
@@ -1927,6 +1996,7 @@ bgSelect.addEventListener('change', drawCanvas);
       reader.readAsDataURL(blob);
     });
   });
+ 
 </script>
 
  </body>
