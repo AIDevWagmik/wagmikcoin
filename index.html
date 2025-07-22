@@ -1238,19 +1238,27 @@ body, html {
 
     <!-- 📢 Share Rules Modal -->
 <div id="shareModal" class="modal hidden">
-  <div class="modal-content">
-    <h3>📢 Before You Share</h3>
-    <ul>
-      <li>✅ Tag <strong>@wagmikdotsol</strong></li>
-      <li>✅ Use our ticker <strong>$WAGMIK</strong></li>
-      <li>✅ Follow <strong>@wagmikdotsol</strong></li>
-      <li>✅ Attach your meme image (auto-downloaded)</li>
-    </ul>
-    <div class="modal-actions">
-      <button id="cancelShare">Cancel</button>
-      <button id="confirmShare">Continue</button>
-    </div>
-  </div>
+  <div class="modal-content">
+    <h2>📜 Meme Sharing Rules</h2>
+    <ul>
+      <li>✅ Must tag <strong>@wagmikdotsol</strong></li>
+      <li>✅ Must follow our official account</li>
+      <li>✅ Meme must be created using the generator</li>
+      <li>✅ Must be a verified X account</li>
+      <li>📌 Must upload the meme you just downloaded</li>
+    </ul>
+
+    <p style="margin-top: 20px;">
+      🚀 If you press <strong>Continue</strong>, you’ll be redirected to X to post your meme.
+      <br />
+      🧠 Don’t forget to <strong>attach the image</strong> we just downloaded for you!
+    </p>
+
+    <div class="button-container" style="margin-top: 20px;">
+      <button id="confirmShare">Continue to X</button>
+      <button id="cancelShare">Cancel</button>
+    </div>
+  </div>
 </div>
    
     <!-- 🖼 Preview Canvas -->
@@ -1736,47 +1744,51 @@ function isInside(mx, my, x, y, w, h) {
 }
 
 function shareToX() {
- // 🚀 SHARE BUTTON LOGIC
-document.getElementById("shareBtn").addEventListener("click", async () => {
-  // Step 1: Save image locally
-  canvas.toBlob(async (blob) => {
-    if (!blob) return;
+  const shareBtn = document.getElementById("shareBtn");
+  const shareModal = document.getElementById("shareModal");
+  const confirmBtn = document.getElementById("confirmShare");
+  const cancelBtn = document.getElementById("cancelShare");
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const link = document.createElement("a");
-      link.href = reader.result;
-      link.download = "wagmik-meme.png";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  shareBtn.addEventListener("click", async () => {
+    // Step 1: Download meme
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
 
-      // ✅ Step 2: Show modal
-      document.getElementById("shareModal").classList.remove("hidden");
-    };
-    reader.readAsDataURL(blob);
-  });
-});
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const link = document.createElement("a");
+        link.href = reader.result;
+        link.download = "wagmik-meme.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
-// 🧠 Cancel
-document.getElementById("cancelShare").onclick = () => {
-  document.getElementById("shareModal").classList.add("hidden");
-};
+        // ✅ Step 2: Show the confirmation popup/modal
+        shareModal.classList.remove("hidden");
+      };
+      reader.readAsDataURL(blob);
+    });
+  });
 
-// ✅ Confirm & Open X
-document.getElementById("confirmShare").onclick = () => {
-  document.getElementById("shareModal").classList.add("hidden");
+  // 🧠 Cancel hides the modal
+  cancelBtn.onclick = () => {
+    shareModal.classList.add("hidden");
+  };
 
-  const top = topTextInput.value.trim();
-  const bottom = bottomTextInput.value.trim();
-  const memeText = `${top} ${bottom}`.replace(/\s+/g, ' ').trim();
+  // 🚀 Confirm opens Twitter
+  confirmBtn.onclick = () => {
+    shareModal.classList.add("hidden");
 
-  const tweetText = `${memeText}\n\nI just made a $WAGMIK meme! 💀🔥 Try it 👉 https://aidevwagmik.github.io\n📌 Meme auto-downloaded — attach & post!`;
-  const tweetURL = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+    const top = topTextInput.value.trim();
+    const bottom = bottomTextInput.value.trim();
+    const memeText = `${top} ${bottom}`.replace(/\s+/g, ' ').trim();
 
-  window.open(tweetURL, '_blank');
-  };
- }
+    const tweetText = `${memeText}\n\nI just made a $WAGMIK meme! 💀🔥 Try it 👉 https://wagmik.xyz\n📌 Meme auto-downloaded — attach & post!`;
+    const tweetURL = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+
+    window.open(tweetURL, '_blank');
+  };
+}
 
 function setupDragAndResize(obj) {
   let dragging = null;
