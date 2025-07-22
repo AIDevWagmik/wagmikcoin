@@ -1170,6 +1170,7 @@ body, html {
         <button onclick="drawMeme()" class="console-btn">Preview</button>
         <button onclick="downloadMeme()" class="console-btn">Download</button>
         <button onclick="resetMeme()" class="console-btn full-width">Reset</button>
+        <button id="shareBtn">Share on X</button>
       </div>
     </div>
    
@@ -1183,6 +1184,29 @@ body, html {
       <button id="deleteBtn" style="margin-top: 8px;">🗑 Delete</button>
     </div>
   </div>
+</div>
+
+ <!-- 📢 Share Rules Modal -->
+<div id="shareModal" class="modal hidden">
+  <div class="modal-content">
+    <h2>📜 Meme Sharing Rules</h2>
+    <ul>
+      <li>✅ Tag <strong>@wagmikdotsol</strong></li>
+      <li>✅ Follow the official account</li>
+      <li>✅ Use the meme generator</li>
+      <li>✅ Verified X accounts only</li>
+      <li>📌 Upload the meme you downloaded</li>
+    </ul>
+    <p style="margin-top: 20px;">
+      🚀 Press <strong>Continue</strong> to go to X and post your meme.
+      <br />
+      🧠 Don’t forget to <strong>attach your image</strong>!
+    </p>
+    <div class="button-container">
+      <button id="confirmShare">Continue to X</button>
+      <button id="cancelShare">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <!-- 🌐 Floating App Links (Left Center) -->
