@@ -1432,53 +1432,6 @@ function toggleMeme() {
 
 <script>
 
-// --- Modal Toggles ---
-function toggleLore() {
-  document.getElementById('loreModal').classList.toggle('active');
-}
-
-function toggleDegen() {
-  const modal = document.getElementById('degenModal');
-  const lines = [
-    "Buy high, hold higher.",
-    "You only lose when you sell.",
-    "Gas fees are a state of mind.",
-    "If it dumps, double down.",
-    "Degen rule #88: Never check the chart.",
-    "Real utility is in the meme.",
-    "WAGMIK is a vibe, not a roadmap.",
-    "Coins come and go, but hopium is eternal.",
-    "He who panics last, panics best.",
-    "Trust the vibes, not the volume."
-  ];
-  if (!modal.classList.contains('active')) {
-    document.getElementById('degenProphecy').textContent =
-      `"${lines[Math.floor(Math.random() * lines.length)]}"`;
-  }
-  modal.classList.toggle('active');
-}
-
-function toggleMeme() {
-  const memeModal = document.getElementById('memeModal');
-  const loreBtn = document.querySelector('.lore-toggle-btn');
-  const degenBtn = document.querySelector('.degen-toggle-btn');
-  const memeBtn = document.querySelector('.meme-toggle-btn');
-
-  memeModal.classList.toggle('active');
-
-  if (memeModal.classList.contains('active')) {
-    document.body.style.overflow = 'hidden'; // prevent scrolling
-    loreBtn.style.display = 'none';
-    degenBtn.style.display = 'none';
-    memeBtn.style.display = 'none';
-  } else {
-    document.body.style.overflow = ''; // restore scroll
-    loreBtn.style.display = '';
-    degenBtn.style.display = '';
-    memeBtn.style.display = '';
-  }
-}
-
 // --- Canvas Setup ---
 const canvas = document.getElementById('memeCanvas');
 const ctx = canvas.getContext('2d');
@@ -1985,7 +1938,9 @@ bgSelect.addEventListener('change', drawCanvas);
 </script>
 
 <script>
-  shareToX(); // ✅ This connects the Share button to your modal logic
+  document.addEventListener("DOMContentLoaded", () => {
+    shareToX();
+  });
 </script>
 
  </body>
