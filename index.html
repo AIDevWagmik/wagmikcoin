@@ -1985,31 +1985,7 @@ bgSelect.addEventListener('change', drawCanvas);
 </script>
 
 <script>
-
-  // ✅ Now paste the Share button logic exactly here:
-  document.getElementById("shareBtn").addEventListener("click", async () => {
-    canvas.toBlob(async (blob) => {
-      if (!blob) return;
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64data = reader.result;
-        const link = document.createElement("a");
-        link.href = base64data;
-        link.download = "wagmik-meme.png";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        const tweetText = encodeURIComponent(
-          "Just made this meme with $WAGMIK 🧠👑 #WAGMIK #Solana\n\nMake yours 👉 https://aidevwagmik.github.io"
-        );
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
-        window.open(twitterUrl, "_blank");
-      };
-      reader.readAsDataURL(blob);
-    });
-  });
- 
+  shareToX(); // ✅ This connects the Share button to your modal logic
 </script>
 
  </body>
