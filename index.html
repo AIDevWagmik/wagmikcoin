@@ -1,4 +1,4 @@
-<!-- Optimized WAGMIK Site -->
+ <!-- Optimized WAGMIK Site -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -948,7 +948,7 @@ body, html {
 
 section.about *,
 section.lore *,
-section:nth-of-type(4) *,     /* Bonk Tribute */
+section.bonk-tribute *,     /* Bonk Tribute */
 section#meme-gallery *,
 section:nth-of-type(6) *,     /* Jupiter Buy */
 .tokenomics-section * {
@@ -973,17 +973,65 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 /* Mobile override (≤767px) */
 @media (max-width: 767px) {
   .hero-banner {
-    height: 280px;
-    background-size: contain;
-    background-position: top;
-    background-repeat: no-repeat;
-  }
+  width: 100vw;
+  height: 480px; /* Adjust if needed */
+  background-image: url('banner.png');
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
 
   body {
     background-image: url('background.png');
     background-size: contain;
     background-repeat: repeat-y;
     background-position: top center;
+    
+  }
+}
+
+@media (max-width: 768px) {
+  .about .quote {
+    position: relative;
+    top: -20px; /* Adjust as needed: -10px, -15px, etc. */
+  }
+}
+
+@media (max-width: 768px) {
+  section.lore {
+    position: relative;
+    top: -20px; /* Tweak as needed: -10px, -15px */
+  }
+}
+
+@media (max-width: 768px) {
+  .bonk-tribute {
+    position: relative;
+    top: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tokenomics-section {
+    background-image: url('background-tokenomics.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: bottom center;
+
+    padding-bottom: 60px;
+    padding-top: 40px;
+    min-height: 600px;
+  }
+
+  .tokenomics-section footer {
+    text-align: center;
+    margin-top: 40px;
+    color: #fff;
+    position: relative;
+    z-index: 2;
   }
 }
 
@@ -1032,7 +1080,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   <p>Forged from chart tears and bottom buys, $WAGMIK was born in the depths of Solana Twitter and raised on hopium. Bonk was the cousin who made it. WAGMIK was left behind. Until now.</p>
 </section>
 
-<section class="section">
+<section class="section bonk-tribute">
   <h2>🔥 The Bonk Tribute</h2>
   <iframe
     src="https://dexscreener.com/solana/ysq96dvzrrmvrassyb2vr5chfwosqdrzqrgnmrrtr1l"
@@ -1087,6 +1135,11 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
       <li><strong>Utility:</strong> Vibes, Lore & Copium</li>
     </ul>
   </div>
+   <footer>
+   Made with memes, madness, and moon math ✨
+   <br/>
+   © 2025 $WAGMIK. No rights reserved.
+  </footer>
 </section>
 
 
@@ -1251,11 +1304,6 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   </a>
 </div>
   
-  <footer>
-   Made with memes, madness, and moon math ✨
-   <br/>
-   © 2025 $WAGMIK. No rights reserved.
-  </footer>
   <script>
    function createCoin() {
     const coin = document.createElement("div");
