@@ -1003,7 +1003,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 @media (max-width: 768px) {
   section.lore {
     position: relative;
-    top: -40px; /* Tweak as needed: -10px, -15px */
+    top: -60px; /* Tweak as needed: -10px, -15px */
   }
 }
 
@@ -1023,21 +1023,71 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    align-items: center;          /* Center contents horizontally */
+    justify-content: flex-start;  /* Let us control spacing manually */
 
+    padding: 40px 20px 80px;      /* Top, side, bottom */
     min-height: 100vh;
-    padding: 40px 20px 80px; /* Top, side, bottom padding */
+  }
+
+  .tokenomics-content {
+    margin-top: 40px;             /* Move the tokenomics text down */
+    align-self: stretch;          /* Let it fill width if needed */
+    text-align: center;           /* Optional: center content */
   }
 
   .tokenomics-section footer {
-    margin-top: auto;
+    margin-top: auto;             /* Push footer to the bottom */
     text-align: center;
     color: #fff;
     font-size: 0.9rem;
   }
+
+  .tokenomics-section *,
+  .lore *,
+  .about *,
+  .bonk-tribute *,
+  .quote,
+  footer,
+  h1, h2, h3, h4, h5, h6,
+  p, li, a, span {
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.75); /* Still here for contrast */
+  }
 }
 
  @media (max-width: 768px) {
+  section.section:nth-of-type(4) {
+    position: relative;
+    top: -20px;
+  }
+}
+
+ @media (max-width: 768px) {
+  /* ✅ BACKDROP BLUR & STYLE FOR KEY SECTIONS */
+  .tokenomics-content,
+  .about,
+  .lore,
+  .bonk-tribute,
+  .quote,
+  section.section:nth-of-type(4) {
+    background-color: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(6px);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 0 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* ✅ POSITION TWEAKS */
+  .tokenomics-content {
+    margin-top: 40px;
+  }
+
+  .lore {
+    position: relative;
+    top: -60px;
+  }
+
   section.section:nth-of-type(4) {
     position: relative;
     top: -20px;
