@@ -1826,5 +1826,53 @@ bgSelect.addEventListener('change', drawCanvas);
 [topTextInput, bottomTextInput].forEach(el => el.addEventListener('input', drawCanvas));
 </script>
 
+<script>
+function shareToX() {
+  const shareBtn = document.getElementById("shareBtn");
+  const shareModal = document.getElementById("shareModal");
+  const confirmBtn = document.getElementById("confirmShare");
+  const cancelBtn = document.getElementById("cancelShare");
+
+  shareBtn.addEventListener("click", async () => {
+    canvas.toBlob(async (blob) => {
+      if (!blob) return;
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const link = document.createElement("a");
+        link.href = reader.result;
+        link.download = "wagmik-meme.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        shareModal.classList.remove("hidden");
+      };
+      reader.readAsDataURL(blob);
+    });
+  });
+
+  cancelBtn.onclick = () => {
+    shareModal.classList.add("hidden");
+  };
+
+  confirmBtn.onclick = () => {
+    shareModal.classList.add("hidden");
+
+    const top = topTextInput.value.trim();
+    const bottom = bottomTextInput.value.trim();
+    const memeText = `${top} ${bottom}`.replace(/\s+/g, ' ').trim();
+
+    const tweetText = `${memeText}\n\nI just made a $WAGMIK meme! 💀🔥 Try it 👉 https://wagmik.xyz\n📌 Meme auto-downloaded — attach & post!`;
+    const tweetURL = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+
+    window.open(tweetURL, '_blank');
+  };
+}
+</script>
+
+<script>
+  shareToX();
+</script>
+  
  </body>
 </html>
