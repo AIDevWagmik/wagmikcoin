@@ -252,46 +252,46 @@ html, body {
 }
 
 @media (min-width: 769px) {
-  .floating-lore {
-    position: absolute;
-    top: -60px;
-    right: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 48px;
-    pointer-events: none;
-    z-index: 10;
-  }
+  .floating-lore {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    max-width: 200px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 24px;
+    pointer-events: none;
+  }
 
-  .lore-chapter {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
-    color: #FFDE6A;
-    font-size: 1.3em;
-    line-height: 1.6;
-    text-align: center;
-    pointer-events: none;
-    background: rgba(0, 0, 0, 0.35);
-    padding: 12px 16px;
-    border-radius: 16px;
-    display: inline-block;
-    backdrop-filter: blur(4px);
-    max-width: 220px;
-    word-wrap: break-word;
-    white-space: normal;
-    text-shadow:
-      -2px -2px 0 #000,
-       2px -2px 0 #000,
-      -2px  2px 0 #000,
-       2px  2px 0 #000;
-  }
+  .floating-lore .lore-chapter {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    color: #FFDE6A;
+    font-size: 1.3em;
+    line-height: 1.6;
+    text-align: right;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 12px 16px;
+    border-radius: 16px;
+    display: inline-block;
+    backdrop-filter: blur(4px);
+    max-width: 220px;
+    word-wrap: break-word;
+    white-space: normal;
+    text-shadow:
+      -2px -2px 0 #000,
+       2px -2px 0 #000,
+      -2px  2px 0 #000,
+       2px  2px 0 #000;
+  }
 
-  .lore-chapter.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  .floating-lore .lore-chapter.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .coin-fall {
@@ -871,7 +871,7 @@ input, select, textarea, button {
     align-items: center;
     max-height: unset;
     overflow-y: auto;
-    padding-bottom: 80px;
+    padding-bottom: 20px;
     overscroll-behavior: contain;
     touch-action: manipulation; /* allows input while preventing scroll gestures */
   }
@@ -884,7 +884,8 @@ input, select, textarea, button {
 
   #memeCanvas {
     touch-action: none;
-    margin-top: 0 auto 16px auto;
+    margin-top: 12px;
+    margin-bottom: 40px;
     display: block;
     z-index: 1;
     max-width: 100%;
@@ -1083,6 +1084,13 @@ body, html {
     font-size: 1em;
     padding: 12px;
   }
+}
+
+@media (min-width: 769px) {
+  .tokenomics-section {
+    background-size: 100% 100%; /* 🔥 Fill full width on desktop */
+    padding: 100px 0 0;         /* Optional: tighter left/right padding */
+  }
 }
 
   </style>
@@ -1724,6 +1732,11 @@ function resetMeme() {
 
   // Force redraw to clear canvas contents
   drawCanvas();
+
+  // 👇 Re-bind touch handlers after reset
+[...hats, ...chains, ...characters].forEach(obj => {
+  setupTouchHandlers(obj);
+ });
 }
 
 function downloadMeme() {
