@@ -198,32 +198,29 @@ html, body {
 @media (min-width: 769px) {
   .floating-lore {
     position: absolute;
-    top: 120px;
-    right: 30px;
+    top: 80px;
+    right: 40px;
     max-width: 240px;
+    z-index: 10;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 18px;
+    gap: 24px;
     pointer-events: none;
-    z-index: 5;
   }
 
   .floating-lore .lore-chapter {
+    background: rgba(0, 0, 0, 0.65);
+    color: #ffde6a;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 1em;
+    text-align: right;
+    text-shadow: 1px 1px 3px black;
+    max-width: 100%;
     opacity: 0;
     transform: translateY(30px);
     transition: opacity 0.6s ease, transform 0.6s ease;
-    background: rgba(0, 0, 0, 0.5);
-    color: #FFDE6A;
-    font-size: 1.05em;
-    line-height: 1.5;
-    padding: 10px 14px;
-    border-radius: 12px;
-    text-align: right;
-    pointer-events: none;
-    white-space: normal;
-    word-wrap: break-word;
-    text-shadow: 1px 1px 2px black;
   }
 
   .floating-lore .lore-chapter.visible {
@@ -971,17 +968,6 @@ body, html {
   }
 }
 
-@media (min-width: 769px) {
-  .tokenomics-section {
-  width: 100%;
-  background-color: transparent;
-  background-image: url("tokenomics-bg.png");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
- }
-}
-
   </style>
 
   <script src="https://terminal.jup.ag/main-v4.js"></script>
@@ -1072,7 +1058,7 @@ body, html {
 <section class="tokenomics-section">
   <div class="fade-between-swap-tokenomics"></div>
   <div class="tokenomics-content">
-    <h2>📊 Tokenomics</h2>>
+    <h2>📊 Tokenomics</h2>
     <ul>
       <li><strong>Total Supply:</strong> 1,000,000,000</li>
       <li><strong>Tax:</strong> 0%</li>
