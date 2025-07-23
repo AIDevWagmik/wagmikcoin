@@ -1939,7 +1939,7 @@ function shareToX() {
     const bottom = bottomTextInput.value.trim();
     const memeText = `${top} ${bottom}`.replace(/\s+/g, ' ').trim();
 
-    const tweetText = `${memeText}\n\nI just made a $WAGMIK meme! 💀🔥 Try it 👉 https://wagmik.xyz\n📌 Meme auto-downloaded — attach & post!`;
+    const tweetText = `${memeText}\n\nI just made a $WAGMIK meme! 💀🔥\n\n📌Try it 👉 https://wagmik.xyz`;
     const tweetURL = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
 
     window.open(tweetURL, '_blank');
