@@ -996,7 +996,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 @media (max-width: 768px) {
   .about .quote {
     position: relative;
-    top: -20px; /* Adjust as needed: -10px, -15px, etc. */
+    top: 20px; /* Adjust as needed: -10px, -15px, etc. */
   }
 }
 
@@ -1021,17 +1021,40 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     background-size: cover;
     background-position: bottom center;
 
-    padding-bottom: 60px;
-    padding-top: 40px;
-    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    min-height: 100vh;
+    padding: 40px 20px 100px; /* Top, side, bottom padding */
   }
 
   .tokenomics-section footer {
+    margin-top: auto;
     text-align: center;
-    margin-top: 40px;
     color: #fff;
+    font-size: 0.9rem;
+  }
+}
+
+ @media (max-width: 768px) {
+  section.section:nth-of-type(4) {
     position: relative;
-    z-index: 2;
+    top: -20px;
+  }
+}
+
+ @media (max-width: 768px) {
+  .tokenomics-section,
+  .about,
+  .lore,
+  .bonk-tribute,
+  .quote,
+  .section,
+  footer,
+  h1, h2, h3, h4, h5, h6,
+  p, li, span, a {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
   }
 }
 
