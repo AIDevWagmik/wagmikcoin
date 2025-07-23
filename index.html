@@ -1065,14 +1065,15 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
  @media (max-width: 768px) {
   /* ✅ BACKDROP BLUR & STYLE FOR KEY SECTIONS */
    .glass-box {
-  background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 20px;
-  padding: 20px 16px;
-  margin: 0 auto 30px auto;
-  box-shadow: 0 0 15px rgba(0,0,0,0.3);
-  max-width: 90vw;
+  background: rgba(0, 0, 0, 0.25);       /* Less opaque for lighter glass effect */
+  backdrop-filter: blur(4px);           /* Softer blur */
+  -webkit-backdrop-filter: blur(4px);   /* Safari support */
+  border-radius: 16px;                  /* Optional: slightly softer corners */
+  padding: 12px 16px;                   /* Less padding = tighter fit */
+  margin: 10px auto;                    /* Centers it with less vertical spacing */
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);/* Optional softer shadow */
+  display: inline-block;                /* Shrinks to fit content */
+  max-width: 90vw;                      /* Mobile-safe max width */
 }
 
   /* ✅ POSITION TWEAKS */
@@ -1180,9 +1181,8 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   <div id="jupiter-terminal"></div>
 </section>
  
-<section class="tokenomics-section glass-box">
-  <div class="fade-between-swap-tokenomics"></div>
-  <div class="tokenomics-content">
+<section class="tokenomics-section">
+  <div class="tokenomics-content glass-box">
     <ul>
       <li><strong>Total Supply:</strong> 1,000,000,000</li>
       <li><strong>Tax:</strong> 0%</li>
