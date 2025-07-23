@@ -254,26 +254,37 @@ html, body {
 @media (min-width: 769px) {
   .floating-lore {
     position: absolute;
-    top: 60px;
-    right: 40px;
-    max-width: 260px;
-    z-index: 10;
+    top: 120px;
+    right: 30px;
+    max-width: 240px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 18px;
     pointer-events: none;
+    z-index: 5;
   }
 
   .floating-lore .lore-chapter {
-    word-wrap: break-word;
-    white-space: normal;
-    background: rgba(0,0,0,0.6);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    background: rgba(0, 0, 0, 0.5);
+    color: #FFDE6A;
+    font-size: 1.05em;
+    line-height: 1.5;
     padding: 10px 14px;
     border-radius: 12px;
-    font-size: 1em;
     text-align: right;
-    text-shadow: 1px 1px 3px black;
+    pointer-events: none;
+    white-space: normal;
+    word-wrap: break-word;
+    text-shadow: 1px 1px 2px black;
+  }
+
+  .floating-lore .lore-chapter.visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -868,10 +879,10 @@ input, select, textarea, button {
   #memeCanvas {
     touch-action: none;
     margin-top: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     display: block;
     z-index: 1;
-    max-width: 100%;
+    max-width: 95%;
     height: auto;
     box-sizing: border-box;
     touch-action: none;
@@ -1071,10 +1082,13 @@ body, html {
 
 @media (min-width: 769px) {
   .tokenomics-section {
-    background-size: cover;
-    background-position: center;
-    padding: 100px 20px 20px;
-  }
+  width: 100%;
+  background-color: transparent;
+  background-image: url("tokenomics-bg.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+ }
 }
 
   </style>
@@ -1602,9 +1616,12 @@ function createAccessory(type, imgSrc, scale = 1.0) {
   setupTouchHandlers(obj); // ← Move here, outside of onload
 
   // ✅ Only rely on onload for redraw, not logic
-  img.onload = () => {
-    drawCanvas();
-  };
+ img.onload = () => {
+  setupDragAndResize(obj);
+  setupTouchHandlers(obj);      // ✅ Ensure handlers are bound on first load
+  window.activeTouchObj = null; // ✅ Reset active touch in case it's stuck
+  drawCanvas();
+ };
 }
 
 function drawCanvas() {
@@ -1719,7 +1736,10 @@ function resetMeme() {
 
   // 👇 Re-bind touch handlers after reset
 [...hats, ...chains, ...characters].forEach(obj => {
-  setupTouchHandlers(obj);
+  setupTouchHandlers(obj);        // Rebind events
+  obj.dragging = false;           // Reset drag state
+  obj.gestureActive = false;      // Reset gesture state
+  window.activeTouchObj = null;   // Reset global reference
  });
 }
 
