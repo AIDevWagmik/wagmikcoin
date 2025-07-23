@@ -1071,12 +1071,12 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   .lore,
   .bonk-tribute,
   .quote {
-    background-color: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(3.5px);
-    border-radius: 6px;
-    padding: 10px 12px;
-    margin: 0 10px 16px;
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    background: rgba(0, 0, 0, 0.3); /* More transparent */
+    backdrop-filter: blur(8px);     /* Lighter blur */
+    -webkit-backdrop-filter: blur(8px); /* Safari support */
+    border-radius: 16px;            /* Softer corners */
+    padding: 20px;                  /* Reduce bulkiness */
+    margin: 0 10px;                 /* Optional tighter edge */
   }
 
   /* ✅ POSITION TWEAKS */
@@ -1187,7 +1187,6 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 <section class="tokenomics-section">
   <div class="fade-between-swap-tokenomics"></div>
   <div class="tokenomics-content">
-    <h2>📊 Tokenomics</h2>
     <ul>
       <li><strong>Total Supply:</strong> 1,000,000,000</li>
       <li><strong>Tax:</strong> 0%</li>
