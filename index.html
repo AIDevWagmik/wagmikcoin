@@ -1064,24 +1064,20 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
  @media (max-width: 768px) {
   /* ✅ BACKDROP BLUR & STYLE FOR KEY SECTIONS */
-   .memes-section,
-  .jupiter-section,
-  .tokenomics-content,
-  .about,
-  .lore,
-  .bonk-tribute,
-  .quote {
-    background: rgba(0, 0, 0, 0.3); /* More transparent */
-    backdrop-filter: blur(8px);     /* Lighter blur */
-    -webkit-backdrop-filter: blur(8px); /* Safari support */
-    border-radius: 16px;            /* Softer corners */
-    padding: 20px;                  /* Reduce bulkiness */
-    margin: 0 10px;                 /* Optional tighter edge */
-  }
+   .glass-box {
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 20px;
+  padding: 20px 16px;
+  margin: 0 auto 30px auto;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  max-width: 90vw;
+}
 
   /* ✅ POSITION TWEAKS */
   .tokenomics-content {
-    margin-top: 40px;
+    margin-top: 20px;
   }
 
   .lore {
@@ -1111,7 +1107,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
 <div class="fade-line-header-bottom"></div>
 
-<section class="section about">
+<section class="section about glass-box">
   <h2>🚀 About</h2>
   <p>$WAGMIK is the coin for every Solana degen who bought the top, paper-handed the bottom, and still thinks memes are a valid investment strategy.
   </p>
@@ -1135,12 +1131,12 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   </div>
 </section>
 
-<section class="section lore">
+<section class="section lore glass-box">
   <h2>🧬 Lore</h2>
   <p>Forged from chart tears and bottom buys, $WAGMIK was born in the depths of Solana Twitter and raised on hopium. Bonk was the cousin who made it. WAGMIK was left behind. Until now.</p>
 </section>
 
-<section class="section bonk-tribute">
+<section class="section bonk-tribute glass-box">
   <h2>🔥 The Bonk Tribute</h2>
   <iframe
     src="https://dexscreener.com/solana/ysq96dvzrrmvrassyb2vr5chfwosqdrzqrgnmrrtr1l"
@@ -1151,7 +1147,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 </section>
 
 <!-- 🚀 Meme Gallery Section -->
-<section class="section memes-section" id="meme-gallery">
+<section class="section memes-section glass-box" id="meme-gallery">
   <h2>😂 Community Memes</h2>
   <div class="gallery-wrapper">
     <div class="gallery-track" id="memeTrack">
@@ -1179,12 +1175,12 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 </section>
 
 <!-- Jupiter Swap Section -->
-<section class="section jupiter-section">
+<section class="section jupiter-section glass-box">
   <h2>🛒 Use Jupiter to Buy $WAGMIK</h2>
   <div id="jupiter-terminal"></div>
 </section>
  
-<section class="tokenomics-section">
+<section class="tokenomics-section glass-box">
   <div class="fade-between-swap-tokenomics"></div>
   <div class="tokenomics-content">
     <ul>
