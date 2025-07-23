@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>$WAGMIK – We’re All Gonna Make It… Kinda</title>
   <!-- All original and functional code preserved -->
   <style>
     html {
@@ -30,10 +29,8 @@
       color: #fff;
       text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
     }
-    .fade-between {
-      background: linear-gradient(to bottom, rgba(26, 14, 45, 1), rgba(26, 14, 45, 0));
-      height: 80px;
-    }
+
+    
     @media (max-width: 768px) {
       section {
         padding: 40px 15px;
@@ -53,33 +50,10 @@
  <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>
-   $WAGMIK – We’re All Gonna Make It… Kinda
-  </title>
+ 
   <style>
    body, .section p, .tokenomics-content li {
   text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.75);
-}
-
-header h1 {
-  font-size: 3.2em;
-  color: #ffe06b;
-  text-shadow:
-    -2px -2px 4px rgba(0, 0, 0, 0.85),
-     2px -2px 4px rgba(0, 0, 0, 0.85),
-    -2px  2px 4px rgba(0, 0, 0, 0.85),
-     2px  2px 4px rgba(0, 0, 0, 0.85);
-}
-
-header p {
-  font-size: 1.4em;
-  margin-top: 12px;
-  color: #ffa500;
-  text-shadow:
-    -1px -1px 3px rgba(0, 0, 0, 0.8),
-     1px -1px 3px rgba(0, 0, 0, 0.8),
-    -1px  1px 3px rgba(0, 0, 0, 0.8),
-     1px  1px 3px rgba(0, 0, 0, 0.8);
 }
    
    body {
@@ -104,13 +78,6 @@ html, body {
   overflow-x: hidden;
 }
 
-    header {
-      position: relative;
-      background: url('banner.png') center/cover no-repeat;
-      max-height: 400px;
-      padding: 80px 20px 40px;
-      text-align: center;
-    }
 
    header::before {
   content: none;
@@ -161,29 +128,6 @@ html, body {
       border-radius: 25px;
       text-decoration: none;
     }
-
-    .tokenomics img {
-      display: block;
-      margin: 30px auto;
-      width: 180px;
-      border-radius: 50%;
-    }
-
-    .bottom-banner {
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
-  background: url('bottom-banner.png') no-repeat center center;
-  background-size: cover;
-  background-attachment: scroll;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-}
-  .bottom-banner img {
-  display: none; /* hide the tag, now it's background-image */
-}
 
 
 /* Meme Gallery */
@@ -315,7 +259,6 @@ html, body {
   position: relative;
   width: 100%;
   min-height: 100vh;
-  background: url('tokenomics-bg.png') no-repeat center center;
   background-size: cover;
   background-attachment: scroll;
   display: flex;
@@ -394,38 +337,6 @@ footer {
   pointer-events: none;
 }
 
-.fade-line-header-bottom {
-  position: absolute;
-  top: 305px;
-  left: 0;
-  width: 100%;
-  height: 80px; /* adjust for stronger/softer fade */
-  background: linear-gradient(to bottom, rgba(26, 14, 45, 1), rgba(26, 14, 45, 0));
-  z-index: 15;
-  pointer-events: none;
-}
-
-.fade-between-swap-tokenomics {
-  position: absolute;
-  top: -5px;
-  left: 0;
-  width: 100%;
-  height: 80px; /* adjust for stronger/softer fade */
-  background: linear-gradient(to bottom, rgba(26, 14, 45, 1), rgba(26, 14, 45, 0));
-  z-index: 20;
-  pointer-events: none;
-}
-
-.fade-between-tokenomics-bottom {
-  position: absolute;
-  top: 0px;
-  left: 0;
-  width: 100%;
-  height: 80px; /* adjust for stronger/softer fade */
-  background: linear-gradient(to bottom, rgba(26, 14, 45, 1), rgba(26, 14, 45, 0));
-  z-index: 20;
-  pointer-events: none;
-}
 
 /* Floating Buttons */
 .floating-button {
@@ -464,15 +375,6 @@ footer {
   header {
     padding: 60px 10px 30px;
     background-position: center top;
-  }
-
-  header h1 {
-    font-size: 2.2em;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
-  }
-
-  header p {
-    font-size: 1.1em;
   }
 
   .section {
@@ -520,17 +422,6 @@ footer {
 }
 
 @media (max-width: 768px) {
-  header {
-    background-position: center -120px; /* Move banner image up */
-    max-height: 300px;
-    padding-bottom: 20px;
-  }
-
-  .fade-line-header-bottom {
-    top: 210px; /* Adjust fade position under new banner height */
-    height: 65px;
-    background: linear-gradient(to top, rgba(26, 14, 45, 0), rgba(26, 14, 45, 1));
-  }
 
   .section.about {
     margin-top: 0;
@@ -1099,11 +990,6 @@ body, html {
  
  <body>
   
-<header>
-  <h1>$WAGMIK</h1>
-  <p>We’re All Gonna Make It… Kinda</p>
-</header>
-  
 <div class="body-background-fade"></div>
 
 <div class="coin-fall" id="coin-fall"></div>
@@ -1186,26 +1072,16 @@ body, html {
 <section class="tokenomics-section">
   <div class="fade-between-swap-tokenomics"></div>
   <div class="tokenomics-content">
-    <h2>📊 Tokenomics</h2>
-    <img src="coin.png" alt="$WAGMIK Coin" class="token-logo" />
+    <h2>📊 Tokenomics</h2>>
     <ul>
       <li><strong>Total Supply:</strong> 1,000,000,000</li>
       <li><strong>Tax:</strong> 0%</li>
       <li><strong>Chain:</strong> Solana</li>
       <li><strong>Utility:</strong> Vibes, Lore & Copium</li>
     </ul>
-    <div style="margin-top: 30px;">
-      <a href="https://x.com/wagmikdotsol" target="_blank">
-        <img src="x_image.png" alt="Twitter/X" style="width:42px; height:42px;" />
-      </a>
-    </div>
   </div>
 </section>
 
-<div class="bottom-banner">
-<div class="fade-between-tokenomics-bottom"></div>
-  <img src="bottom-banner.png" alt="Crypto Influencers Holding WAGMIK Coins" />
-  </div>
 
 <!-- Lore Button & Modal -->
 <button class="floating-button lore-toggle-btn" onclick="toggleLore()">📜 Read Lore</button>
