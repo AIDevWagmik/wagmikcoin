@@ -252,46 +252,29 @@ html, body {
 }
 
 @media (min-width: 769px) {
-  .floating-lore {
-    position: absolute;
-    top: 80px;
-    right: 20px;
-    max-width: 200px;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 24px;
-    pointer-events: none;
-  }
+  .floating-lore {
+    position: absolute;
+    top: 60px;
+    right: 40px;
+    max-width: 260px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 18px;
+    pointer-events: none;
+  }
 
-  .floating-lore .lore-chapter {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
-    color: #FFDE6A;
-    font-size: 1.3em;
-    line-height: 1.6;
-    text-align: right;
-    background: rgba(0, 0, 0, 0.35);
-    padding: 12px 16px;
-    border-radius: 16px;
-    display: inline-block;
-    backdrop-filter: blur(4px);
-    max-width: 220px;
-    word-wrap: break-word;
-    white-space: normal;
-    text-shadow:
-      -2px -2px 0 #000,
-       2px -2px 0 #000,
-      -2px  2px 0 #000,
-       2px  2px 0 #000;
-  }
-
-  .floating-lore .lore-chapter.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  .floating-lore .lore-chapter {
+    word-wrap: break-word;
+    white-space: normal;
+    background: rgba(0,0,0,0.6);
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 1em;
+    text-align: right;
+    text-shadow: 1px 1px 3px black;
+  }
 }
 
 .coin-fall {
@@ -885,7 +868,7 @@ input, select, textarea, button {
   #memeCanvas {
     touch-action: none;
     margin-top: 12px;
-    margin-bottom: 40px;
+    margin-bottom: 16px;
     display: block;
     z-index: 1;
     max-width: 100%;
@@ -1087,10 +1070,11 @@ body, html {
 }
 
 @media (min-width: 769px) {
-  .tokenomics-section {
-    background-size: 100% 100%; /* 🔥 Fill full width on desktop */
-    padding: 100px 0 0;         /* Optional: tighter left/right padding */
-  }
+  .tokenomics-section {
+    background-size: cover;
+    background-position: center;
+    padding: 100px 20px 20px;
+  }
 }
 
   </style>
@@ -1591,7 +1575,6 @@ function drawMeme() {
 }
 
 function createAccessory(type, imgSrc, scale = 1.0) {
-  // 🧼 Check for existing instance of this imageSrc
   const targetArray = type === 'hat' ? hats : type === 'chain' ? chains : characters;
   if (targetArray.some(obj => obj.img.src === imgSrc)) return;
 
@@ -1613,14 +1596,15 @@ function createAccessory(type, imgSrc, scale = 1.0) {
   };
 
   targetArray.push(obj);
-  setupDragAndResize(obj);
-  setupTouchHandlers(obj);
 
-  img.onload = () => {
+  // ✅ Always attach handlers
   setupDragAndResize(obj);
-  setupTouchHandlers(obj);
-  drawCanvas();
- };
+  setupTouchHandlers(obj); // ← Move here, outside of onload
+
+  // ✅ Only rely on onload for redraw, not logic
+  img.onload = () => {
+    drawCanvas();
+  };
 }
 
 function drawCanvas() {
