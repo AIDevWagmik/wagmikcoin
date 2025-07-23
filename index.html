@@ -1064,18 +1064,19 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
  @media (max-width: 768px) {
   /* ✅ BACKDROP BLUR & STYLE FOR KEY SECTIONS */
+   .memes-section,
+  .jupiter-section,
   .tokenomics-content,
   .about,
   .lore,
   .bonk-tribute,
-  .quote,
-  section.section:nth-of-type(4) {
-    background-color: rgba(0, 0, 0, 0.35);
-    backdrop-filter: blur(6px);
-    border-radius: 12px;
-    padding: 16px;
-    margin: 0 16px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+  .quote {
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(3.5px);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin: 0 10px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
   }
 
   /* ✅ POSITION TWEAKS */
@@ -1150,7 +1151,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 </section>
 
 <!-- 🚀 Meme Gallery Section -->
-<section class="section" id="meme-gallery">
+<section class="section memes-section" id="meme-gallery">
   <h2>😂 Community Memes</h2>
   <div class="gallery-wrapper">
     <div class="gallery-track" id="memeTrack">
@@ -1178,7 +1179,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 </section>
 
 <!-- Jupiter Swap Section -->
-<section class="section">
+<section class="section jupiter-section">
   <h2>🛒 Use Jupiter to Buy $WAGMIK</h2>
   <div id="jupiter-terminal"></div>
 </section>
@@ -1339,6 +1340,9 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
 <!-- 🌐 Floating App Links (Left Center) -->
 <div class="floating-apps">
+ <a href="https://x.com/WAGMIKdotSOL" target="_blank">
+    <img src="x_image.png" alt="Twitter X" class="app-logo" />
+  </a>
   <a href="https://bullx.io/login?redirectUrl=" target="_blank">
     <img src="bullx.png" alt="BullX" class="app-logo" />
   </a>
@@ -1350,18 +1354,6 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   </a>
 </div>
 
-<!-- 🌐 Floating App Links (Left Center) -->
-<div class="floating-apps">
-  <a href="https://bullx.io/login?redirectUrl=" target="_blank">
-    <img src="bullx.png" alt="BullX" class="app-logo" />
-  </a>
-  <a href="https://axiom.trade/" target="_blank">
-    <img src="axiom.png" alt="Axiom" class="app-logo" />
-  </a>
-  <a href="https://photon-sol.tinyastro.io/" target="_blank">
-    <img src="photon.png" alt="Photon" class="app-logo" />
-  </a>
-</div>
   
   <script>
    function createCoin() {
