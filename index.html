@@ -230,63 +230,6 @@ html, body {
       100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
     }
 
-.tokenomics-section {
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
-  background-size: cover;
-  background-attachment: scroll;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 100px 20px 20px;
-  box-sizing: border-box;
-  z-index: 1;
-}
-
-.tokenomics-section {
-  margin-bottom: 0 !important;
-  padding-bottom: 0 !important;
-}
-
-.tokenomics-section + .bottom-banner {
-  margin-top: 0 !important;
-  padding-bottom: 60px;
-}
-
-.tokenomics-content {
-  max-width: 800px;
-  text-align: center;
-  color: #fff;
-}
-
-.token-logo {
-  width: 120px;
-  margin: 20px auto;
-  display: block;
-}
-
-.tokenomics-content h2 {
-  font-size: 2em;
-  margin-bottom: 20px;
-}
-
-.tokenomics-content ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.tokenomics-content li {
-  margin-bottom: 10px;
-  font-size: 1.4em;
-}
-
-    /* 🔧 Remove gap above Tokenomics */
-section.section + .tokenomics-section {
-  margin-top: -40px; /* adjust this number as needed */
-}
-
 
 footer {
   display: flex;
@@ -1092,27 +1035,33 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   }
 }
 
-@media screen and (min-width: 768px) {
-  .tokenomics-section {
-    background: url('bottom-banner.png') no-repeat center bottom;
-    background-size: cover;
-    background-color: #0b003d; /* fallback background if image fails */
-    padding-bottom: 150px; /* give space for the banner/footer area */
-  }
-
-  .tokenomics-content {
-    padding-bottom: 40px; /* prevent content from overlapping the footer/banner */
-  }
-
-  .tokenomics-section footer {
-    text-align: center;
-    color: white;
-    padding-top: 20px;
-    font-size: 14px;
-  }
+/* === Global Tokenomics Section Styling === */
+.tokenomics-section {
+  background: url('bottom-banner.png') no-repeat center bottom;
+  background-size: cover;
+  background-color: #0b003d; /* fallback color */
+  padding: 80px 20px 150px; /* top, sides, bottom space */
+  text-align: center;
+  color: white;
 }
 
+/* Tokenomics text content */
+.tokenomics-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+  font-size: 18px;
+  line-height: 1.6;
+}
 
+/* Footer inside tokenomics */
+.tokenomics-section footer {
+  font-size: 14px;
+  padding-top: 20px;
+  color: #ffffff;
+  text-align: center;
+  opacity: 0.8;
+}
 
   </style>
 
