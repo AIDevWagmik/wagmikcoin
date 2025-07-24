@@ -1078,7 +1078,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
   /* ✅ POSITION TWEAKS */
   .tokenomics-content {
-    margin-top: 100px;
+    margin-top: 120px;
   }
 
   .lore {
@@ -1587,9 +1587,10 @@ function createAccessory(type, imgSrc, scale = 1.0) {
   img.src = imgSrc;
 
   const obj = {
-    img,
-    x: 0,
-    y: 0,
+  role: type, // 👈 ADD THIS LINE
+  img,
+  x: 0,
+  y: 0,
     scale,
     rotation: 0,
     dragging: false,
@@ -1623,7 +1624,17 @@ function drawCanvas() {
     ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
   }
  
- [...characters, ...chains, ...hats].forEach(obj => {
+const allObjects = [...hats, ...chains, ...characters];
+
+allObjects.sort((a, b) => {
+  const getPriority = (obj) =>
+    obj.img.src.includes('hat') ? 3 :
+    obj.img.src.includes('chain') ? 2 :
+    obj.img.src.includes('character') ? 1 : 0;
+  return getPriority(a) - getPriority(b);
+});
+
+allObjects.forEach(obj => {
   if (!obj.img || !obj.img.src) return;
 
   const w = obj.img.width * obj.scale;
@@ -1634,53 +1645,51 @@ function drawCanvas() {
   ctx.rotate(obj.rotation);
   ctx.drawImage(obj.img, -w / 2, -h / 2, w, h);
 
-  if (window.innerWidth < 768 && obj === activeTouchObj) {
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
-  ctx.lineWidth = 2;
-  ctx.setLineDash([6, 4]);
-  ctx.strokeRect(-w / 2, -h / 2, w, h);
-  ctx.setLineDash([]);
+  if (window.innerWidth < 768 && obj === activeTouchObj) {
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 4]);
+    ctx.strokeRect(-w / 2, -h / 2, w, h);
+    ctx.setLineDash([]);
 
-  // Draw ❌ button
-  const btnSize = 24;
-  const btnX = -w / 2 - btnSize / 2;
-  const btnY = -h / 2 - btnSize / 2;
+    const btnSize = 24;
+    const btnX = -w / 2 - btnSize / 2;
+    const btnY = -h / 2 - btnSize / 2;
 
-  ctx.fillStyle = 'red';
-  ctx.beginPath();
-  ctx.arc(btnX + btnSize / 2, btnY + btnSize / 2, btnSize / 2, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = 'white';
-  ctx.font = '16px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('✕', btnX + btnSize / 2, btnY + btnSize / 2);
+    ctx.fillStyle = 'red';
+    ctx.beginPath();
+    ctx.arc(btnX + btnSize / 2, btnY + btnSize / 2, btnSize / 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'white';
+    ctx.font = '16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('✕', btnX + btnSize / 2, btnY + btnSize / 2);
 
-  // Save position to check on touch
-  const cos = Math.cos(obj.rotation);
-  const sin = Math.sin(obj.rotation);
+    const cos = Math.cos(obj.rotation);
+    const sin = Math.sin(obj.rotation);
+    const centerX = obj.x + (obj.img.width * obj.scale) / 2;
+    const centerY = obj.y + (obj.img.height * obj.scale) / 2;
 
-  const centerX = obj.x + (obj.img.width * obj.scale) / 2;
-  const centerY = obj.y + (obj.img.height * obj.scale) / 2;
+    const btnCenterX = centerX + (btnX * cos - btnY * sin);
+    const btnCenterY = centerY + (btnX * sin + btnY * cos);
 
-  const btnCenterX = centerX + (btnX * cos - btnY * sin);
-  const btnCenterY = centerY + (btnX * sin + btnY * cos);
+    obj.deleteBtnBounds = {
+      x: btnCenterX - btnSize / 2,
+      y: btnCenterY - btnSize / 2,
+      size: btnSize,
+      centerX: btnCenterX,
+      centerY: btnCenterY
+    };
+  }
 
-obj.deleteBtnBounds = {
-  x: btnCenterX - btnSize / 2,
-  y: btnCenterY - btnSize / 2,
-  size: btnSize,
-  centerX: btnCenterX,
-  centerY: btnCenterY
- };
-} 
+  if (window.innerWidth >= 768) {
+    delete obj.deleteBtnBounds;
+  }
 
-if (window.innerWidth >= 768) {
-  delete obj.deleteBtnBounds; // Clean up desktop mode
-}
- 
-  ctx.restore();
+  ctx.restore();
 });
+
 
   ctx.textBaseline = 'top'; // add this
   ctx.font = '28px Impact, sans-serif';
@@ -1725,13 +1734,14 @@ function resetMeme() {
   // Force redraw to clear canvas contents
   drawCanvas();
 
-  // 👇 Re-bind touch handlers after reset
-[...hats, ...chains, ...characters].forEach(obj => {
-  setupTouchHandlers(obj);        // Rebind events
-  obj.dragging = false;           // Reset drag state
-  obj.gestureActive = false;      // Reset gesture state
-  window.activeTouchObj = null;   // Reset global reference
- });
+setTimeout(() => {
+  [...hats, ...chains, ...characters].forEach(obj => {
+    setupTouchHandlers(obj);
+    obj.dragging = false;
+    obj.gestureActive = false;
+  });
+  window.activeTouchObj = null;
+ }, 50); // short delay ensures canvas is ready
 }
 
 function downloadMeme() {
@@ -1739,6 +1749,20 @@ function downloadMeme() {
   link.download = 'wagmik-meme.png';
   link.href = canvas.toDataURL('image/png');
   link.click();
+}
+
+function enforceLayerOrder() {
+  const allObjects = [...characters, ...chains, ...hats];
+  allObjects.forEach(obj => {
+    if (obj.role === 'character') {
+      // Characters should draw behind
+      const index = allObjects.indexOf(obj);
+      if (index > -1) {
+        allObjects.splice(index, 1);
+        allObjects.unshift(obj);
+      }
+    }
+  });
 }
 
 function deleteSelectedObject() {
