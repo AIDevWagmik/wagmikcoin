@@ -34,18 +34,6 @@
   text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.75);
 }
    
-   body {
-  position: relative;
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: url('background.png') no-repeat center top;
-  background-size: 110%; /* Zoomed-out look while covering */
-  background-attachment: scroll; /* Moves with scroll */
-  background-repeat: no-repeat;
-  background-color: #1a0e2d; /* fallback behind transparent areas */
-  color: #fff;
-  overflow-x: hidden;
-}
 
   body {
   overflow-x: hidden;
@@ -175,31 +163,31 @@ html, body {
 
 @media (min-width: 769px) {
   .floating-lore {
-    position: absolute;
-    top: 80px;
-    right: 40px;
-    max-width: 240px;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 24px;
-    pointer-events: none;
-  }
+  position: absolute;
+  top: 160px; /* push down below the top banner/logo */
+  right: 5vw; /* position relative to screen width */
+  max-width: 300px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 24px;
+  pointer-events: none;
+}
 
   .floating-lore .lore-chapter {
-    background: rgba(0, 0, 0, 0.65);
-    color: #ffde6a;
-    padding: 10px 14px;
-    border-radius: 12px;
-    font-size: 1em;
-    text-align: right;
-    text-shadow: 1px 1px 3px black;
-    max-width: 100%;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-  }
+  background: rgba(0, 0, 0, 0.65);
+  color: #ffde6a;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 1em;
+  text-align: right;
+  text-shadow: 1px 1px 3px black;
+  max-width: 100%;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
 
   .floating-lore .lore-chapter.visible {
     opacity: 1;
@@ -944,13 +932,6 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 }
 
 @media (max-width: 768px) {
-  section.lore {
-    position: relative;
-    top: -30px; /* Tweak as needed: -10px, -15px */
-  }
-}
-
-@media (max-width: 768px) {
   .bonk-tribute {
     position: relative;
     top: 30px;
@@ -1036,32 +1017,41 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 }
 
 @media screen and (min-width: 768px) {
-  .bottom-banner {
-    background: url('bottom-banner.png') no-repeat center bottom;
-    background-size: cover;
-    background-color: #0b003d; /* fallback */
-    width: 100%;
-    height: 200px; /* adjust height as needed */
+  body {
+    background:
+      url('bottom-banner.png') no-repeat center bottom,
+      url('background.png') no-repeat center top;
+    background-size: 100% auto, 110%; /* bottom banner full width, background zoomed */
+    background-attachment: scroll, scroll;
+    background-repeat: no-repeat, no-repeat;
+    background-color: #1a0e2d;
   }
 
   .tokenomics-section {
-    padding-bottom: 60px; /* Give space before banner */
-  }
-
-  .tokenomics-section footer {
-    text-align: center;
-    color: white;
-    font-size: 14px;
-    padding-top: 20px;
+    padding-bottom: 220px; /* Creates space so footer sits ON banner */
   }
 
   .tokenomics-content {
     max-width: 800px;
     margin: 0 auto;
-    color: white;
-    font-size: 18px;
-    line-height: 1.6;
     text-align: center;
+    color: white;
+    position: relative;
+    z-index: 2;
+  }
+
+  .tokenomics-section footer {
+    font-size: 14px;
+    margin-top: 40px;
+    position: relative;
+    z-index: 2;
+  }
+}
+
+@media (min-width: 768px) {
+  .section.lore {
+    position: relative;
+    top: -80px; /* 👈 raise the section up, adjust this value as needed */
   }
 }
 
@@ -1173,9 +1163,6 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
    © 2025 $WAGMIK. No rights reserved.
   </footer>
 </section>
-
- <!-- Bottom Banner Section -->
-<section class="bottom-banner"></section>
 
 
 <!-- Lore Button & Modal -->
