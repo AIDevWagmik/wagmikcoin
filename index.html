@@ -1008,7 +1008,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
   .lore {
     position: relative;
-    top: -80px;
+    top: -140px;
   }
 
   section.section:nth-of-type(4) {
@@ -1019,47 +1019,40 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
 @media screen and (min-width: 768px) {
   body {
-    position: relative;
     background:
+      url('bottom-banner.png') no-repeat center bottom,
       url('background.png') no-repeat center top;
-    background-size: 110%;
-    background-attachment: scroll;
-    background-repeat: no-repeat;
+    background-size: 100% 200px, 110%; /* bottom-banner is 200px tall */
+    background-attachment: scroll, scroll;
+    background-repeat: no-repeat, no-repeat;
     background-color: #1a0e2d;
-  }
-
-  body::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 200px; /* how much of the banner to show */
-    background: url('bottom-banner.png') no-repeat center bottom;
-    background-size: 100% auto;
-    z-index: 0;
+    margin: 0;
+    overflow-x: hidden;
   }
 
   .tokenomics-section {
-    padding-bottom: 300px; /* ensures content doesn't overlap the banner */
+    padding-bottom: 200px; /* Gives space for the banner/footer */
+  }
+
+  .tokenomics-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    color: white;
     position: relative;
-    z-index: 1;
+    z-index: 2;
   }
 
   .tokenomics-section footer {
-    text-align: center;
-    color: white;
     font-size: 14px;
     margin-top: 40px;
     position: relative;
     z-index: 2;
   }
-}
 
-@media (min-width: 768px) {
-  .section.lore {
-    position: relative;
-    top: -80px; /* 👈 raise the section up, adjust this value as needed */
+  html, body {
+    height: auto;
+    overflow-y: auto;
   }
 }
 
