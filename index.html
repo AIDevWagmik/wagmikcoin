@@ -660,7 +660,7 @@ input, select, textarea, button {
     align-items: center;
     max-height: none !important;
     overflow-y: visible;
-    padding-bottom: 120px;
+    padding-bottom: 100px;
     padding-top: 10px;
     overscroll-behavior: contain;
     touch-action: manipulation; /* allows input while preventing scroll gestures */
@@ -675,7 +675,7 @@ input, select, textarea, button {
   #memeCanvas {
     touch-action: none;
     margin-top: -10px;
-    margin-bottom: 100px;
+    margin-bottom: 60px;
     display: block;
     z-index: 1;
     max-width: 95%;
@@ -690,7 +690,7 @@ input, select, textarea, button {
     display: flex !important;
     flex-direction: column;
     justify-content: flex-start;
-    padding-bottom: 60px;
+    padding-bottom: 50px;
   }
 
   canvas {
@@ -1581,41 +1581,42 @@ function drawMeme() {
 }
 
 function createAccessory(type, imgSrc, scale = 1.0) {
-  const targetArray = type === 'hat' ? hats : type === 'chain' ? chains : characters;
-  if (targetArray.some(obj => obj.img.src === imgSrc)) return;
+  const targetArray = type === 'hat' ? hats : type === 'chain' ? chains : characters;
+  if (targetArray.some(obj => obj.img.src === imgSrc)) return;
 
-  const img = new Image();
-  img.src = imgSrc;
+  const img = new Image();
+  img.src = imgSrc;
 
- const canvasCenterX = canvas.width / 2;
- const canvasCenterY = canvas.height / 2;
+  const obj = {
+    role: type,
+    img,
+    x: 0,
+    y: 0,
+    scale,
+    rotation: 0,
+    dragging: false,
+    gestureActive: false,
+    offsetX: 0,
+    offsetY: 0,
+    initialScale: scale,
+    initialRotation: 0,
+  };
 
- const obj = {
-  role: type, // 👈 ADD THIS LINE
-  img,
-  x: canvasCenterX - (img.width * scale) / 2,
-  y: canvasCenterY - (img.height * scale) / 2,
-    scale,
-    rotation: 0,
-    dragging: false,
-    gestureActive: false,
-    offsetX: 0,
-    offsetY: 0,
-    initialScale: scale,
-    initialRotation: 0,
-  };
+  targetArray.push(obj);
 
-  targetArray.push(obj);
+ img.onload = () => {
+  const maxX = canvas.width - (img.width * obj.scale);
+  const maxY = canvas.height - (img.height * obj.scale);
 
-  // ✅ Always attach handlers
-  setupDragAndResize(obj);
-  setupTouchHandlers(obj); // ← Move here, outside of onload
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
 
-  // ✅ Only rely on onload for redraw, not logic
- img.onload = () => {
+  // Clamp initial position to be visible
+  obj.x = Math.max(0, Math.min(centerX - (img.width * obj.scale) / 2, maxX));
+  obj.y = Math.max(0, Math.min(centerY - (img.height * obj.scale) / 2, maxY));
+
   setupDragAndResize(obj);
-  setupTouchHandlers(obj);      // ✅ Ensure handlers are bound on first load
-  window.activeTouchObj = null; // ✅ Reset active touch in case it's stuck
+  setupTouchHandlers(obj);
   drawCanvas();
  };
 }
