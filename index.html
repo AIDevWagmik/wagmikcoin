@@ -501,8 +501,8 @@ canvas#memeCanvas {
 @media screen and (min-width: 768px) {
 .floating-buttons {
   position: fixed;
-  right: auto;
-  left: 40px;
+  right: unset;
+  left: 20px;
   bottom: 20px;
   display: flex;
   flex-direction: column;
@@ -965,11 +965,11 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     justify-content: flex-start;  /* Let us control spacing manually */
 
     padding: 40px 20px 80px;      /* Top, side, bottom */
-    min-height: 100vh;
+    min-height: auto;
   }
 
   .tokenomics-content {
-    margin-top: 260px;             /* Move the tokenomics text down */
+    margin-top: 180px;             /* Move the tokenomics text down */
     align-self: stretch;          /* Let it fill width if needed */
     text-align: center;           /* Optional: center content */
     position: relative;
