@@ -498,6 +498,18 @@ canvas#memeCanvas {
   z-index: 1001;
 }
 
+@media screen and (min-width: 768px) {
+.floating-buttons {
+  position: fixed;
+  right: auto;
+  left: 40px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+ }
+}
+
 /* Mobile Styles */
 @media (max-width: 768px) {
   .console-bg {
@@ -960,7 +972,9 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     margin-top: 260px;             /* Move the tokenomics text down */
     align-self: stretch;          /* Let it fill width if needed */
     text-align: center;           /* Optional: center content */
+    position: relative;
     color: white;
+    z-index: 2;
   }
 
   .tokenomics-section footer {
