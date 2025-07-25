@@ -957,7 +957,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   }
 
   .tokenomics-content {
-    margin-top: 0;             /* Move the tokenomics text down */
+    margin-top: -40px;             /* Move the tokenomics text down */
     align-self: stretch;          /* Let it fill width if needed */
     text-align: center;           /* Optional: center content */
     position: relative;
@@ -1010,21 +1010,6 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     position: relative;
     top: -20px;
   }
-}
-
-@media (min-width: 769px) {
-  .glass-box {
-    display: inline-block;
-    background: rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border-radius: 12px;
-    padding: 12px 20px; /* slightly more padding for desktop */
-    margin: 20px auto;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
-    text-align: center;
-    max-width: 85%;
-  }
 }
 
 @media screen and (min-width: 768px) {
@@ -1087,21 +1072,6 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
   .memes-section {
     margin-bottom: 40px;
-  }
-}
-
-@media (min-width: 769px) {
-  .glass-box {
-    display: inline-block;
-    background: rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border-radius: 12px;
-    padding: 12px 20px; /* slightly more padding for desktop */
-    margin: 20px auto;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
-    text-align: center;
-    max-width: 85%;
   }
 }
  
@@ -2035,6 +2005,31 @@ function shareToX() {
  <script>
   shareToX(); 
 </script>
+
+<style>
+@media screen and (min-width: 769px) {
+  .floating-buttons {
+    left: 20px !important;
+    right: auto !important;
+  }
+}
+</style>
+
+<style>
+@media screen and (min-width: 769px) {
+  .glass-box {
+    display: inline-block !important;
+    background: rgba(0, 0, 0, 0.25) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    border-radius: 12px !important;
+    padding: 8px 12px !important;
+    margin: 10px auto !important;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.2) !important;
+    text-align: center !important;
+  }
+}
+</style>
   
  </body>
 </html>
