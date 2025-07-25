@@ -666,7 +666,7 @@ input, select, textarea, button {
     align-items: center;
     max-height: unset;
     overflow-y: auto;
-    padding-bottom: 20px;
+    padding-bottom: 40px;
     overscroll-behavior: contain;
     touch-action: manipulation; /* allows input while preventing scroll gestures */
   }
@@ -680,13 +680,18 @@ input, select, textarea, button {
   #memeCanvas {
     touch-action: none;
     margin-top: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
     display: block;
     z-index: 1;
     max-width: 95%;
     height: auto;
     box-sizing: border-box;
     touch-action: none;
+  }
+
+ .modal.active {
+    max-height: none !important;
+    overflow-y: auto !important;
   }
 
   canvas {
@@ -1031,17 +1036,13 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
   .tokenomics-content {
     max-width: 800px;
-    margin: 0 auto;
+    margin: 0 auto;              /* ✅ center horizontally */
     text-align: center;
     color: white;
     position: relative;
     z-index: 2;
-
-    display: flex;              /* ➕ NEW */
-    flex-direction: column;    /* ➕ NEW */
-    align-items: center;       /* ➕ NEW: ensures horizontal centering */
-    justify-content: center;   /* ➕ optional: centers vertically inside box */
-  }
+    align-self: unset;           /* ✅ removes stretch override */
+  } 
 
   .tokenomics-section footer {
     font-size: 14px;
@@ -1698,38 +1699,39 @@ function resetMeme() {
   chains.length = 0;
   characters.length = 0;
 
-  // Clear all selection references
   selectedObj = null;
   activeTouchObj = null;
   lockedObj = null;
   selectedTouchTarget = null;
 
-  // Reset dropdowns to index 0 (which should be "None")
-  bgSelect.selectedIndex = 0;
-  hatSelect.selectedIndex = 0;
-  chainSelect.selectedIndex = 0;
-  characterSelect.selectedIndex = 0;
-
-  // Explicitly clear .value in case options didn’t trigger a 'change' event
+  // Reset dropdowns
   bgSelect.value = "";
   hatSelect.value = "";
   chainSelect.value = "";
   characterSelect.value = "";
 
-  // Hide the rotation slider (if visible)
+  // Hide rotation slider
   sliderWrapper.style.display = 'none';
 
-  // Force redraw to clear canvas contents
-  drawCanvas();
+  // 🔁 Clean event handlers by replacing canvas
+  const newCanvas = canvas.cloneNode(true);
+  canvas.parentNode.replaceChild(newCanvas, canvas);
+  canvas = newCanvas;
+  ctx = canvas.getContext('2d');
 
-setTimeout(() => {
-  [...hats, ...chains, ...characters].forEach(obj => {
-    setupTouchHandlers(obj);
-    obj.dragging = false;
-    obj.gestureActive = false;
-  });
-  window.activeTouchObj = null;
- }, 50); // short delay ensures canvas is ready
+  // Rebind logic
+  setupAllHandlers();
+  drawCanvas();
+}
+
+function setupAllHandlers() {
+  [bgSelect, hatSelect, chainSelect, characterSelect].forEach(el =>
+    el.addEventListener('change', drawMeme)
+  );
+
+  [topTextInput, bottomTextInput].forEach(el =>
+    el.addEventListener('input', drawCanvas)
+  );
 }
 
 function downloadMeme() {
@@ -1767,9 +1769,15 @@ function deleteSelectedObject() {
   lockedObj = null;
   selectedTouchTarget = null;
 
+  if (selectedObj.role === 'hat') {
   hatSelect.value = '';
+}
+if (selectedObj.role === 'chain') {
   chainSelect.value = '';
+}
+if (selectedObj.role === 'character') {
   characterSelect.value = '';
+}
 
   sliderWrapper.style.display = 'none'; // hide desktop slider
   drawCanvas();
