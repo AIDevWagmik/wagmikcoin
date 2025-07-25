@@ -679,8 +679,8 @@ input, select, textarea, button {
 
   #memeCanvas {
     touch-action: none;
-    margin-top: 12px;
-    margin-bottom: 40px;
+    margin-top: 0px;
+    margin-bottom: 60px;
     display: block;
     z-index: 1;
     max-width: 95%;
@@ -1031,8 +1031,12 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   }
 
   .tokenomics-section {
-    padding-bottom: 200px; /* Gives space for the banner/footer */
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* ✅ center children horizontally */
+  justify-content: flex-start;
+  padding-bottom: 200px;
+}
 
   .tokenomics-content {
     max-width: 800px;
@@ -1699,6 +1703,7 @@ function resetMeme() {
   chains.length = 0;
   characters.length = 0;
 
+  // Reset object states
   selectedObj = null;
   activeTouchObj = null;
   lockedObj = null;
@@ -1713,15 +1718,18 @@ function resetMeme() {
   // Hide rotation slider
   sliderWrapper.style.display = 'none';
 
-  // 🔁 Clean event handlers by replacing canvas
-  const newCanvas = canvas.cloneNode(true);
-  canvas.parentNode.replaceChild(newCanvas, canvas);
-  canvas = newCanvas;
-  ctx = canvas.getContext('2d');
-
-  // Rebind logic
-  setupAllHandlers();
+  // Force a clean canvas
   drawCanvas();
+
+  // ✅ Re-bind fresh touch handlers AFTER short delay
+  setTimeout(() => {
+    [...hats, ...chains, ...characters].forEach(obj => {
+      setupTouchHandlers(obj);
+      obj.dragging = false;
+      obj.gestureActive = false;
+    });
+    window.activeTouchObj = null;
+  }, 50);
 }
 
 function setupAllHandlers() {
@@ -1756,31 +1764,37 @@ function enforceLayerOrder() {
 }
 
 function deleteSelectedObject() {
-  if (!selectedObj) return;
+  if (!selectedObj) return;
 
-  // Remove selectedObj from its corresponding array
-  [hats, chains, characters].forEach(arr => {
-    const index = arr.indexOf(selectedObj);
-    if (index !== -1) arr.splice(index, 1);
-  });
+  // ✅ STEP 1: Detect dropdown to reset *before* deletion
+  const role = selectedObj.role;
+  const imgSrc = selectedObj.img?.src || "";
 
-  selectedObj = null;
-  activeTouchObj = null;
-  lockedObj = null;
-  selectedTouchTarget = null;
+  // STEP 2: Remove selectedObj from relevant array
+  [hats, chains, characters].forEach(arr => {
+    const index = arr.indexOf(selectedObj);
+    if (index !== -1) arr.splice(index, 1);
+  });
 
-  if (selectedObj.role === 'hat') {
-  hatSelect.value = '';
-}
-if (selectedObj.role === 'chain') {
-  chainSelect.value = '';
-}
-if (selectedObj.role === 'character') {
-  characterSelect.value = '';
-}
+  // ✅ STEP 3: Reset only the matching dropdown
+  if (role === 'hat' && hatSelect.value && imgSrc.includes(hatSelect.value)) {
+    hatSelect.value = '';
+  }
+  if (role === 'chain' && chainSelect.value && imgSrc.includes(chainSelect.value)) {
+    chainSelect.value = '';
+  }
+  if (role === 'character' && characterSelect.value && imgSrc.includes(characterSelect.value)) {
+    characterSelect.value = '';
+  }
 
-  sliderWrapper.style.display = 'none'; // hide desktop slider
-  drawCanvas();
+  // STEP 4: Reset state
+  selectedObj = null;
+  activeTouchObj = null;
+  lockedObj = null;
+  selectedTouchTarget = null;
+
+  sliderWrapper.style.display = 'none'; // hide rotation slider
+  drawCanvas();
 }
 
 function isInside(mx, my, x, y, w, h) {
