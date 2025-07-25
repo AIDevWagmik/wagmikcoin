@@ -555,7 +555,8 @@ canvas#memeCanvas {
   .console-container {
     flex-direction: row;
     align-items: flex-start;
-    justify-content: center;
+    justify-content: space-between; /* ⬅️ ensures spacing between sides */
+    gap: 40px;                      /* ⬅️ add space between controls and canvas */
   }
 
   .console-controls {
@@ -659,7 +660,8 @@ input, select, textarea, button {
     align-items: center;
     max-height: none !important;
     overflow-y: visible;
-    padding-bottom: 100px;
+    padding-bottom: 120px;
+    padding-top: 10px;
     overscroll-behavior: contain;
     touch-action: manipulation; /* allows input while preventing scroll gestures */
   }
@@ -673,7 +675,7 @@ input, select, textarea, button {
   #memeCanvas {
     touch-action: none;
     margin-top: -10px;
-    margin-bottom: 80px;
+    margin-bottom: 100px;
     display: block;
     z-index: 1;
     max-width: 95%;
@@ -688,7 +690,7 @@ input, select, textarea, button {
     display: flex !important;
     flex-direction: column;
     justify-content: flex-start;
-    padding-bottom: 40px;
+    padding-bottom: 60px;
   }
 
   canvas {
@@ -1090,6 +1092,14 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     left: 20px !important;
     right: auto !important;
   }
+}
+
+ .console-controls label {
+  color: #ffe06b;
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 10px;
+  display: block;
 }
  
   </style>
@@ -1577,11 +1587,14 @@ function createAccessory(type, imgSrc, scale = 1.0) {
   const img = new Image();
   img.src = imgSrc;
 
-  const obj = {
+ const canvasCenterX = canvas.width / 2;
+ const canvasCenterY = canvas.height / 2;
+
+ const obj = {
   role: type, // 👈 ADD THIS LINE
   img,
-  x: 0,
-  y: 0,
+  x: canvasCenterX - (img.width * scale) / 2,
+  y: canvasCenterY - (img.height * scale) / 2,
     scale,
     rotation: 0,
     dragging: false,
