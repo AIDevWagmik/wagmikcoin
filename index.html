@@ -158,20 +158,21 @@ html, body {
 @media (min-width: 768px) {
   .floating-lore-wrapper {
     position: relative;
-    min-height: 200vh; /* Allows scrolling to reveal floating lore */
+    min-height: 0; /* Allows scrolling to reveal floating lore */
     z-index: 5;
   }
 
+ @media screen and (min-width: 768px) {
   .floating-lore {
-    position: absolute;
-    top: 40px;         /* Adjust upward/downward */
-    right: 20px;       /* Keep it aligned to right edge */
-    max-width: 260px;
-    z-index: 10;
+    position: fixed;
+    top: 120px;       /* adjust as needed to move closer to top */
+    right: 40px;      /* adjust as needed to move closer to the right edge */
+    max-width: 240px;
+    z-index: 999;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 24px;
+    gap: 20px;
     pointer-events: none;
   }
 
@@ -954,7 +955,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   }
 
   .tokenomics-content {
-    margin-top: 180px;             /* Move the tokenomics text down */
+    margin-top: 260px;             /* Move the tokenomics text down */
     align-self: stretch;          /* Let it fill width if needed */
     text-align: center;           /* Optional: center content */
     color: white;
@@ -1033,7 +1034,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
   .tokenomics-section footer {
     font-size: 14px;
-    margin-top: 200px;
+    margin-top: 320px;
     position: relative;
     z-index: 2;
   }
