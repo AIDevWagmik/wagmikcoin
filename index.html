@@ -167,7 +167,7 @@ html, body {
  @media screen and (min-width: 768px) {
   .floating-lore {
     position: fixed;
-    top: 80px;       /* adjust as needed to move closer to top */
+    top: 40px;       /* adjust as needed to move closer to top */
     right: 40px;      /* adjust as needed to move closer to the right edge */
     max-width: 240px;
     z-index: 999;
@@ -496,19 +496,6 @@ canvas#memeCanvas {
   flex-direction: column;
   gap: 20px;
   z-index: 1001;
-}
-
-@media screen and (min-width: 768px) {
-  .floating-buttons {
-    position: fixed;
-    left: 20px !important;
-    right: auto !important;
-    bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    z-index: 1001;
-  }
 }
 
 /* Mobile Styles */
@@ -965,12 +952,12 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     align-items: center;          /* Center contents horizontally */
     justify-content: flex-start;  /* Let us control spacing manually */
 
-    padding: 140px 20px 80px;      /* Top, side, bottom */
+    padding: 40px 20px 80px;      /* Top, side, bottom */
     min-height: auto;
   }
 
   .tokenomics-content {
-    margin-top: 180px;             /* Move the tokenomics text down */
+    padding-top: 180px;             /* Move the tokenomics text down */
     align-self: stretch;          /* Let it fill width if needed */
     text-align: center;           /* Optional: center content */
     position: relative;
@@ -1086,6 +1073,19 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   .memes-section {
     margin-bottom: 40px;
   }
+}
+
+@media screen and (min-width: 768px) {
+  .floating-buttons {
+    position: fixed;
+    left: 20px !important;
+    right: auto !important;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    z-index: 1001;
+  }
 }
 
   </style>
