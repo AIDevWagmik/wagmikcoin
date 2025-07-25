@@ -679,8 +679,8 @@ input, select, textarea, button {
 
   #memeCanvas {
     touch-action: none;
-    margin-top: 0px;
-    margin-bottom: 60px;
+    margin-top: -10px;
+    margin-bottom: 40px;
     display: block;
     z-index: 1;
     max-width: 95%;
@@ -1525,6 +1525,7 @@ let selectedObj = null;
 let activeTouchObj = null;
 let lockedObj = null;
 let selectedTouchTarget = null;
+let canvasMouseDown, canvasMouseMove, canvasMouseUp, canvasWheel;
 
 const hats = [];
 const chains = [];
@@ -1698,12 +1699,18 @@ allObjects.forEach(obj => {
 }
 
 function resetMeme() {
+  // ✅ Remove previous listeners
+  canvas.removeEventListener("mousedown", canvasMouseDown);
+  canvas.removeEventListener("mousemove", canvasMouseMove);
+  canvas.removeEventListener("mouseup", canvasMouseUp);
+  canvas.removeEventListener("wheel", canvasWheel);
+
   // Clear object arrays
   hats.length = 0;
   chains.length = 0;
   characters.length = 0;
 
-  // Reset object states
+  // Reset selection state
   selectedObj = null;
   activeTouchObj = null;
   lockedObj = null;
@@ -1718,16 +1725,17 @@ function resetMeme() {
   // Hide rotation slider
   sliderWrapper.style.display = 'none';
 
-  // Force a clean canvas
   drawCanvas();
 
-  // ✅ Re-bind fresh touch handlers AFTER short delay
+  // ✅ Reattach touch/gesture logic after a short delay
   setTimeout(() => {
     [...hats, ...chains, ...characters].forEach(obj => {
       setupTouchHandlers(obj);
       obj.dragging = false;
       obj.gestureActive = false;
     });
+
+    setupAllHandlers();            // Optional if you're using a drawMeme watcher
     window.activeTouchObj = null;
   }, 50);
 }
@@ -1802,54 +1810,62 @@ function isInside(mx, my, x, y, w, h) {
 }
 
 function setupDragAndResize(obj) {
-  let dragging = null;
-  canvas.addEventListener("mousedown", (e) => {
+  // Mouse events
+  canvasMouseDown = (e) => {
     const { left, top } = canvas.getBoundingClientRect();
     const mx = e.clientX - left;
     const my = e.clientY - top;
+
     [...characters, ...chains, ...hats].forEach(item => {
       const w = item.img.width * item.scale;
       const h = item.img.height * item.scale;
       if (isInside(mx, my, item.x, item.y, w, h)) {
-        item.dragging = true; dragging = item;
+        item.dragging = true;
         selectedObj = item;
+
         if (!/Mobi|Android/i.test(navigator.userAgent)) {
           sliderWrapper.style.display = 'block';
           rotationSlider.value = (item.rotation * 180 / Math.PI).toFixed(0);
         }
       }
     });
-    if (!dragging) {
-      selectedObj = null;
+
+    if (!selectedObj) {
       sliderWrapper.style.display = 'none';
     }
-  });
+  };
 
-  canvas.addEventListener("mousemove", (e) => {
+  canvasMouseMove = (e) => {
+    const dragging = [...characters, ...chains, ...hats].find(obj => obj.dragging);
     if (!dragging) return;
+
     const rect = canvas.getBoundingClientRect();
     dragging.x = e.clientX - rect.left - (dragging.img.width * dragging.scale) / 2;
     dragging.y = e.clientY - rect.top - (dragging.img.height * dragging.scale) / 2;
     drawCanvas();
-  });
+  };
 
-  ["mouseup", "mouseleave"].forEach(evt => {
-    canvas.addEventListener(evt, () => {
-      if (dragging) dragging.dragging = false;
-      dragging = null;
-    });
-  });
+  canvasMouseUp = () => {
+    [...characters, ...chains, ...hats].forEach(obj => obj.dragging = false);
+  };
 
- canvas.addEventListener("wheel", (e) => {
-  if (!dragging) return;
-  e.preventDefault();
+  canvasWheel = (e) => {
+    if (!selectedObj) return;
+    e.preventDefault();
 
-  const zoomFactor = 1.05;
-  dragging.scale *= e.deltaY < 0 ? zoomFactor : 1 / zoomFactor;
-  dragging.scale = Math.max(0.05, Math.min(4.0, dragging.scale));
-  drawCanvas();
-});
+    const zoomFactor = 1.05;
+    selectedObj.scale *= e.deltaY < 0 ? zoomFactor : 1 / zoomFactor;
+    selectedObj.scale = Math.max(0.05, Math.min(4.0, selectedObj.scale));
+    drawCanvas();
+  };
+
+  // Attach
+  canvas.addEventListener("mousedown", canvasMouseDown);
+  canvas.addEventListener("mousemove", canvasMouseMove);
+  canvas.addEventListener("mouseup", canvasMouseUp);
+  canvas.addEventListener("wheel", canvasWheel);
 }
+
 
 ["touchstart", "touchmove", "touchend"].forEach(eventType => {
   canvas.addEventListener(eventType, (e) => {
