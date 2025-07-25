@@ -952,7 +952,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     align-items: center;          /* Center contents horizontally */
     justify-content: flex-start;  /* Let us control spacing manually */
 
-    padding: 220px 20px 80px;      /* Top, side, bottom */
+    padding: 250px 20px 80px;      /* Top, side, bottom */
     min-height: auto;
   }
 
@@ -1014,16 +1014,17 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
 @media (min-width: 769px) {
   .glass-box {
-  display: inline-block;                /* Shrink to content size */
-  background: rgba(0, 0, 0, 0.25);      /* Subtle dark blur */
-  backdrop-filter: blur(4px);          /* Softer blur */
-  -webkit-backdrop-filter: blur(4px);  /* Safari support */
-  border-radius: 12px;                 /* Slightly rounded */
-  padding: 8px 12px;                   /* Minimal padding */
-  margin: 10px auto;                   /* Center horizontally */
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2); /* Light outer glow */
-  text-align: center;                  /* Ensure text stays centered */
- }
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 12px;
+    padding: 12px 20px; /* slightly more padding for desktop */
+    margin: 20px auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    max-width: 85%;
+  }
 }
 
 @media screen and (min-width: 768px) {
@@ -1090,18 +1091,20 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 }
 
 @media (min-width: 769px) {
-  .floating-buttons {
-    all: unset;
-    position: fixed;
-    left: 20px;
-    bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    z-index: 1001;
-  }
+  .glass-box {
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 12px;
+    padding: 12px 20px; /* slightly more padding for desktop */
+    margin: 20px auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    max-width: 85%;
+  }
 }
-
+ 
   </style>
 
   <script src="https://terminal.jup.ag/main-v4.js"></script>
