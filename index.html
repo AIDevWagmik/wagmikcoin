@@ -952,12 +952,12 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     align-items: center;          /* Center contents horizontally */
     justify-content: flex-start;  /* Let us control spacing manually */
 
-    padding: 40px 20px 80px;      /* Top, side, bottom */
+    padding: 180px 20px 80px;      /* Top, side, bottom */
     min-height: auto;
   }
 
   .tokenomics-content {
-    margin-top: 40px;             /* Move the tokenomics text down */
+    margin-top: 0;             /* Move the tokenomics text down */
     align-self: stretch;          /* Let it fill width if needed */
     text-align: center;           /* Optional: center content */
     position: relative;
@@ -1077,14 +1077,14 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
 @media screen and (min-width: 769px) {
   .floating-buttons {
-    position: fixed;
-    left: 20px !important;
     right: auto !important;
-    bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    z-index: 1001;
+    left: 40px !important;  /* Or however far you want from left */
+    bottom: 20px !important;
+    position: fixed !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    z-index: 1001 !important;
   }
 }
 
