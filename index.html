@@ -152,7 +152,7 @@ html, body {
 
 .floating-lore-wrapper {
   position: relative;
-  min-height: 600px; /* Make this large enough to show all chapters */
+  min-height: auto;
   z-index: 5;
 }
 
@@ -164,8 +164,8 @@ html, body {
 @media screen and (min-width: 768px) {
   .floating-lore {
     position: absolute;
-    top: 100px; /* Move it up higher (adjust as needed) */
-    right: 60px; /* Bring it tighter into the right column */
+    top: 40px; /* Move it up higher (adjust as needed) */
+    right: 20px; /* Bring it tighter into the right column */
     max-width: 260px;
     z-index: 10;
     display: flex;
@@ -1006,10 +1006,6 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     margin-top: 140px;
   }
 
-  .lore {
-    position: relative;
-    top: 20px;
-  }
 
   section.section:nth-of-type(4) {
     position: relative;
@@ -1054,6 +1050,11 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   }
 }
 
+.lore {
+  position: relative;
+  top: -80px; /* or adjust further as needed */
+}
+
 .tokenomics-content ul,
 .tokenomics-content li {
   list-style: none;
@@ -1063,6 +1064,20 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
 .tokenomics-content li {
   margin-bottom: 10px;
+}
+
+@media (min-width: 768px) {
+  body::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 220px; /* ✅ lower = shorter banner visible */
+    background: url('bottom-banner.png') no-repeat center bottom;
+    background-size: 100% auto;
+    z-index: 0;
+  }
 }
 
 
