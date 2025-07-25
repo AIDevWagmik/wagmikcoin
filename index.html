@@ -81,6 +81,7 @@ html, body {
       border-radius: 10px;
       font-style: italic;
       text-align: center;
+      color: white;
     }
 
     .cta {
@@ -180,7 +181,7 @@ html, body {
 
   .floating-lore .lore-chapter {
     background: rgba(0, 0, 0, 0.65);
-    color: #ffde6a;
+    color: #ffde6a; 
     padding: 10px 14px;
     border-radius: 12px;
     font-size: 1em;
@@ -387,6 +388,7 @@ footer {
     #loreModal {
       background: linear-gradient(rgba(20, 10, 40, 0.4), rgba(20, 10, 40, 0.4)), url('lore.png') center center no-repeat;
       background-size: cover;
+      color: #ffe06b;
     }
 
     .lore-chapter {
@@ -957,16 +959,16 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   }
 
   .tokenomics-content {
-    margin-top: -40px;             /* Move the tokenomics text down */
     align-self: stretch;          /* Let it fill width if needed */
     text-align: center;           /* Optional: center content */
     position: relative;
     color: white;
     z-index: 2;
+    margin-bottom: 80px;
   }
 
   .tokenomics-section footer {
-    margin-top: auto;             /* Push footer to the bottom */
+    margin-top: 40px;             /* Push footer to the bottom */
     text-align: center;
     color: #fff;
     font-size: 0.9rem;
@@ -1034,6 +1036,11 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     color: white;
     position: relative;
     z-index: 2;
+
+    display: flex;              /* ➕ NEW */
+    flex-direction: column;    /* ➕ NEW */
+    align-items: center;       /* ➕ NEW: ensures horizontal centering */
+    justify-content: center;   /* ➕ optional: centers vertically inside box */
   }
 
   .tokenomics-section footer {
@@ -1073,6 +1080,14 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   .memes-section {
     margin-bottom: 40px;
   }
+}
+
+ @media screen and (min-width: 769px) {
+  .degen-toggle-btn,
+  .meme-toggle-btn {
+    left: 20px !important;
+    right: auto !important;
+  }
 }
  
   </style>
@@ -2005,15 +2020,6 @@ function shareToX() {
  <script>
   shareToX(); 
 </script>
-
-<style>
-@media screen and (min-width: 769px) {
-  .floating-buttons {
-    left: 20px !important;
-    right: auto !important;
-  }
-}
-</style>
 
 <style>
 @media screen and (min-width: 769px) {
