@@ -499,15 +499,16 @@ canvas#memeCanvas {
 }
 
 @media screen and (min-width: 768px) {
-.floating-buttons {
-  position: fixed;
-  right: unset;
-  left: 20px;
-  bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
- }
+  .floating-buttons {
+    position: fixed;
+    left: 20px !important;
+    right: auto !important;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    z-index: 1001;
+  }
 }
 
 /* Mobile Styles */
@@ -964,7 +965,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     align-items: center;          /* Center contents horizontally */
     justify-content: flex-start;  /* Let us control spacing manually */
 
-    padding: 40px 20px 80px;      /* Top, side, bottom */
+    padding: 140px 20px 80px;      /* Top, side, bottom */
     min-height: auto;
   }
 
