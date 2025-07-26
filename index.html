@@ -1756,10 +1756,33 @@ function resetMeme() {
  }, 50);
 }
 
+function createAndAddObject(filename, category) {
+  const img = new Image();
+  img.src = `assets/${filename}`;
+
+  img.onload = () => {
+    const obj = {
+      img,
+      x: 100,
+      y: 100,
+      scale: 1,
+      rotation: 0,
+      dragging: false,
+      gestureActive: false
+    };
+
+    // 🔥 Push to the correct layer group
+    if (category === 'hat') hats.push(obj);
+    else if (category === 'chain') chains.push(obj);
+    else characters.push(obj);
+
+    setupTouchHandlers(obj);
+    setupDragAndResize(obj);
+    drawCanvas();
+  };
+}
+
 function setupAllHandlers() {
-  [bgSelect, hatSelect, chainSelect, characterSelect].forEach(el =>
-    el.addEventListener('change', drawMeme)
-  );
 
   [topTextInput, bottomTextInput].forEach(el =>
     el.addEventListener('input', drawCanvas)
@@ -2024,7 +2047,27 @@ function setupTouchHandlers(obj) {
   setupTouchHandlers(obj);
 });
 
-[bgSelect, hatSelect, chainSelect, characterSelect].forEach(el => el.addEventListener('change', drawMeme));
+hatSelect.addEventListener('change', (e) => {
+  const filename = e.target.value;
+  if (filename) {
+    createAndAddObject(filename, 'hat'); // 👈 add category
+  }
+});
+
+chainSelect.addEventListener('change', (e) => {
+  const filename = e.target.value;
+  if (filename) {
+    createAndAddObject(filename, 'chain'); // 👈
+  }
+});
+
+characterSelect.addEventListener('change', (e) => {
+  const filename = e.target.value;
+  if (filename) {
+    createAndAddObject(filename, 'character'); // 👈
+  }
+});
+
 bgSelect.addEventListener('change', drawCanvas);
 [topTextInput, bottomTextInput].forEach(el => el.addEventListener('input', drawCanvas));
 </script>
