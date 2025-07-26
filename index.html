@@ -1156,6 +1156,36 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   position: relative;
   z-index: 2;
 }
+
+.mobile-popup {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 20px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.popup-content {
+  max-width: 400px;
+  margin: auto;
+}
+
+.mobile-popup button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: #00cc99;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
  
   </style>
 
@@ -2128,6 +2158,18 @@ function shareToX() {
   shareToX(); 
 </script>
 
+<script>
+  // Show popup only on mobile devices
+  window.addEventListener('DOMContentLoaded', () => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const hasNoWallet = !window.solana && !window.backpack;
+
+    if (isMobile && hasNoWallet) {
+      document.getElementById('mobileWalletPopup').style.display = 'block';
+    }
+  });
+</script>
+
 <style>
 @media screen and (min-width: 769px) {
   .glass-box {
@@ -2143,6 +2185,18 @@ function shareToX() {
   }
 }
 </style>
+
+<!-- Mobile Wallet Popup -->
+<div id="mobileWalletPopup" class="mobile-popup">
+  <div class="popup-content">
+    <p>👋 Welcome to WAGMIK!<br>
+      To connect your wallet, please visit:<br>
+      <strong>wagmik.xyz</strong><br>
+      using your <strong>Phantom</strong>, <strong>Solflare</strong>, or <strong>Backpack</strong> app browser.
+    </p>
+    <button onclick="document.getElementById('mobileWalletPopup').style.display='none'">Got it!</button>
+  </div>
+</div>
   
  </body>
 </html>
