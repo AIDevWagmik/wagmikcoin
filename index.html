@@ -660,7 +660,7 @@ input, select, textarea, button {
     align-items: center;
     max-height: none !important;
     overflow-y: visible;
-    padding-bottom: 100px;
+    padding-bottom: 180px;
     padding-top: 10px;
     overscroll-behavior: contain;
     touch-action: manipulation; /* allows input while preventing scroll gestures */
@@ -677,7 +677,8 @@ input, select, textarea, button {
   width: 100%;
   height: auto;
   display: block;
-  margin: 0 auto 32px auto; /* top right bottom left */
+  margin-top: 10px;
+  margin-bottom: 100px;
   touch-action: none;
   box-sizing: border-box;
   z-index: 1;
@@ -1889,14 +1890,15 @@ function setupDragAndResize(obj) {
 
 
 function getTouchTarget(x, y) {
-  const allObjs = [...hats, ...chains, ...characters]; // hats get priority
+  const allObjs = [...hats, ...chains, ...characters]; // Order matters here!
   for (let i = allObjs.length - 1; i >= 0; i--) {
     const obj = allObjs[i];
     const w = obj.img.width * obj.scale;
     const h = obj.img.height * obj.scale;
-    const isInside =
+    const isInside = (
       x >= obj.x && x <= obj.x + w &&
-      y >= obj.y && y <= obj.y + h;
+      y >= obj.y && y <= obj.y + h
+    );
     if (isInside) return obj;
   }
   return null;
@@ -1934,19 +1936,12 @@ function setupTouchHandlers(obj) {
     // Get top-most touched object
     const touchedObj = getTouchTarget(x, y);
 
-    if (e.touches.length === 1 && touchedObj) {
-      if (!lockedObj || lockedObj === touchedObj) {
-        if (selectedTouchTarget && selectedTouchTarget !== touchedObj) {
-          selectedTouchTarget = null;
-        }
-
-        lockedObj = touchedObj;
-        selectedTouchTarget = touchedObj;
-        touchedObj.dragging = true;
-        activeTouchObj = touchedObj;
-      }
-    }
-
+  if (e.touches.length === 1 && touchedObj) {
+  lockedObj = touchedObj;
+  selectedTouchTarget = touchedObj;
+  touchedObj.dragging = true;
+  activeTouchObj = touchedObj;
+}
     // Fallback
     if (!activeTouchObj && touchedObj) {
       activeTouchObj = touchedObj;
