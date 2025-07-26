@@ -1140,7 +1140,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 @media (min-width: 768px) {
   .bottom-fade-divider {
     background: linear-gradient(to bottom, rgba(26, 14, 45, 0), rgba(26, 14, 45, 1));
-    transform: translateY(-1000px); /* adjust upward position */
+    transform: translateY(-1200px); /* adjust upward position */
   }
 }
 
@@ -1148,7 +1148,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 @media (max-width: 767px) {
   .bottom-fade-divider {
     background: linear-gradient(to bottom, rgba(26, 14, 45, 0), rgba(26, 14, 45, 1));
-    transform: translateY(-90px); /* adjust differently for mobile */
+    transform: translateY(-140px); /* adjust differently for mobile */
   }
 }
  
@@ -1521,23 +1521,42 @@ function toggleMeme() {
   </script>
 
 <script>
-  window.Jupiter.init({
-    displayMode: "integrated",
-    integratedTargetId: "jupiter-terminal", // 👈 attaches to your div
-    endpoint: "https://api.mainnet-beta.solana.com",
-    formProps: {
-      fixedOutputMint: "EPjFWdd5AufqSSqeM2qN1xzxybapC8G4wEGGkZwyTDt1", // ⬅️ Replace with actual WAGMIK mint
-      initialAmount: "1"
-    },
-    containerStyles: {
-      width: "100%",
-      maxWidth: "400px",
-      margin: "0 auto",
-      borderRadius: "12px",
-      zIndex: 9999,
-      boxShadow: "0 0 12px rgba(0,0,0,0.3)",
-      overflow: "hidden"
+  async function connectWalletIfMobile() {
+    const isMobile = window.innerWidth <= 768;
+
+    if (isMobile && window.solana && window.solana.isPhantom) {
+      try {
+        await window.solana.connect(); // 🚀 This prompts mobile wallet
+        return window.solana;
+      } catch (err) {
+        console.warn("Wallet connection was declined.");
+      }
     }
+
+    return null;
+  }
+</script>
+
+<script>
+  connectWalletIfMobile().then(wallet => {
+    window.Jupiter.init({
+      displayMode: "integrated",
+      integratedTargetId: "jupiter-terminal",
+      endpoint: "https://api.mainnet-beta.solana.com",
+      wallet: wallet, // ✅ pass the connected wallet (or null if not connected)
+      formProps: {
+        fixedOutputMint: "EPjFWdd5AufqSSqeM2qN1xzxybapC8G4wEGGkZwyTDt1",
+        initialAmount: "1"
+      },
+      containerStyles: {
+        width: "100%",
+        maxWidth: "400px",
+        margin: "0 auto",
+        borderRadius: "12px",
+        boxShadow: "0 0 12px rgba(0,0,0,0.3)",
+        overflow: "hidden"
+      }
+    });
   });
 </script>
 
