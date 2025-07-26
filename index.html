@@ -1642,7 +1642,17 @@ allObjects.sort((a, b) => {
   return getPriority(a) - getPriority(b);
 });
  
-allObjects.forEach(obj => {
+// ✅ Force strict layer order
+const background = allObjects.find(obj => obj.img?.src?.toLowerCase().includes('bg'));
+const character = allObjects.find(obj => obj.img?.src?.toLowerCase().includes('character'));
+const others = allObjects.filter(obj =>
+  obj.img?.src &&
+  !obj.img.src.toLowerCase().includes('bg') &&
+  !obj.img.src.toLowerCase().includes('character')
+);
+
+// Helper draw function (preserve your original draw code)
+const draw = (obj) => {
   if (!obj.img || !obj.img.src) return;
 
   const w = obj.img.width * obj.scale;
@@ -1659,44 +1669,15 @@ allObjects.forEach(obj => {
     ctx.setLineDash([6, 4]);
     ctx.strokeRect(-w / 2, -h / 2, w, h);
     ctx.setLineDash([]);
-
-    const btnSize = 24;
-    const btnX = -w / 2 - btnSize / 2;
-    const btnY = -h / 2 - btnSize / 2;
-
-    ctx.fillStyle = 'red';
-    ctx.beginPath();
-    ctx.arc(btnX + btnSize / 2, btnY + btnSize / 2, btnSize / 2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = 'white';
-    ctx.font = '16px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('✕', btnX + btnSize / 2, btnY + btnSize / 2);
-
-    const cos = Math.cos(obj.rotation);
-    const sin = Math.sin(obj.rotation);
-    const centerX = obj.x + (obj.img.width * obj.scale) / 2;
-    const centerY = obj.y + (obj.img.height * obj.scale) / 2;
-
-    const btnCenterX = centerX + (btnX * cos - btnY * sin);
-    const btnCenterY = centerY + (btnX * sin + btnY * cos);
-
-    obj.deleteBtnBounds = {
-      x: btnCenterX - btnSize / 2,
-      y: btnCenterY - btnSize / 2,
-      size: btnSize,
-      centerX: btnCenterX,
-      centerY: btnCenterY
-    };
-  }
-
-  if (window.innerWidth >= 768) {
-    delete obj.deleteBtnBounds;
   }
 
   ctx.restore();
-});
+};
+
+// 🧱 Draw in the correct order
+if (background) draw(background);
+if (character) draw(character);
+others.forEach(draw);
 
 
   ctx.textBaseline = 'top'; // add this
