@@ -657,9 +657,10 @@ input, select, textarea, button {
 @media (max-width: 768px) {
   .modal.active,
   #memeModal.modal.active {
+    min-height: 100vh !important;
     max-height: none !important;
     height: auto !important;
-    overflow-y: auto !important;
+    overflow-y: visible !important;
     display: flex !important;
     flex-direction: column;
     justify-content: flex-start;
