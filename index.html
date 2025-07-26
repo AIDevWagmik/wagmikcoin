@@ -1757,45 +1757,33 @@ function resetMeme() {
 }
 
 function createAndAddObject(filename, category) {
-  const img = new Image();
-  img.src = filename;
+  const img = new Image();
+  img.src = filename;
 
-  img.onload = () => {
-    const obj = {
-      img,
-      x: 100,
-      y: 100,
-      scale: 1,
-      rotation: 0,
-      dragging: false,
-      gestureActive: false
-    };
+  img.onload = () => {
+    const obj = {
+      img,
+      x: 100,
+      y: 100,
+      scale: 1,
+      rotation: 0,
+      dragging: false,
+      gestureActive: false
+    };
 
-    // 🔥 Push to the correct layer group
- const filenameLower = filename.toLowerCase();
+    // ✅ Push directly based on select category
+    if (category === 'hat') {
+      hats.push(obj);
+    } else if (category === 'chain') {
+      chains.push(obj);
+    } else {
+      characters.push(obj);
+    }
 
-if (
-  category === 'hat' ||
-  filenameLower.includes('hat') ||
-  filenameLower.includes('mask')
-) {
-  hats.push(obj);
-} else if (
-  category === 'chain' ||
-  filenameLower.includes('glasses') ||
-  filenameLower.includes('candle') ||
-  filenameLower.includes('look') ||
-  filenameLower.includes('wojak')
-) {
-  chains.push(obj);
-} else {
-  characters.push(obj);
-}
-
-    setupTouchHandlers(obj);
-    setupDragAndResize(obj);
-    drawCanvas();
-  };
+    setupTouchHandlers(obj);
+    setupDragAndResize(obj);
+    drawCanvas(); // ✅ Draw immediately once loaded
+  };
 }
 
 function setupAllHandlers() {
