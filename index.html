@@ -1790,7 +1790,7 @@ function setupDragAndResize(obj) {
     const mx = e.clientX - left;
     const my = e.clientY - top;
 
-    [...characters, ...chains, ...hats].forEach(item => {
+    [...hats, ...chains, ...characters].reverse().forEach(item => {
       const w = item.img.width * item.scale;
       const h = item.img.height * item.scale;
       if (isInside(mx, my, item.x, item.y, w, h)) {
@@ -1810,7 +1810,7 @@ function setupDragAndResize(obj) {
   };
 
   canvasMouseMove = (e) => {
-    const dragging = [...characters, ...chains, ...hats].find(obj => obj.dragging);
+    const dragging = [...hats, ...chains, ...characters].find(obj => obj.dragging);
     if (!dragging) return;
 
     const rect = canvas.getBoundingClientRect();
@@ -1820,7 +1820,7 @@ function setupDragAndResize(obj) {
   };
 
   canvasMouseUp = () => {
-    [...characters, ...chains, ...hats].forEach(obj => obj.dragging = false);
+    [...hats, ...chains, ...characters].forEach(obj => obj.dragging = false);
   };
 
   canvasWheel = (e) => {
