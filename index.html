@@ -1622,63 +1622,38 @@ function createAccessory(type, imgSrc, scale = 1.0) {
 }
 
 function drawCanvas() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const bg = backgrounds[bgSelect.value];
-  if (bg && bg.complete) {
-    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
-  }
- 
-const allObjects = [...hats, ...chains, ...characters];
-
-allObjects.sort((a, b) => {
-  const getPriority = (obj) => {
-    const src = obj.img?.src?.toLowerCase() || '';
-    if (src.includes('bg') || src.includes('background')) return 0;
-    if (src.includes('character')) return 1;
-    return 2; // everything else
-  };
-
-  return getPriority(a) - getPriority(b);
-});
- 
-// ✅ Force strict layer order
-const background = allObjects.find(obj => obj.img?.src?.toLowerCase().includes('bg'));
-const character = allObjects.find(obj => obj.img?.src?.toLowerCase().includes('character'));
-const others = allObjects.filter(obj =>
-  obj.img?.src &&
-  !obj.img.src.toLowerCase().includes('bg') &&
-  !obj.img.src.toLowerCase().includes('character')
-);
-
-// Helper draw function (preserve your original draw code)
-const draw = (obj) => {
-  if (!obj.img || !obj.img.src) return;
-
-  const w = obj.img.width * obj.scale;
-  const h = obj.img.height * obj.scale;
-
-  ctx.save();
-  ctx.translate(obj.x + w / 2, obj.y + h / 2);
-  ctx.rotate(obj.rotation);
-  ctx.drawImage(obj.img, -w / 2, -h / 2, w, h);
-
-  if (window.innerWidth < 768 && obj === activeTouchObj) {
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([6, 4]);
-    ctx.strokeRect(-w / 2, -h / 2, w, h);
-    ctx.setLineDash([]);
+  // Draw background
+  const bg = backgrounds[bgSelect.value];
+  if (bg && bg.complete) {
+    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
   }
 
-  ctx.restore();
-};
+  // ✅ Correct layer order: character first, then accessories
+  const allObjects = [...characters, ...hats, ...chains];
 
-// 🧱 Draw in the correct order
-if (background) draw(background);
-if (character) draw(character);
-others.forEach(draw);
+  allObjects.forEach(obj => {
+    if (!obj.img || !obj.img.src) return;
 
+    const w = obj.img.width * obj.scale;
+    const h = obj.img.height * obj.scale;
+
+    ctx.save();
+    ctx.translate(obj.x + w / 2, obj.y + h / 2);
+    ctx.rotate(obj.rotation);
+    ctx.drawImage(obj.img, -w / 2, -h / 2, w, h);
+
+    if (window.innerWidth < 768 && obj === activeTouchObj) {
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 4]);
+      ctx.strokeRect(-w / 2, -h / 2, w, h);
+      ctx.setLineDash([]);
+    }
+
+    ctx.restore();
+  });
 
   ctx.textBaseline = 'top'; // add this
   ctx.font = '28px Impact, sans-serif';
