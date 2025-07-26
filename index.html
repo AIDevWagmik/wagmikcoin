@@ -655,52 +655,44 @@ input, select, textarea, button {
 }
 
 @media (max-width: 768px) {
-  .console-container {
-    flex-direction: column;
-    align-items: center;
+  .modal.active,
+  #memeModal.modal.active {
     max-height: none !important;
-    overflow-y: visible;
-    padding-bottom: 180px;
-    padding-top: 10px;
-    overscroll-behavior: contain;
-    touch-action: manipulation; /* allows input while preventing scroll gestures */
+    height: auto !important;
+    overflow-y: auto !important;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-bottom: 160px !important; /* 🛠 ensures canvas is visible */
   }
 
-  .console-controls {
-    position: relative;
-    margin-bottom: 0;
-    z-index: 2;
+ .console-container {
+  padding-top: 20px !important;
+  padding-bottom: 200px !important;
+  overflow-y: visible !important;
+  max-height: none !important;
+  box-sizing: border-box;
+  touch-action: manipulation; /* ✅ restored */
+}
+
+  #memeCanvas {
+    margin-top: 20px !important;
+    margin-bottom: 100px !important;
+    display: block !important;
+    max-width: 95vw !important;
+    width: 100% !important;
+    height: auto !important;
+    border: 2px dashed white;
+    touch-action: none;
   }
-
- #memeCanvas {
-  max-width: 95%;
-  width: 100%;
-  height: auto;
-  display: block;
-  margin-top: 10px;
-  margin-bottom: 100px;
-  touch-action: none;
-  box-sizing: border-box;
-  z-index: 1;
-}
-
-.modal.active {
-  height: auto !important;
-  max-height: 100% !important;
-  overflow-y: auto !important;
-  display: flex !important;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding: 20px 16px 60px; /* Top, Sides, Bottom */
-  box-sizing: border-box;
-}
 
   canvas {
-    max-width: 100%;
     display: block;
     margin: 0 auto;
+    max-width: 100%;
   }
 }
+
 
 @media (max-width: 768px) {
   #memeModal select,
@@ -1890,7 +1882,7 @@ function setupDragAndResize(obj) {
 
 
 function getTouchTarget(x, y) {
-  const allObjs = [...hats, ...chains, ...characters]; // Order matters here!
+  const allObjs = [...characters, ...chains, ...hats]; // Order matters here!
   for (let i = allObjs.length - 1; i >= 0; i--) {
     const obj = allObjs[i];
     const w = obj.img.width * obj.scale;
