@@ -1632,11 +1632,10 @@ function drawCanvas() {
 const allObjects = [...hats, ...chains, ...characters];
 
 allObjects.sort((a, b) => {
-  const getPriority = (obj) =>
-    obj.img.src.includes('hat') ? 3 :
-    obj.img.src.includes('chain') ? 2 :
-    obj.img.src.includes('character') ? 1 : 0;
-  return getPriority(a) - getPriority(b);
+  const isChar = src => src.includes('character');
+  const isBg = src => src.includes('bg') || src.includes('background');
+
+  const aSrc = a.img
 });
 
 allObjects.forEach(obj => {
