@@ -1892,6 +1892,21 @@ function setupDragAndResize(obj) {
   }, { passive: false });
 });
 
+function getTouchTarget(x, y) {
+  const allObjs = [...hats, ...chains, ...characters]; // or any global array that matches what's drawn
+  for (let i = allObjs.length - 1; i >= 0; i--) {
+    const obj = allObjs[i];
+    const w = obj.img.width * obj.scale;
+    const h = obj.img.height * obj.scale;
+    const isInside = (
+      x >= obj.x && x <= obj.x + w &&
+      y >= obj.y && y <= obj.y + h
+    );
+    if (isInside) return obj;
+  }
+  return null;
+}
+
 function setupTouchHandlers(obj) {
   const touchStartHandler = (e) => {
     const rect = canvas.getBoundingClientRect();
@@ -1923,38 +1938,28 @@ function setupTouchHandlers(obj) {
       }
     }
 
-    const w = obj.img.width * obj.scale;
-    const h = obj.img.height * obj.scale;
+    const touchedObj = getTouchTarget(x, y);
 
-    const isInside = (
-      x >= obj.x && x <= obj.x + w &&
-      y >= obj.y && y <= obj.y + h
-    );
-
-    // Single-finger drag
-    if (e.touches.length === 1 && isInside) {
-      if (!lockedObj || lockedObj === obj) {
-        if (selectedTouchTarget && selectedTouchTarget !== obj) {
-          selectedTouchTarget = null;
-        }
-      
-        lockedObj = obj;
-        obj.dragging = true;
-
-     const allObjs = [...hats, ...chains, ...characters];
-      if (allObjs.includes(obj)) {
-          activeTouchObj = obj;
-          selectedTouchTarget = obj
-        }
+  if (e.touches.length === 1 && touchedObj) {
+    if (!lockedObj || lockedObj === touchedObj) {
+      if (selectedTouchTarget && selectedTouchTarget !== touchedObj) {
+        selectedTouchTarget = null;
       }
-    }
 
-   // 🩹 Fallback: if object didn’t get picked up by activeTouchObj
-if (!activeTouchObj && isInside) {
-  activeTouchObj = obj;
-  lockedObj = obj;
-  obj.dragging = true;
-}
+      lockedObj = touchedObj;
+      selectedTouchTarget = touchedObj;
+      touchedObj.dragging = true;
+      activeTouchObj = touchedObj;
+    }
+  }
+
+  // ✅ Fallback (extra safety)
+  if (!activeTouchObj && touchedObj) {
+    activeTouchObj = touchedObj;
+    lockedObj = touchedObj;
+    touchedObj.dragging = true;
+  }
+};
 
     // Two-finger gesture
     if (e.touches.length === 2 && (!lockedObj || lockedObj === obj)) {
