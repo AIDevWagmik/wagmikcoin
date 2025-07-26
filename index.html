@@ -1097,6 +1097,40 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   margin-bottom: 10px;
   display: block;
 }
+
+/* 🔧 Base Fade Divider (shared) */
+.blend-divider {
+  width: 100%;
+  pointer-events: none;
+  position: relative;
+  z-index: 2;
+}
+
+/* 🖥️ Desktop Styles */
+@media (min-width: 768px) {
+  .top-fade {
+    background: linear-gradient(to bottom, rgba(85, 36, 95, 1), rgba(61, 50, 88, 0));
+    height: 100px;
+  }
+
+  .bottom-fade {
+    background: linear-gradient(to top, rgba(61, 50, 88, 1), rgba(52, 34, 77, 0));
+    height: 120px;
+  }
+}
+
+/* 📱 Mobile Styles */
+@media (max-width: 767px) {
+  .top-fade {
+    background: linear-gradient(to bottom, rgba(85, 36, 95, 1), rgba(61, 50, 88, 0));
+    height: 80px;
+  }
+
+  .bottom-fade {
+    background: linear-gradient(to top, rgba(61, 50, 88, 1), rgba(52, 34, 77, 0));
+    height: 100px;
+  }
+} 
  
   </style>
 
@@ -1112,7 +1146,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
 <div class="coin-fall" id="coin-fall"></div>
 
-<div class="fade-line-header-bottom"></div>
+<div class="blend-divider top-fade"></div>
 
 <section class="section about">
   <h2>🚀 About</h2>
@@ -1190,6 +1224,8 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   <h2>🛒 Use Jupiter to Buy $WAGMIK</h2>
   <div id="jupiter-terminal"></div>
 </section>
+
+<div class="blend-divider bottom-fade"></div>
  
 <section class="tokenomics-section">
   <div class="tokenomics-content glass-box">
