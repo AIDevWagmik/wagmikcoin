@@ -1741,15 +1741,20 @@ function resetMeme() {
 
   // ✅ Reattach touch/gesture logic after a short delay
   setTimeout(() => {
-    [...hats, ...chains, ...characters].forEach(obj => {
-      setupTouchHandlers(obj);
-      obj.dragging = false;
-      obj.gestureActive = false;
-    });
+   window.activeTouchObj = null;
+   
+  [...hats, ...chains, ...characters].forEach(obj => {
+    obj.dragging = false;
+    obj.gestureActive = false;
+    obj.offsetX = 0;
+    obj.offsetY = 0;
+    setupTouchHandlers(obj);
+  });
 
-    setupAllHandlers();            // Optional if you're using a drawMeme watcher
-    window.activeTouchObj = null;
-  }, 50);
+  lockedObj = null;
+  activeTouchObj = null;
+  selectedTouchTarget = null;
+ }, 50);
 }
 
 function setupAllHandlers() {
@@ -1894,6 +1899,11 @@ function setupTouchHandlers(obj) {
     const x = touch.clientX - rect.left;
     const y = touch.clientY - rect.top;
 
+   if (e.touches.length === 1) {
+  lockedObj = null;
+  selectedTouchTarget = null;
+}
+
    // ✅ Clear any previously stuck reference
    window.activeTouchObj = null;
    selectedTouchTarget = null;
@@ -1938,6 +1948,13 @@ function setupTouchHandlers(obj) {
         }
       }
     }
+
+   // 🩹 Fallback: if object didn’t get picked up by activeTouchObj
+if (!activeTouchObj && isInside) {
+  activeTouchObj = obj;
+  lockedObj = obj;
+  obj.dragging = true;
+}
 
     // Two-finger gesture
     if (e.touches.length === 2 && (!lockedObj || lockedObj === obj)) {
