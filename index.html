@@ -1758,7 +1758,7 @@ function resetMeme() {
 
 function createAndAddObject(filename, category) {
   const img = new Image();
-  img.src = `assets/${filename}`;
+  img.src = filename;
 
   img.onload = () => {
     const obj = {
