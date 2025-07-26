@@ -1133,14 +1133,14 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   pointer-events: none;
   position: absolute;
   left: 0;
-  z-index: 2;
+  z-index: 1;
 }
 
 /* Desktop Fade */
 @media (min-width: 768px) {
   .bottom-fade-divider {
     background: linear-gradient(to bottom, rgba(26, 14, 45, 0), rgba(26, 14, 45, 1));
-    transform: translateY(-1250px); /* adjust upward position */
+    transform: translateY(-1240px); /* adjust upward position */
   }
 }
 
@@ -1148,7 +1148,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 @media (max-width: 767px) {
   .bottom-fade-divider {
     background: linear-gradient(to bottom, rgba(26, 14, 45, 0), rgba(26, 14, 45, 1));
-    transform: translateY(-150px); /* adjust differently for mobile */
+    transform: translateY(-160px); /* adjust differently for mobile */
   }
 }
  
@@ -1209,6 +1209,9 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   ></iframe>
 </section>
 
+<!-- Bottom Fade Divider -->
+<div class="bottom-fade-divider"></div>
+
 <!-- 🚀 Meme Gallery Section -->
 <section class="section memes-section" id="meme-gallery">
   <h2>😂 Community Memes</h2>
@@ -1242,9 +1245,6 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   <h2>🛒 Use Jupiter to Buy $WAGMIK</h2>
   <div id="jupiter-terminal"></div>
 </section>
-
-<!-- Bottom Fade Divider -->
-<div class="bottom-fade-divider"></div>
  
 <section class="tokenomics-section">
   <div class="tokenomics-content glass-box">
@@ -1521,15 +1521,26 @@ function toggleMeme() {
   </script>
 
 <script>
-  async function connectWalletIfMobile() {
+  async function getMobileWallet() {
     const isMobile = window.innerWidth <= 768;
 
-    if (isMobile && window.solana && window.solana.isPhantom) {
+    // Phantom
+    if (isMobile && window.solana?.isPhantom) {
       try {
-        await window.solana.connect(); // 🚀 This prompts mobile wallet
+        await window.solana.connect();
         return window.solana;
       } catch (err) {
-        console.warn("Wallet connection was declined.");
+        console.warn("Phantom connection declined.");
+      }
+    }
+
+    // Backpack
+    if (isMobile && window.backpack?.solana?.connect) {
+      try {
+        await window.backpack.solana.connect();
+        return window.backpack.solana;
+      } catch (err) {
+        console.warn("Backpack connection declined.");
       }
     }
 
@@ -1538,14 +1549,14 @@ function toggleMeme() {
 </script>
 
 <script>
-  connectWalletIfMobile().then(wallet => {
+  getMobileWallet().then(wallet => {
     window.Jupiter.init({
       displayMode: "integrated",
       integratedTargetId: "jupiter-terminal",
       endpoint: "https://api.mainnet-beta.solana.com",
-      wallet: wallet, // ✅ pass the connected wallet (or null if not connected)
+      wallet: wallet, // ← ✅ inject wallet if available
       formProps: {
-        fixedOutputMint: "EPjFWdd5AufqSSqeM2qN1xzxybapC8G4wEGGkZwyTDt1",
+        fixedOutputMint: "EPjFWdd5AufqSSqeM2qN1xzxybapC8G4wEGGkZwyTDt1", // USDC
         initialAmount: "1"
       },
       containerStyles: {
@@ -1559,6 +1570,7 @@ function toggleMeme() {
     });
   });
 </script>
+
 
 <script>
 
