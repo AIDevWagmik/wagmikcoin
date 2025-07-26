@@ -1893,7 +1893,7 @@ function setupDragAndResize(obj) {
 });
 
 function getTouchTarget(x, y) {
-  const allObjs = [...hats, ...chains, ...characters]; // or any global array that matches what's drawn
+ const allObjs = [...characters, ...chains, ...hats]; // or any global array that matches what's drawn
   for (let i = allObjs.length - 1; i >= 0; i--) {
     const obj = allObjs[i];
     const w = obj.img.width * obj.scale;
@@ -1958,32 +1958,7 @@ function setupTouchHandlers(obj) {
     activeTouchObj = touchedObj;
     lockedObj = touchedObj;
     touchedObj.dragging = true;
-  }
-
-    // Two-finger gesture
-    if (e.touches.length === 2 && (!lockedObj || lockedObj === obj)) {
-      const [t1, t2] = e.touches;
-      const dx = t2.clientX - t1.clientX;
-      const dy = t2.clientY - t1.clientY;
-
-      initialDist = Math.hypot(dx, dy);
-      initialAngle = Math.atan2(dy, dx);
-      initialScale = obj.scale;
-      initialRotation = obj.rotation;
-
-      const centerX = (t1.clientX + t2.clientX) / 2;
-      const centerY = (t1.clientY + t2.clientY) / 2;
-
-      const objCenterX = obj.x + w / 2;
-      const objCenterY = obj.y + h / 2;
-
-      obj.offsetX = objCenterX - (centerX - rect.left);
-      obj.offsetY = objCenterY - (centerY - rect.top);
-
-      lockedObj = obj;
-      obj.gestureActive = true;
-      activeTouchObj = obj;
-    }
+   }
   };
 
   // ✅ Clean up any previous handler for this object
