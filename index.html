@@ -1772,9 +1772,25 @@ function createAndAddObject(filename, category) {
     };
 
     // 🔥 Push to the correct layer group
-    if (category === 'hat') hats.push(obj);
-    else if (category === 'chain') chains.push(obj);
-    else characters.push(obj);
+ const filenameLower = filename.toLowerCase();
+
+if (
+  category === 'hat' ||
+  filenameLower.includes('hat') ||
+  filenameLower.includes('mask')
+) {
+  hats.push(obj);
+} else if (
+  category === 'chain' ||
+  filenameLower.includes('glasses') ||
+  filenameLower.includes('candle') ||
+  filenameLower.includes('look') ||
+  filenameLower.includes('wojak')
+) {
+  chains.push(obj);
+} else {
+  characters.push(obj);
+}
 
     setupTouchHandlers(obj);
     setupDragAndResize(obj);
