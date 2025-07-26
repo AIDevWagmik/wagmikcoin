@@ -1632,12 +1632,16 @@ function drawCanvas() {
 const allObjects = [...hats, ...chains, ...characters];
 
 allObjects.sort((a, b) => {
-  const isChar = src => src.includes('character');
-  const isBg = src => src.includes('bg') || src.includes('background');
+  const getPriority = (obj) => {
+    const src = obj.img?.src?.toLowerCase() || '';
+    if (src.includes('bg') || src.includes('background')) return 0;
+    if (src.includes('character')) return 1;
+    return 2; // everything else
+  };
 
-  const aSrc = a.img
+  return getPriority(a) - getPriority(b);
 });
-
+ 
 allObjects.forEach(obj => {
   if (!obj.img || !obj.img.src) return;
 
@@ -2023,8 +2027,9 @@ function setupTouchHandlers(obj) {
 });
 
 [bgSelect, hatSelect, chainSelect, characterSelect].forEach(el =>
-  el.addEventListener('change', drawMeme)
+  el.addEventListener('change', drawMeme)                                                         
 );
+bgSelect.addEventListener('change', drawCanvas);
 [topTextInput, bottomTextInput].forEach(el => el.addEventListener('input', drawCanvas));
 </script>
 
