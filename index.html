@@ -1126,6 +1126,31 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   margin-bottom: 10px;
   display: block;
 }
+
+.bottom-fade-divider {
+  width: 100%;
+  height: 100px; /* same as fade size */
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  z-index: 2;
+}
+
+/* Desktop Fade */
+@media (min-width: 768px) {
+  .bottom-fade-divider {
+    background: linear-gradient(to bottom, rgba(26, 14, 45, 0), rgba(26, 14, 45, 1));
+    transform: translateY(-80px); /* adjust upward position */
+  }
+}
+
+/* Mobile Fade */
+@media (max-width: 767px) {
+  .bottom-fade-divider {
+    background: linear-gradient(to bottom, rgba(26, 14, 45, 0), rgba(26, 14, 45, 1));
+    transform: translateY(-60px); /* adjust differently for mobile */
+  }
+}
  
   </style>
 
@@ -1218,6 +1243,8 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   <div id="jupiter-terminal"></div>
 </section>
 
+<!-- Bottom Fade Divider -->
+<div class="bottom-fade-divider"></div>
  
 <section class="tokenomics-section">
   <div class="tokenomics-content glass-box">
