@@ -2,7 +2,7 @@
   "name": "SWAGMIK",
   "short_name": "WAGMIK",
   "description": "Meme coin movement on Solana",
-  "start_url": "/",
+  "start_url": "/wagmikcoin/",
   "display": "standalone",
   "background_color": "#1a0e2d",
   "theme_color": "#1a0e2d",
