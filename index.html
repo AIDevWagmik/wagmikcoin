@@ -40,7 +40,7 @@
 
  <link rel="manifest" href="manifest.json" />
 
- <link rel="icon" type="image/png" href="/icons/icon-192.png">
+ <link rel="icon" type="image/png" href="icons/icon-192.png">
 
   <style>
     html {
@@ -1231,8 +1231,22 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
 @media screen and (max-width: 767px) {
   body.standalone .hero-banner::after {
-    transform: translateY(-200px); /* Adjust -10px until it's perfectly aligned */
+    transform: translateY(-230px); /* Adjust -10px until it's perfectly aligned */
   }
+}
+
+.mobile-popup {
+  position: fixed;
+  bottom: 20px;
+  left: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 14px;
+  z-index: 10000;
+  text-align: center;
 }
 
   </style>
@@ -1374,6 +1388,11 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   <button class="close-btn" onclick="toggleMeme()">✖</button>
   <div class="console-container">
     <img src="console-layout.png" class="console-bg" alt="MEME Generator">
+
+   <div id="memeGeneratorPopup" class="mobile-popup" style="display: none;">
+  <p><strong>Welcome to the Meme Generator!</strong><br>
+  For the best experience, use your browser's <em>Share</em> button and tap <strong>“Add to Home Screen”</strong>.</p>
+</div>
 
     <!-- 🎛 Controls Section -->
     <div class="console-controls">
@@ -2266,6 +2285,24 @@ function shareToX() {
   if (window.matchMedia('(display-mode: standalone)').matches) {
     document.body.classList.add('standalone');
   }
+</script>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
+  const hasBeenShown = localStorage.getItem('memePopupShown');
+
+  if (isMobile && !hasBeenShown) {
+    const popup = document.getElementById('memeGeneratorPopup');
+    if (popup) {
+      popup.style.display = 'block';
+      setTimeout(() => {
+        popup.style.display = 'none';
+        localStorage.setItem('memePopupShown', 'true');
+      }, 8000); // Hide after 8 seconds
+    }
+  }
+});
 </script>
 
 <style>
