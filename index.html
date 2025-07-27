@@ -1235,7 +1235,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   }
 }
 
-#memeGeneratorPopup {
+.meme-generator-popup {
   display: none;
   position: fixed;
   bottom: 20px;
@@ -1250,7 +1250,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   z-index: 10000;
 }
 
-#memeGeneratorPopup button {
+.meme-generator-popup button {
   margin-top: 12px;
   padding: 8px 16px;
   background-color: #00cc99;
@@ -1401,9 +1401,9 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   <div class="console-container">
     <img src="console-layout.png" class="console-bg" alt="MEME Generator">
 
-  <div id="memeGeneratorPopup" class="meme-generator-popup">
+   <div id="memeGeneratorPopup" class="meme-generator-popup" style="display: none;">
   <p><strong>Welcome to the Meme Generator!</strong><br>
-  For best experience, use your browser’s <em>Share</em> button and tap <strong>Add to Home Screen</strong>.</p>
+  For the best experience, use your browser’s <em>Share</em> button and tap <strong>Add to Home Screen</strong>.</p>
   <button onclick="dismissMemePopup()">Got it!</button>
 </div>
 
@@ -1528,18 +1528,6 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     <img src="photon.png" alt="Photon" class="app-logo" />
   </a>
 </div>
-
-<div id="memeGeneratorPopup" class="share-modal hidden">
-  <div class="modal-content">
-    <h2>👋 Welcome!</h2>
-    <p style="margin-top: 10px;">
-      For the best experience, tap <strong>“Share” → “Add to Home Screen”</strong> to use this as an app.
-    </p>
-    <div class="button-container">
-      <button onclick="closeMemePopup()">Got it</button>
-    </div>
-  </div>
-</div>
   
   <script>
    function createCoin() {
@@ -1634,7 +1622,6 @@ function toggleMeme() {
   memeModal.classList.toggle('active');
 
 // 👇 Show Meme Generator popup only once on mobile browser (not app)
-// 👇 Show Meme Generator popup only once on mobile browser (not PWA)
 setTimeout(() => {
   if (
     window.innerWidth < 768 &&
@@ -1648,7 +1635,7 @@ setTimeout(() => {
       popup.style.display = "block";
     }
   }
-}, 0);
+}, 100);
 
   if (window.innerWidth < 768) {
     const isActive = memeModal.classList.contains('active');
