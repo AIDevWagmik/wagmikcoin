@@ -1765,13 +1765,47 @@ function drawCanvas() {
     ctx.rotate(obj.rotation);
     ctx.drawImage(obj.img, -w / 2, -h / 2, w, h);
 
-    if (window.innerWidth < 768 && obj === activeTouchObj) {
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([6, 4]);
-      ctx.strokeRect(-w / 2, -h / 2, w, h);
-      ctx.setLineDash([]);
-    }
+if (window.innerWidth < 768 && obj === activeTouchObj) {
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 4]);
+    ctx.strokeRect(-w / 2, -h / 2, w, h);
+    ctx.setLineDash([]);
+
+    const btnSize = 24;
+    const btnX = -w / 2 - btnSize / 2;
+    const btnY = -h / 2 - btnSize / 2;
+
+    ctx.fillStyle = 'red';
+    ctx.beginPath();
+    ctx.arc(btnX + btnSize / 2, btnY + btnSize / 2, btnSize / 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'white';
+    ctx.font = '16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('✕', btnX + btnSize / 2, btnY + btnSize / 2);
+
+    const cos = Math.cos(obj.rotation);
+    const sin = Math.sin(obj.rotation);
+    const centerX = obj.x + (obj.img.width * obj.scale) / 2;
+    const centerY = obj.y + (obj.img.height * obj.scale) / 2;
+
+    const btnCenterX = centerX + (btnX * cos - btnY * sin);
+    const btnCenterY = centerY + (btnX * sin + btnY * cos);
+
+    obj.deleteBtnBounds = {
+      x: btnCenterX - btnSize / 2,
+      y: btnCenterY - btnSize / 2,
+      size: btnSize,
+      centerX: btnCenterX,
+      centerY: btnCenterY
+    };
+  }
+
+  if (window.innerWidth >= 768) {
+    delete obj.deleteBtnBounds;
+  }
 
     ctx.restore();
   });
