@@ -1621,21 +1621,20 @@ function toggleMeme() {
 
   memeModal.classList.toggle('active');
 
-// 👇 Show Meme Generator popup only once on mobile browser (not app)
-setTimeout(() => {
-  if (
-    window.innerWidth < 768 &&
-    memeModal.classList.contains('active') &&
-    !window.matchMedia('(display-mode: standalone)').matches
-  ) {
-    const hasBeenShown = localStorage.getItem("memePopupShown");
-    const popup = document.getElementById("memeGeneratorPopup");
+// ✅ Show Meme Generator popup only once on mobile browser (not app)
+if (
+  window.innerWidth < 768 &&
+  memeModal.classList.contains('active') &&
+  !window.matchMedia('(display-mode: standalone)').matches
+) {
+  const hasBeenShown = localStorage.getItem("memePopupShown");
+  const popup = document.getElementById("memeGeneratorPopup");
 
-    if (!hasBeenShown && popup) {
-      popup.style.display = "block";
-    }
+  if (!hasBeenShown && popup) {
+    popup.style.display = "block";
+    localStorage.setItem("memePopupShown", "true");
   }
-}, 100);
+}
 
   if (window.innerWidth < 768) {
     const isActive = memeModal.classList.contains('active');
