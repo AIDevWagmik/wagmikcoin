@@ -1235,7 +1235,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   }
 }
 
-.mobile-popup {
+#memeGeneratorPopup {
   position: fixed;
   bottom: 20px;
   left: 10px;
@@ -1247,6 +1247,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   font-size: 14px;
   z-index: 10000;
   text-align: center;
+  display: none;
 }
 
   </style>
@@ -1608,6 +1609,24 @@ function toggleMeme() {
   const memeBtn = document.querySelector('.meme-toggle-btn');
 
   memeModal.classList.toggle('active');
+
+   // 👇 Show generator popup only once on mobile
+ if (
+  window.innerWidth < 768 &&
+  memeModal.classList.contains('active') &&
+  !window.matchMedia('(display-mode: standalone)').matches
+) {
+  const hasBeenShown = localStorage.getItem("memePopupShown");
+  const popup = document.getElementById("memeGeneratorPopup");
+
+  if (!hasBeenShown && popup) {
+    popup.style.display = 'block';
+    setTimeout(() => {
+      popup.style.display = 'none';
+      localStorage.setItem("memePopupShown", 'true');
+    }, 8000);
+  }
+}
 
   if (window.innerWidth < 768) {
     const isActive = memeModal.classList.contains('active');
@@ -2285,24 +2304,6 @@ function shareToX() {
   if (window.matchMedia('(display-mode: standalone)').matches) {
     document.body.classList.add('standalone');
   }
-</script>
-
-<script>
-window.addEventListener('DOMContentLoaded', () => {
-  const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
-  const hasBeenShown = localStorage.getItem('memePopupShown');
-
-  if (isMobile && !hasBeenShown) {
-    const popup = document.getElementById('memeGeneratorPopup');
-    if (popup) {
-      popup.style.display = 'block';
-      setTimeout(() => {
-        popup.style.display = 'none';
-        localStorage.setItem('memePopupShown', 'true');
-      }, 8000); // Hide after 8 seconds
-    }
-  }
-});
 </script>
 
 <style>
