@@ -1195,7 +1195,12 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   z-index: 3;
 }
 
- 
+@media screen and (max-width: 767px) {
+  body.standalone .top-fade {
+    transform: translateY(-10px); /* Adjust -10px until it's perfectly aligned */
+  }
+}
+
   </style>
 
   <script src="https://terminal.jup.ag/main-v4.js"></script>
@@ -2220,6 +2225,12 @@ function shareToX() {
         .then(reg => console.log('✅ Service Worker registered:', reg))
         .catch(err => console.error('❌ Service Worker registration failed:', err));
     });
+  }
+</script>
+
+<script>
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    document.body.classList.add('standalone');
   }
 </script>
 
