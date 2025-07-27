@@ -1236,6 +1236,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 }
 
 #memeGeneratorPopup {
+  display: none;
   position: fixed;
   bottom: 20px;
   left: 10px;
@@ -1245,9 +1246,19 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   padding: 15px;
   border-radius: 10px;
   font-size: 14px;
-  z-index: 10000;
   text-align: center;
-  display: none;
+  z-index: 10000;
+}
+
+#memeGeneratorPopup button {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background-color: #00cc99;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
   </style>
@@ -1390,9 +1401,10 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   <div class="console-container">
     <img src="console-layout.png" class="console-bg" alt="MEME Generator">
 
-   <div id="memeGeneratorPopup" class="mobile-popup" style="display: none;">
+  <div id="memeGeneratorPopup" class="meme-generator-popup">
   <p><strong>Welcome to the Meme Generator!</strong><br>
-  For the best experience, use your browser's <em>Share</em> button and tap <strong>“Add to Home Screen”</strong>.</p>
+  For best experience, use your browser’s <em>Share</em> button and tap <strong>Add to Home Screen</strong>.</p>
+  <button onclick="dismissMemePopup()">Got it!</button>
 </div>
 
     <!-- 🎛 Controls Section -->
@@ -1610,23 +1622,22 @@ function toggleMeme() {
 
   memeModal.classList.toggle('active');
 
-   // 👇 Show generator popup only once on mobile
- if (
-  window.innerWidth < 768 &&
-  memeModal.classList.contains('active') &&
-  !window.matchMedia('(display-mode: standalone)').matches
-) {
-  const hasBeenShown = localStorage.getItem("memePopupShown");
-  const popup = document.getElementById("memeGeneratorPopup");
+// 👇 Show Meme Generator popup only once on mobile browser (not app)
+// 👇 Show Meme Generator popup only once on mobile browser (not PWA)
+setTimeout(() => {
+  if (
+    window.innerWidth < 768 &&
+    memeModal.classList.contains('active') &&
+    !window.matchMedia('(display-mode: standalone)').matches
+  ) {
+    const hasBeenShown = localStorage.getItem("memePopupShown");
+    const popup = document.getElementById("memeGeneratorPopup");
 
-  if (!hasBeenShown && popup) {
-    popup.style.display = 'block';
-    setTimeout(() => {
-      popup.style.display = 'none';
-      localStorage.setItem("memePopupShown", 'true');
-    }, 8000);
+    if (!hasBeenShown && popup) {
+      popup.style.display = "block";
+    }
   }
-}
+}, 0);
 
   if (window.innerWidth < 768) {
     const isActive = memeModal.classList.contains('active');
@@ -2303,6 +2314,16 @@ function shareToX() {
 <script>
   if (window.matchMedia('(display-mode: standalone)').matches) {
     document.body.classList.add('standalone');
+  }
+</script>
+
+<script>
+  function dismissMemePopup() {
+    const popup = document.getElementById("memeGeneratorPopup");
+    if (popup) {
+      popup.style.display = "none";
+      localStorage.setItem("memePopupShown", "true");
+    }
   }
 </script>
 
