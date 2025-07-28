@@ -1401,11 +1401,19 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   <div class="console-container">
     <img src="console-layout.png" class="console-bg" alt="MEME Generator">
 
+
    <div id="memeGeneratorPopup" class="meme-generator-popup" style="display: none;">
-  <p><strong>Welcome to the Meme Generator!</strong><br>
-  For the best experience, use your browser’s <em>Share</em> button and tap <strong>Add to Home Screen</strong>.</p>
-  <button onclick="dismissMemePopup()">Got it!</button>
+  <div class="modal-content">
+    <h2>🔥 Welcome!</h2>
+    <p style="margin-top: 10px;">
+      For the best experience, tap <strong>Share</strong> → <strong>Add to Home Screen</strong> to use this as an app.
+    </p>
+    <div class="button-container">
+      <button onclick="dismissMemePopupp()">Got it!</button>
+    </div>
+  </div>
 </div>
+
 
     <!-- 🎛 Controls Section -->
     <div class="console-controls">
@@ -1643,15 +1651,13 @@ function toggleMeme() {
 
 // ✅ Show Meme Generator popup only once on mobile browser (not app)
 if (
-  /Mobi|Android/i.test(navigator.userAgent) &&
+  window.innerWidth < 768 &&
   memeModal.classList.contains('active') &&
   !window.matchMedia('(display-mode: standalone)').matches
 ) {
   const popup = document.getElementById("memeGeneratorPopup");
-
   if (popup) {
     popup.style.display = "block";
-    localStorage.setItem("memePopupShown", "true");
   }
 }
 
@@ -1846,19 +1852,21 @@ function drawMeme() {
   targetArray.push(obj);
 
  img.onload = () => {
-  const maxX = canvas.width - (img.width * obj.scale);
-  const maxY = canvas.height - (img.height * obj.scale);
+const maxX = canvas.width - (img.width * obj.scale);
+const maxY = canvas.height - (img.height * obj.scale);
 
-  let x = (canvas.width - w) / 2;
-  let y = (canvas.height - h) / 2;
+let x = (canvas.width - img.width * obj.scale) / 2;
+let y = (canvas.height - img.height * obj.scale) / 2;
 
-if (type === 'hat') y -= 40;        // nudge hats up
-if (type === 'chain') y += 50;      // chains hang lower
-if (type === 'character') y -= 20;  // adjust characters slightly up
+if (type === 'hat') y -= 40;
+if (type === 'chain') y += 50;
+if (type === 'character') y -= 20;
 
-  // Clamp initial position to be visible
-  obj.x = Math.max(0, Math.min(centerX - (img.width * obj.scale) / 2, maxX));
-  obj.y = Math.max(0, Math.min(centerY - (img.height * obj.scale) / 2, maxY));
+const centerX = canvas.width / 2;
+const centerY = canvas.height / 2;
+
+obj.x = Math.max(0, Math.min(centerX - (img.width * obj.scale) / 2, maxX));
+obj.y = Math.max(0, Math.min(centerY - (img.height * obj.scale) / 2, maxY));
 
   setupDragAndResize(obj);
   setupTouchHandlers(obj);
