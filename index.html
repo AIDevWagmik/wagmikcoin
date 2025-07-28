@@ -2084,6 +2084,7 @@ function setupDragAndResize(obj) {
       if (isInside(mx, my, item.x, item.y, w, h)) {
         item.dragging = true;
         selectedObj = item;
+        clickedObj = item;
 
         if (!/Mobi|Android/i.test(navigator.userAgent)) {
           sliderWrapper.style.display = 'block';
@@ -2145,16 +2146,19 @@ function setupDragAndResize(obj) {
 }
 
 
-function getTouchTarget(x, y) {
-  const allObjs = [...characters, ...chains, ...hats]; // Order matters here!
+function getTouchTarget(x, y, preferTopMost = true) {
+  const allObjs = preferTopMost
+    ? [...hats, ...chains, ...characters]   // topmost-first for touch
+    : [...characters, ...chains, ...hats]; // bottom-first for precise mouse
+
   for (let i = allObjs.length - 1; i >= 0; i--) {
     const obj = allObjs[i];
     const w = obj.img.width * obj.scale;
     const h = obj.img.height * obj.scale;
-    const isInside = (
+    const isInside =
       x >= obj.x && x <= obj.x + w &&
-      y >= obj.y && y <= obj.y + h
-    );
+      y >= obj.y && y <= obj.y + h;
+
     if (isInside) return obj;
   }
   return null;
