@@ -1427,25 +1427,33 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
       <select id="hatSelect">
         <option value="">None</option>
-        <option value="wagmik-hat.png">WAGMIK Hat</option>
-        <option value="WAGMIK-mask.png">WAGMIK Mask</option>
+        <option value="wagmik-hat.png">Wagmik Hat</option>
+        <option value="wagmik-logo-hat.png">Wagmik Logo Hat</option>
+        <option value="WAGMIK-mask.png">Wagmik Mask</option>
+        <option value="meme-hat.png">MEME Hat</option>
         <option value="wif-hat.png">WIF Hat</option>
-        <option value="bonk-hat2.png">BONK Hat</option>
-        <option value="bonk-mask.png">BONK Mask</option>
+        <option value="bonk-mask.png">Bonk Mask</option>
         <option value="degen-hat.png">DEGEN Hat</option>
         <option value="degen-hat2.png">DEGEN Hat2</option>
-        <option value="pepe-hat.png">PEPE Hat</option>
-        <option value="Pepe-mask.png">PEPE Mask</option>
-        <option value="tom-mask.png">TOM Mask</option>
+        <option value="pepe-hat.png">Pepe Hat</option>
+        <option value="pepe-mask.png">Pepe Mask</option>
+        <option value="tom-mask.png">Tom Mask</option>
+        <option value="ssj.png">SSJ Hair</option>
+        <option value="ssj-blue.png">SSJ Blue Hair</option>
       </select>
 
       <select id="chainSelect">
         <option value="">None</option>
-        <option value="chain-wagmik.png">WAGMIK Chain</option>
+        <option value="bitcoin.png">Bitcoin</option>
         <option value="chain2.png">Cuban Chain</option>
         <option value="glasses.png">Meme Glasses</option>
+        <option value="dollar-glasses.png">Dollar Glasses</option>
+        <option value="lightsaber.png">Lightsaber</option>
+        <option value="katana.png">Katana</option>
         <option value="god-candle.png">God Candle</option>
         <option value="bro-look.png">Bro Look</option>
+        <option value="buy-sign.png">Buy Sign</option>
+        <option value="cigarette.png">Cigarette</option>
         <option value="wojak.png">Wojak</option>
         <option value="wojak-mystery.png">Wojak 2</option>
         <option value="wojak-boomer.png">Wojak Boomer</option>
@@ -1453,17 +1461,29 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
       <select id="characterSelect">
         <option value="">None</option>
-        <option value="wagmik-cheering.png">WAGMIK Cheering</option>
-        <option value="ponke.png">Ponke</option>
-        <option value="pepe.png">Pepe</option>
+        <option value="ansem.png">Ansem</option>
+        <option value="bonk-pengu.png">Bonk Pengu</option>
+        <option value="bossman.png">Bossman</option>
+        <option value="bren.png">Bren</option>
+        <option value="caleb.png">Caleb</option>
+        <option value="DJ.png">DJ</option>
+        <option value="fomo.png">Fomo</option>
+        <option value="hopium-papi.png">Hopium Papi</option>
+        <option value="iced.png">Iced</option>
+        <option value="mert.png">Mert</option>
+        <option value="solana-sensei.png">Solana Sensei</option>
+        <option value="sugar.png">Sugar</option>
         <option value="wolf.png">Wolf</option>
         <option value="wolf-rich.png">Wolf Rich</option>
-        <option value="ansem.png">Ansem</option>
-        <option value="mert.png">Mert</option>
-        <option value="bossman.png">Bossman</option>
-        <option value="DJ.png">DJ</option>
+        <option value="ponke.png">Ponke</option>
+        <option value="pepe.png">Pepe</option>
         <option value="goku-ui.png">Goku UI</option>
         <option value="saitama.png">Saitama</option>
+        <option value="wagmik-cheering.png">Wagmik Cheering</option>
+        <option value="wagmik-bullish.png">Wagmik</option>
+        <option value="wagmik-look.png">Wagmik2</option>
+        <option value="wagmik-onedollar.png">Wagmik3</option>
+        <option value="wagmik-give.png">Wagmik4</option>
       </select>
 
      <input autocapitalize="off" autocomplete="off" id="topText" inputmode="text" placeholder="Top Text" tabindex="0" type="text"/>
@@ -2092,15 +2112,31 @@ function setupDragAndResize(obj) {
   };
 
   canvasWheel = (e) => {
-    if (!selectedObj) return;
-    e.preventDefault();
+  if (!selectedObj) return;
+  e.preventDefault();
 
-    const zoomFactor = 1.05;
-    selectedObj.scale *= e.deltaY < 0 ? zoomFactor : 1 / zoomFactor;
-    selectedObj.scale = Math.max(0.05, Math.min(4.0, selectedObj.scale));
-    drawCanvas();
-  };
+  const zoomFactor = 1.05;
+  const scaleDirection = e.deltaY < 0 ? zoomFactor : 1 / zoomFactor;
+  const newScale = Math.max(0.05, Math.min(4.0, selectedObj.scale * scaleDirection));
 
+  // Get mouse position relative to canvas
+  const rect = canvas.getBoundingClientRect();
+  const mouseX = e.clientX - rect.left;
+  const mouseY = e.clientY - rect.top;
+
+  // Adjust object position so it zooms toward cursor
+  selectedObj.x = mouseX - (mouseX - selectedObj.x) * (newScale / selectedObj.scale);
+  selectedObj.y = mouseY - (mouseY - selectedObj.y) * (newScale / selectedObj.scale);
+
+  // Apply new scale
+  selectedObj.scale = newScale;
+
+  drawCanvas();
+};
+
+
+ 
+  
   // Attach
   canvas.addEventListener("mousedown", canvasMouseDown);
   canvas.addEventListener("mousemove", canvasMouseMove);
