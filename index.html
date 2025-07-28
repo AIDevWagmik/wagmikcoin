@@ -1617,12 +1617,13 @@ function toggleMeme() {
   const memeModal = document.getElementById('memeModal');
   const loreBtn = document.querySelector('.lore-toggle-btn');
   const degenBtn = document.querySelector('.degen-toggle-btn');
- 
+  const memeBtn = document.querySelector('.meme-toggle-btn');
+
   memeModal.classList.toggle('active');
 
 // ✅ Show Meme Generator popup only once on mobile browser (not app)
 if (
-  window.innerWidth < 768 &&
+  /Mobi|Android/i.test(navigator.userAgent) &&
   memeModal.classList.contains('active') &&
   !window.matchMedia('(display-mode: standalone)').matches
 ) {
