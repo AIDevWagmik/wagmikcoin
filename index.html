@@ -1617,8 +1617,7 @@ function toggleMeme() {
   const memeModal = document.getElementById('memeModal');
   const loreBtn = document.querySelector('.lore-toggle-btn');
   const degenBtn = document.querySelector('.degen-toggle-btn');
-  const memeBtn = document.querySelector('.meme-toggle-btn');
-
+ 
   memeModal.classList.toggle('active');
 
 // ✅ Show Meme Generator popup only once on mobile browser (not app)
@@ -1648,6 +1647,25 @@ if (
   }
 }
   </script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const memeBtn = document.querySelector('.meme-toggle-btn');
+
+    memeBtn.addEventListener('click', () => {
+      // Directly show popup after modal is toggled
+      const isMobile = window.innerWidth < 768;
+      const isApp = window.matchMedia('(display-mode: standalone)').matches;
+      const hasBeenShown = localStorage.getItem("memePopupShown");
+      const popup = document.getElementById("memeGeneratorPopup");
+
+      if (isMobile && !isApp && !hasBeenShown && popup) {
+        popup.style.display = "block";
+        localStorage.setItem("memePopupShown", "true");
+      }
+    });
+  });
+</script> 
 
 <script>
   async function getMobileWallet() {
