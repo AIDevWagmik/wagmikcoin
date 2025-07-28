@@ -1647,10 +1647,9 @@ if (
   memeModal.classList.contains('active') &&
   !window.matchMedia('(display-mode: standalone)').matches
 ) {
-  const hasBeenShown = localStorage.getItem("memePopupShown");
   const popup = document.getElementById("memeGeneratorPopup");
 
-  if (!hasBeenShown && popup) {
+  if (popup) {
     popup.style.display = "block";
     localStorage.setItem("memePopupShown", "true");
   }
@@ -1803,19 +1802,26 @@ function drawMeme() {
   const charVal = characterSelect.value;
 
   if (hatVal && !hats.some(obj => obj.img.src.includes(hatVal))) {
-    createAccessory('hat', hatVal, 0.7);
+    createAccessory('hat', hatVal, 0.6);
   }
 
   if (chainVal && !chains.some(obj => obj.img.src.includes(chainVal))) {
-    createAccessory('chain', chainVal, 0.8);
+    createAccessory('chain', chainVal, 0.7);
   }
 
   if (charVal && !characters.some(obj => obj.img.src.includes(charVal))) {
-    createAccessory('character', charVal, 1.0);
+    createAccessory('character', charVal, 1.1);
   }
 }
 
-function createAccessory(type, imgSrc, scale = 1.0) {
+ function createAccessory(type, imgSrc, scale) {
+  const defaultScales = {
+    character: 1.2,
+    hat: 0.85,
+    chain: 0.75
+  };
+  scale = scale ?? defaultScales[type] ?? 1.0;
+
   const targetArray = type === 'hat' ? hats : type === 'chain' ? chains : characters;
   if (targetArray.some(obj => obj.img.src === imgSrc)) return;
 
@@ -1843,8 +1849,12 @@ function createAccessory(type, imgSrc, scale = 1.0) {
   const maxX = canvas.width - (img.width * obj.scale);
   const maxY = canvas.height - (img.height * obj.scale);
 
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
+  let x = (canvas.width - w) / 2;
+  let y = (canvas.height - h) / 2;
+
+if (type === 'hat') y -= 40;        // nudge hats up
+if (type === 'chain') y += 50;      // chains hang lower
+if (type === 'character') y -= 20;  // adjust characters slightly up
 
   // Clamp initial position to be visible
   obj.x = Math.max(0, Math.min(centerX - (img.width * obj.scale) / 2, maxX));
