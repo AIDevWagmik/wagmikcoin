@@ -1670,25 +1670,6 @@ if (
   </script>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const memeBtn = document.querySelector('.meme-toggle-btn');
-
-    memeBtn.addEventListener('click', () => {
-      // Directly show popup after modal is toggled
-      const isMobile = window.innerWidth < 768;
-      const isApp = window.matchMedia('(display-mode: standalone)').matches;
-      const hasBeenShown = localStorage.getItem("memePopupShown");
-      const popup = document.getElementById("memeGeneratorPopup");
-
-      if (isMobile && !isApp && !hasBeenShown && popup) {
-        popup.style.display = "block";
-        localStorage.setItem("memePopupShown", "true");
-      }
-    });
-  });
-</script> 
-
-<script>
   async function getMobileWallet() {
     const isMobile = window.innerWidth <= 768;
 
@@ -2078,20 +2059,20 @@ function setupDragAndResize(obj) {
     const mx = e.clientX - left;
     const my = e.clientY - top;
 
-    [...hats, ...chains, ...characters].reverse().forEach(item => {
-      const w = item.img.width * item.scale;
-      const h = item.img.height * item.scale;
-      if (isInside(mx, my, item.x, item.y, w, h)) {
-        item.dragging = true;
-        selectedObj = item;
-        clickedObj = item;
+   for (const item of [...hats, ...chains, ...characters].reverse()) {
+  const w = item.img.width * item.scale;
+  const h = item.img.height * item.scale;
+  if (isInside(mx, my, item.x, item.y, w, h)) {
+    item.dragging = true;
+    selectedObj = item;
 
-        if (!/Mobi|Android/i.test(navigator.userAgent)) {
-          sliderWrapper.style.display = 'block';
-          rotationSlider.value = (item.rotation * 180 / Math.PI).toFixed(0);
-        }
-      }
-    });
+    if (!/Mobi|Android/i.test(navigator.userAgent)) {
+      sliderWrapper.style.display = 'block';
+      rotationSlider.value = (item.rotation * 180 / Math.PI).toFixed(0);
+    }
+    break; // ⬅️ Stop checking after first match
+  }
+}
 
     if (!selectedObj) {
       sliderWrapper.style.display = 'none';
@@ -2194,7 +2175,7 @@ function setupTouchHandlers(obj) {
     }
 
     // Get top-most touched object
-    const touchedObj = getTouchTarget(x, y);
+    const touchedObj = getTouchTarget(x, y, false);
 
   if (e.touches.length === 1 && touchedObj) {
   lockedObj = touchedObj;
