@@ -1651,11 +1651,12 @@ function toggleMeme() {
 
 // ✅ Show Meme Generator popup only once on mobile browser (not app)
 if (
-  window.innerWidth < 768 &&
+  /Mobi|Android/i.test(navigator.userAgent) &&
   memeModal.classList.contains('active') &&
   !window.matchMedia('(display-mode: standalone)').matches
 ) {
   const popup = document.getElementById("memeGeneratorPopup");
+
   if (popup) {
     popup.style.display = "block";
   }
@@ -2077,19 +2078,20 @@ function setupDragAndResize(obj) {
     const mx = e.clientX - left;
     const my = e.clientY - top;
 
-   for (const item of [...hats, ...chains, ...characters].reverse()) {
-  const w = item.img.width * item.scale;
-  const h = item.img.height * item.scale;
-  if (isInside(mx, my, item.x, item.y, w, h)) {
-    item.dragging = true;
-    selectedObj = item;
+   const clicked = getTouchTarget(mx, my, false); // false = precise mouse priority
 
-    if (!/Mobi|Android/i.test(navigator.userAgent)) {
-      sliderWrapper.style.display = 'block';
-      rotationSlider.value = (item.rotation * 180 / Math.PI).toFixed(0);
-    }
-    break; // ⬅️ Stop checking after first match
+if (clicked) {
+  clicked.dragging = true;
+  selectedObj = clicked;
+  clickedObj = clicked;
+
+  if (!/Mobi|Android/i.test(navigator.userAgent)) {
+    sliderWrapper.style.display = 'block';
+    rotationSlider.value = (clicked.rotation * 180 / Math.PI).toFixed(0);
   }
+} else {
+  selectedObj = null;
+  sliderWrapper.style.display = 'none';
 }
 
     if (!selectedObj) {
