@@ -1161,19 +1161,21 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
 @media screen and (max-width: 767px) {
  .meme-generator-popup {
-  position: absolute;
-  top: 20px;
+  position: fixed;
+  top: 10px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
-  max-width: 90%;
   background: black;
   color: white;
   border-radius: 12px;
   padding: 16px;
+  margin: 0;
   text-align: center;
+  max-width: 90%;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
   pointer-events: auto;
+  
 }
 
 .meme-generator-popup.hidden {
@@ -1201,7 +1203,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    padding: 20px 10px 30px;
+    padding: 10px 10px 30px;
     overflow-y: auto;
     max-height: 100vh;
   }
