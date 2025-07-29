@@ -1185,7 +1185,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 @media (max-width: 767px) {
   .bottom-fade-divider {
     background: linear-gradient(to bottom, rgba(26, 14, 45, 0), rgba(26, 14, 45, 1));
-    transform: translateY(-160px); /* adjust differently for mobile */
+    transform: translateY(-180px); /* adjust differently for mobile */
   }
 }
 
@@ -1260,6 +1260,12 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   font-weight: bold;
   cursor: pointer;
 }
+
+#memeGeneratorPopup {
+  background: red !important;
+  z-index: 9999 !important;
+}
+
 
   </style>
 
@@ -1402,7 +1408,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     <img src="console-layout.png" class="console-bg" alt="MEME Generator">
 
 
-   <div id="memeGeneratorPopup" class="meme-generator-popup" style="display: none;">
+   <div id="memeGeneratorPopup" class="meme-generator-popup">
   <div class="modal-content">
     <h2>🔥 Welcome!</h2>
     <p style="margin-top: 10px;">
@@ -1651,7 +1657,10 @@ function toggleMeme() {
 
 // 🔧 TEMP: Show popup on every open for debugging
 const popup = document.getElementById("memeGeneratorPopup");
-if (popup) popup.style.display = "block";
+if (popup) {
+  console.log("Popup trigger running");
+  popup.style.display = "block";
+}
 
   if (window.innerWidth < 768) {
     const isActive = memeModal.classList.contains('active');
