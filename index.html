@@ -1649,18 +1649,9 @@ function toggleMeme() {
 
   memeModal.classList.toggle('active');
 
-// ✅ Show Meme Generator popup only once on mobile browser (not app)
-if (
-  /Mobi|Android/i.test(navigator.userAgent) &&
-  memeModal.classList.contains('active') &&
-  !window.matchMedia('(display-mode: standalone)').matches
-) {
-  const popup = document.getElementById("memeGeneratorPopup");
-
-  if (popup) {
-    popup.style.display = "block";
-  }
-}
+// 🔧 TEMP: Show popup on every open for debugging
+const popup = document.getElementById("memeGeneratorPopup");
+if (popup) popup.style.display = "block";
 
   if (window.innerWidth < 768) {
     const isActive = memeModal.classList.contains('active');
