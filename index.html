@@ -1114,7 +1114,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 @media (max-width: 767px) {
   .bottom-fade-divider {
     background: linear-gradient(to bottom, rgba(26, 14, 45, 0), rgba(26, 14, 45, 1));
-    transform: translateY(-165px); /* adjust differently for mobile */
+    transform: translateY(-160px); /* adjust differently for mobile */
   }
 }
 
@@ -1164,7 +1164,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   }
 
  body.standalone .bottom-fade-divider {
-  transform: translateY(-140px);
+  transform: translateY(-135px);
  }
 }
 
@@ -1289,6 +1289,23 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   #memeGeneratorPopup {
     display: none !important;
   }
+
+  .desktop-side {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.easter-clicker {
+  max-width: 80px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.easter-clicker:hover {
+  transform: scale(1.1) rotate(4deg);
+ }
 }
  
   </style>
@@ -1442,6 +1459,14 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
       </div>
     </div>
   </div>
+
+ <div class="desktop-side left" onclick="showRandomLore()">
+  <img src="left-clicker.png" alt="Read Lore" class="easter-clicker" />
+</div>
+
+<div class="desktop-side right" onclick="loadMemePreset()">
+  <img src="right-clicker.png" alt="Meme Boost" class="easter-clicker" />
+</div>
 
    <div class="console-container">
     <img src="console-layout.png" class="console-bg" alt="MEME Generator">
@@ -1708,6 +1733,24 @@ function toggleMeme() {
   function dismissMemePopup() {
   const popup = document.getElementById("memeGeneratorPopup");
   if (popup) popup.classList.add("hidden");
+}
+
+function showRandomLore() {
+  const lores = [
+    "Degen prophecy #23: Buy the top, post the meme.",
+    "Only the chosen few escape the rug.",
+    "The chart fell, but the meme lived.",
+    "WAGMIK scrolls: 'Buy, cope, meme, repeat.'"
+  ];
+  const random = lores[Math.floor(Math.random() * lores.length)];
+  alert(random); // Optional: replace with modal if needed
+}
+
+function loadMemePreset() {
+  // Example: preselect meme dropdowns
+  document.getElementById("bgSelect").value = "bg-degen";
+  document.getElementById("topText").value = "I believed the lore";
+  document.getElementById("bottomText").value = "Now I'm a meme";
 }
 
   </script>
