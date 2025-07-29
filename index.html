@@ -691,68 +691,6 @@ input, select, textarea, button {
   position: relative;
 }
 
-@media (max-width: 768px) {
-  .modal.active,
-  #memeModal.modal.active {
-    min-height: 100vh !important;
-    max-height: none !important;
-    height: auto !important;
-    overflow-y: visible !important;
-    display: flex !important;
-    flex-direction: column;
-    justify-content: flex-start;
-    padding-bottom: 100px !important; /* 🛠 ensures canvas is visible */
-  }
-
- .console-container {
-  padding-top: 0px !important;
-  padding-bottom: 100px !important;
-  overflow-y: visible !important;
-  max-height: none !important;
-  box-sizing: border-box;
-  touch-action: manipulation; /* ✅ restored */
-  gap: 12px !important;
-}
-
-  #memeCanvas {
-    margin-top: 20px !important;
-    margin-bottom: 40px !important;
-    display: block !important;
-    max-width: 95vw !important;
-    width: 100% !important;
-    height: auto !important;
-    border: 2px dashed white;
-    touch-action: none;
-  }
-
-  canvas {
-    display: block;
-    margin: 0 auto;
-    max-width: 100%;
-  }
-}
-
-
-@media (max-width: 768px) {
-  #memeModal select,
-  #memeModal input[type="text"] {
-    pointer-events: auto !important;
-    z-index: 1000 !important;
-    position: relative;
-  }
-}
-
-@media (max-width: 768px) {
-  .console-controls {
-    order: 1;
-  }
-  .console-canvas {
-    order: 2;
-    margin-top: -20px;
-  }
-}
-
-
 @media (min-width: 768px) {
   .lore-toggle-btn {
     display: none;
@@ -790,6 +728,7 @@ body, html {
   touch-action: auto !important; /* reset global block if it lingers */
 }
 
+   /*
 @media (max-width: 768px) {
   .modal.active {
     max-height: 100vh !important;
@@ -798,22 +737,7 @@ body, html {
     flex-direction: column;
   }
 }
-
- @media (max-width: 768px) {
-  #memeModal.modal.active {
-    max-height: 100vh;
-    overflow-y: auto;
-    display: flex !important;
-    flex-direction: column;
-    justify-content: flex-start;
-    padding-bottom: 24px; /* 🩹 Make room for canvas */
-  }
-
-  .console-container {
-    padding-bottom: 24px; /* extra scroll space on small viewports */
-    box-sizing: border-box;
-  }
-}
+   */
 
    /* 🟣 Share Modal Wrapper */
 .share-modal.hidden {
@@ -1269,6 +1193,85 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   padding: 8px 16px;
   font-weight: bold;
  }
+}
+
+@media (max-width: 768px) {
+  #memeModal.modal.active {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20px 10px 30px;
+    overflow-y: auto;
+    max-height: 100vh;
+  }
+
+  .console-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 24px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    max-height: unset;
+    touch-action: manipulation;
+  }
+
+  .console-controls {
+    width: 100%;
+    max-width: 360px;
+    padding: 0 10px;
+    order: 1;
+    z-index: 2;
+  }
+
+  .console-canvas {
+    order: 2;
+    margin-top: -10px;
+    z-index: 1;
+  }
+
+  #memeCanvas {
+    width: 100%;
+    max-width: 95%;
+    height: auto;
+    margin: 12px auto 20px;
+    display: block;
+    border: 2px dashed white;
+    box-sizing: border-box;
+    touch-action: none;
+  }
+
+  .console-controls input,
+  .console-controls select,
+  .console-controls button {
+    font-size: 1em;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    touch-action: manipulation;
+    pointer-events: auto !important;
+  }
+
+  .button-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .button-row button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #ff4fd8 0%, #ffe06b 100%);
+    color: #000;
+    font-weight: bold;
+    border: none;
+  }
 }
  
   </style>
