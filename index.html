@@ -1408,19 +1408,6 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 <div class="modal" id="memeModal">
   <button class="close-btn" onclick="toggleMeme()">✖</button>
 
-   <!-- Meme Generator Popup -->
-  <div id="memeGeneratorPopup" class="meme-generator-popup">
-    <div class="modal-content">
-      <h2>🔥 Welcome!</h2>
-      <p style="margin-top: 10px;">
-        For the best experience, tap <strong>Share</strong> → <strong>Add to Home Screen</strong> to use this as an app.
-      </p>
-      <div class="button-container">
-        <button onclick="dismissMemePopup()">Got it!</button>
-      </div>
-    </div>
-  </div>
-
    <div class="console-container">
     <img src="console-layout.png" class="console-bg" alt="MEME Generator">
   </div>
@@ -2414,8 +2401,19 @@ function shareToX() {
     <button onclick="document.getElementById('mobileWalletPopup').style.display='none'">Got it!</button>
   </div>
 </div>
+
+<!-- Meme Generator Popup -->
+  <div id="memeGeneratorPopup" class="meme-generator-popup">
+    <div class="modal-content">
+      <h2>🔥 Welcome!</h2>
+      <p style="margin-top: 10px;">
+        For the best experience, tap <strong>Share</strong> → <strong>Add to Home Screen</strong> to use this as an app.
+      </p>
+      <div class="button-container">
+        <button onclick="dismissMemePopup()">Got it!</button>
+      </div>
+    </div>
+  </div>
   
  </body>
-</html>
-</body>
 </html>
