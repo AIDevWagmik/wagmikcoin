@@ -1275,6 +1275,12 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     border: none;
   }
 }
+
+ @media (min-width: 768px) {
+  #memeGeneratorPopup {
+    display: none !important;
+  }
+}
  
   </style>
 
@@ -1673,8 +1679,10 @@ function toggleMeme() {
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
 
   if (window.innerWidth < 768 && isMobile && !isStandalone && memeModal.classList.contains('active')) {
-    popup?.classList.remove("hidden");
-  }
+  popup?.classList.remove("hidden");
+} else {
+  popup?.classList.add("hidden"); // ✅ Always hide it on desktop or app
+}
 
   if (window.innerWidth < 768) {
     const isActive = memeModal.classList.contains('active');
