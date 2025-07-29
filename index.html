@@ -1350,7 +1350,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 }
 
 /* -------------------------------
-   Meme Boost Popup Styles
+   Lore Popup Styles
 -------------------------------- */
 .read-lore-popup {
   position: fixed;
@@ -1542,7 +1542,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   </div>
 </div>
 
-<div id="lorePopup" class="meme-generator-popup hidden">
+<div id="lorePopup" class="read-lore-popup hidden">
   <h2>📜 Lore Drop!</h2>
   <p style="margin-top: 10px;">You're now tapped into the sacred $WAGMIK scrolls of prophecy...</p>
   <div class="button-container">
@@ -1824,6 +1824,11 @@ function dismissMemePopup() {
 // Dismiss the popup
 function dismissMemeBoostPopup() {
   document.getElementById("memeBoostPopup").classList.add("hidden");
+}
+
+function dismissLorePopup() {
+  const popup = document.getElementById("lorePopup");
+  if (popup) popup.classList.add("hidden");
 }
 
 // Handle Meme Boost click
