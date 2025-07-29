@@ -1235,17 +1235,19 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   }
 }
 
-.meme-generator-popup {
-  position: absolute;
-  top: 10%;
-  left: 5%;
-  width: 90%;
-  background: rgba(0, 0, 0, 0.95);
-  color: white;
-  padding: 20px;
-  border-radius: 10px;
+.meme-generator-popup  {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 9999;
-  font-family: sans-serif;
+  max-width: 90%;
+  background: black;
+  color: white;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
 }
 
 .meme-generator-popup.hidden {
