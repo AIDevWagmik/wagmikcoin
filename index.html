@@ -1544,7 +1544,9 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
 <div id="lorePopup" class="read-lore-popup hidden">
   <h2>📜 Lore Drop!</h2>
-  <p style="margin-top: 10px;">You're now tapped into the sacred $WAGMIK scrolls of prophecy...</p>
+  <p style="margin-top: 10px;">You're now tapped into the sacred $WAGMIK scrolls of prophecy...<br>
+  <strong id="randomLoreText"></strong>
+  </p>
   <div class="button-container">
     <button onclick="dismissLorePopup()">Got it!</button>
   </div>
@@ -1839,17 +1841,34 @@ function toggleMeme() {
   // --------------------------
 
   document.getElementById("memeBoostBtn").addEventListener("click", function () {
-    // Show Meme Boost popup
-    document.getElementById("memeBoostPopup").classList.remove("hidden");
+  // Show popup
+  document.getElementById("memeBoostPopup").classList.remove("hidden");
 
-    // Load preset
-    document.getElementById("bgSelect").value = "bg-Degen.png";
-    document.getElementById("topText").value = "BUY HIGH";
-    document.getElementById("bottomText").value = "SELL LOW";
+  // List of meme images stored in the root next to index.html
+  const memeImages = [
+    "memeboost1.png",
+    "memeboost2.png",
+    "memeboost4.png"
+    "memeboost5.png"
+    "memeboost6.png"
+  ];
 
-    // Redraw canvas if drawCanvas() exists
-    if (typeof drawCanvas === "function") drawCanvas();
-  });
+  const randomImage = memeImages[Math.floor(Math.random() * memeImages.length)];
+
+  const canvas = document.getElementById("memeCanvas");
+  const ctx = canvas.getContext("2d");
+
+  const img = new Image();
+  img.src = randomImage;
+
+  img.onload = function () {
+    // Resize canvas to image size
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+  };
+});
 
   // --------------------------
   // 📜 Handle Lore Button
@@ -1857,33 +1876,34 @@ function toggleMeme() {
 
   document.getElementById("readLoreBtn").addEventListener("click", function () {
     document.getElementById("lorePopup").classList.remove("hidden");
+   showRandomLore();
   });
 
   // --------------------------
   // 🧠 Load Meme Preset (optional reuse)
   // --------------------------
 
-  function loadMemePreset() {
-    document.getElementById("bgSelect").value = "bg-degen";
-    document.getElementById("topText").value = "I believed the lore";
-    document.getElementById("bottomText").value = "Now I'm a meme";
-    if (typeof drawCanvas === "function") drawCanvas();
-  }
+ 
 
   // --------------------------
   // 🔮 Optional: Show Random Lore Quote
   // --------------------------
 
-  function showRandomLore() {
-    const lores = [
-      "Degen prophecy #23: Buy the top, post the meme.",
-      "Only the chosen few escape the rug.",
-      "The chart fell, but the meme lived.",
-      "WAGMIK scrolls: Buy, cope, meme, repeat."
-    ];
-    const random = lores[Math.floor(Math.random() * lores.length)];
-    alert(random); // Replace this line if you want to inject into DOM
+ function showRandomLore() {
+  const lores = [
+    "Degen prophecy #23: Buy the top, post the meme.",
+    "Only the chosen few escape the rug.",
+    "The chart fell, but the meme lived.",
+    "WAGMIK scrolls: Buy, cope, meme, repeat."
+  ];
+
+  const random = lores[Math.floor(Math.random() * lores.length)];
+  const loreTextElement = document.getElementById("randomLoreText");
+
+  if (loreTextElement) {
+    loreTextElement.textContent = random;
   }
+}
 
   </script>
 
