@@ -1713,6 +1713,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   }
   setInterval(createCoin, 400);
   </script>
+  
   <script>
    // Lightbox Logic
   const lightbox = document.getElementById("lightbox");
@@ -1748,166 +1749,155 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     });
   });
   </script>
-  <script>
+
+<script>
+  // 🔁 Toggle Meme Modal
+  function toggleMeme() {
+    const memeModal = document.getElementById('memeModal');
+    const popup = document.getElementById('memeGeneratorPopup');
+
+    const loreBtn = document.querySelector('.lore-toggle-btn');
+    const degenBtn = document.querySelector('.degen-toggle-btn');
+    const memeBtn = document.querySelector('.meme-toggle-btn');
+
+    memeModal.classList.toggle('active');
+
+    // ✅ Show popup on mobile only
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+
+    if (window.innerWidth < 768 && isMobile && !isStandalone && memeModal.classList.contains('active')) {
+      popup?.classList.remove("hidden");
+    } else {
+      popup?.classList.add("hidden");
+    }
+
+    if (window.innerWidth < 768) {
+      const isActive = memeModal.classList.contains('active');
+      const visibility = isActive ? 'hidden' : 'visible';
+
+      if (loreBtn) loreBtn.style.visibility = visibility;
+      if (degenBtn) degenBtn.style.visibility = visibility;
+      if (memeBtn) memeBtn.style.visibility = visibility;
+
+      document.body.style.overflow = isActive ? 'hidden' : '';
+    }
+  }
+
+  // 🔁 Toggle Lore Modal
   function toggleLore() {
-  const modal = document.getElementById('loreModal');
-  modal.classList.toggle('active');
+    const modal = document.getElementById('loreModal');
+    modal.classList.toggle('active');
 
-  // 👇 Fix focus issue on mobile
-  if (window.innerWidth < 768 && modal.classList.contains('active')) {
-    modal.focus();
-  }
-}
-
-function toggleDegen() {
-  const modal = document.getElementById('degenModal');
-  const lines = [
-    "Buy high, hold higher.",
-    "You only lose when you sell.",
-    "Gas fees are a state of mind.",
-    "If it dumps, double down.",
-    "Degen rule #88: Never check the chart.",
-    "Real utility is in the meme.",
-    "WAGMIK is a vibe, not a roadmap.",
-    "Coins come and go, but hopium is eternal.",
-    "He who panics last, panics best.",
-    "Trust the vibes, not the volume."
-  ];
-
-  if (!modal.classList.contains('active')) {
-    document.getElementById('degenProphecy').textContent =
-      `"${lines[Math.floor(Math.random() * lines.length)]}"`;
+    if (window.innerWidth < 768 && modal.classList.contains('active')) {
+      modal.focus();
+    }
   }
 
-  modal.classList.toggle('active');
+  // 🔁 Toggle Degen Modal
+  function toggleDegen() {
+    const modal = document.getElementById('degenModal');
+    const lines = [
+      "Buy high, hold higher.",
+      "You only lose when you sell.",
+      "Gas fees are a state of mind.",
+      "If it dumps, double down.",
+      "Degen rule #88: Never check the chart.",
+      "Real utility is in the meme.",
+      "WAGMIK is a vibe, not a roadmap.",
+      "Coins come and go, but hopium is eternal.",
+      "He who panics last, panics best.",
+      "Trust the vibes, not the volume."
+    ];
 
-  if (window.innerWidth < 768 && modal.classList.contains('active')) {
-    modal.focus();
+    if (!modal.classList.contains('active')) {
+      document.getElementById('degenProphecy').textContent =
+        `"${lines[Math.floor(Math.random() * lines.length)]}"`;
+    }
+
+    modal.classList.toggle('active');
+
+    if (window.innerWidth < 768 && modal.classList.contains('active')) {
+      modal.focus();
+    }
   }
-}
 
-function toggleMeme() {
-  const memeModal = document.getElementById('memeModal');
-  const popup = document.getElementById("memeGeneratorPopup");
- 
-  const loreBtn = document.querySelector('.lore-toggle-btn');
-  const degenBtn = document.querySelector('.degen-toggle-btn');
-  const memeBtn = document.querySelector('.meme-toggle-btn');
-
-  memeModal.classList.toggle('active');
-
-  // ✅ Show popup on mobile browser only, NOT standalone app or desktop
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-
-  if (window.innerWidth < 768 && isMobile && !isStandalone && memeModal.classList.contains('active')) {
-  popup?.classList.remove("hidden");
-} else {
-  popup?.classList.add("hidden"); // ✅ Always hide it on desktop or app
-}
-
-  if (window.innerWidth < 768) {
-    const isActive = memeModal.classList.contains('active');
-    const visibility = isActive ? 'hidden' : 'visible';
-
-    loreBtn.style.visibility = visibility;
-    degenBtn.style.visibility = visibility;
-    memeBtn.style.visibility = visibility;
-
-    document.body.style.overflow = isActive ? 'hidden' : '';
-  }
- }
-}
-// --------------------------
-  // 🔺 Dismiss Popup Functions
   // --------------------------
-
+  // ❌ Dismiss Functions
+  // --------------------------
   function dismissMemePopup() {
-    const popup = document.getElementById("memeGeneratorPopup");
+    const popup = document.getElementById('memeGeneratorPopup');
     if (popup) popup.classList.add("hidden");
   }
 
   function dismissMemeBoostPopup() {
-    const popup = document.getElementById("memeBoostPopup");
+    const popup = document.getElementById('memeBoostPopup');
     if (popup) popup.classList.add("hidden");
   }
 
   function dismissLorePopup() {
-    const popup = document.getElementById("lorePopup");
+    const popup = document.getElementById('lorePopup');
     if (popup) popup.classList.add("hidden");
   }
 
   // --------------------------
-  // 🚀 Handle Meme Boost Button
+  // 🚀 Handle Meme Boost
   // --------------------------
+  document.getElementById("memeBoostBtn")?.addEventListener("click", function () {
+    document.getElementById("memeBoostPopup").classList.remove("hidden");
 
-  document.getElementById("memeBoostBtn").addEventListener("click", function () {
-  // Show popup
-  document.getElementById("memeBoostPopup").classList.remove("hidden");
+    const memeImages = [
+      "memeboost1.png",
+      "memeboost2.png",
+      "memeboost4.png",
+      "memeboost5.png",
+      "memeboost6.png"
+    ];
 
-  // List of meme images stored in the root next to index.html
-  const memeImages = [
-    "memeboost1.png",
-    "memeboost2.png",
-    "memeboost4.png"
-    "memeboost5.png"
-    "memeboost6.png"
-  ];
+    const randomImage = memeImages[Math.floor(Math.random() * memeImages.length)];
 
-  const randomImage = memeImages[Math.floor(Math.random() * memeImages.length)];
+    const canvas = document.getElementById("memeCanvas");
+    const ctx = canvas.getContext("2d");
 
-  const canvas = document.getElementById("memeCanvas");
-  const ctx = canvas.getContext("2d");
+    const img = new Image();
+    img.src = randomImage;
 
-  const img = new Image();
-  img.src = randomImage;
-
-  img.onload = function () {
-    // Resize canvas to image size
-    canvas.width = img.width;
-    canvas.height = img.height;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, 0);
-  };
-});
-
-  // --------------------------
-  // 📜 Handle Lore Button
-  // --------------------------
-
-  document.getElementById("readLoreBtn").addEventListener("click", function () {
-    document.getElementById("lorePopup").classList.remove("hidden");
-   showRandomLore();
+    img.onload = function () {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+    };
   });
 
   // --------------------------
-  // 🧠 Load Meme Preset (optional reuse)
+  // 📜 Handle Lore Click
   // --------------------------
-
- 
+  document.getElementById("readLoreBtn")?.addEventListener("click", function () {
+    document.getElementById("lorePopup").classList.remove("hidden");
+    showRandomLore();
+  });
 
   // --------------------------
-  // 🔮 Optional: Show Random Lore Quote
+  // 🔮 Generate Random Lore Text
   // --------------------------
+  function showRandomLore() {
+    const lores = [
+      "Degen prophecy #23: Buy the top, post the meme.",
+      "Only the chosen few escape the rug.",
+      "The chart fell, but the meme lived.",
+      "WAGMIK scrolls: Buy, cope, meme, repeat."
+    ];
 
- function showRandomLore() {
-  const lores = [
-    "Degen prophecy #23: Buy the top, post the meme.",
-    "Only the chosen few escape the rug.",
-    "The chart fell, but the meme lived.",
-    "WAGMIK scrolls: Buy, cope, meme, repeat."
-  ];
+    const random = lores[Math.floor(Math.random() * lores.length)];
+    const loreTextElement = document.getElementById("randomLoreText");
 
-  const random = lores[Math.floor(Math.random() * lores.length)];
-  const loreTextElement = document.getElementById("randomLoreText");
-
-  if (loreTextElement) {
-    loreTextElement.textContent = random;
+    if (loreTextElement) {
+      loreTextElement.textContent = random;
+    }
   }
-}
-
-  </script>
-
+</script>
+  
 <script>
   async function getMobileWallet() {
     const isMobile = window.innerWidth <= 768;
