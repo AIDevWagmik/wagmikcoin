@@ -1235,12 +1235,13 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   }
 }
 
-.meme-generator-popup  {
+@media screen and (max-width: 767px) {
+ .meme-generator-popup {
   position: absolute;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10;
+  z-index: 9999;
   max-width: 90%;
   background: black;
   color: white;
@@ -1262,13 +1263,14 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
 .meme-generator-popup button {
   background: #00ff99;
-  border: none;
-  padding: 10px 20px;
-  font-weight: bold;
-  border-radius: 6px;
   color: black;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: bold;
+ }
 }
-
+ 
   </style>
 
   <script src="https://terminal.jup.ag/main-v4.js"></script>
@@ -1407,6 +1409,19 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
 <div class="modal" id="memeModal">
   <button class="close-btn" onclick="toggleMeme()">✖</button>
+
+   <!-- Meme Generator Popup -->
+  <div id="memeGeneratorPopup" class="meme-generator-popup">
+    <div class="modal-content">
+      <h2>🔥 Welcome!</h2>
+      <p style="margin-top: 10px;">
+        For the best experience, tap <strong>Share</strong> → <strong>Add to Home Screen</strong> to use this as an app.
+      </p>
+      <div class="button-container">
+        <button onclick="dismissMemePopup()">Got it!</button>
+      </div>
+    </div>
+  </div>
 
    <div class="console-container">
     <img src="console-layout.png" class="console-bg" alt="MEME Generator">
@@ -2401,19 +2416,6 @@ function shareToX() {
     <button onclick="document.getElementById('mobileWalletPopup').style.display='none'">Got it!</button>
   </div>
 </div>
-
-<!-- Meme Generator Popup -->
-  <div id="memeGeneratorPopup" class="meme-generator-popup">
-    <div class="modal-content">
-      <h2>🔥 Welcome!</h2>
-      <p style="margin-top: 10px;">
-        For the best experience, tap <strong>Share</strong> → <strong>Add to Home Screen</strong> to use this as an app.
-      </p>
-      <div class="button-container">
-        <button onclick="dismissMemePopup()">Got it!</button>
-      </div>
-    </div>
-  </div>
   
  </body>
 </html>
