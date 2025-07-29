@@ -879,7 +879,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 /* 📱 Mobile-specific fade tuning */
 @media (max-width: 767px) {
   .hero-banner::after {
-    height: 160px;
+    height: 165px;
     transform: translateY(-110px);
     background: linear-gradient(to bottom, rgba(26, 14, 45, 1), rgba(26, 14, 45, 0));
   }
@@ -1114,7 +1114,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 @media (max-width: 767px) {
   .bottom-fade-divider {
     background: linear-gradient(to bottom, rgba(26, 14, 45, 0), rgba(26, 14, 45, 1));
-    transform: translateY(-180px); /* adjust differently for mobile */
+    transform: translateY(-165px); /* adjust differently for mobile */
   }
 }
 
@@ -1160,8 +1160,12 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
 @media screen and (max-width: 767px) {
   body.standalone .hero-banner::after {
-    transform: translateY(-230px); /* Adjust -10px until it's perfectly aligned */
+    transform: translateY(-240px); /* Adjust -10px until it's perfectly aligned */
   }
+
+ body.standalone .bottom-fade-divider {
+  transform: translateY(-140px);
+ }
 }
 
 @media screen and (max-width: 767px) {
