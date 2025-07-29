@@ -1236,35 +1236,35 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 }
 
 .meme-generator-popup {
-  position: fixed;
-  bottom: 20px;
-  left: 10px;
-  right: 10px;
-  background: rgba(0, 0, 0, 0.85);
+  position: absolute;
+  top: 10%;
+  left: 5%;
+  width: 90%;
+  background: rgba(0, 0, 0, 0.95);
   color: white;
-  padding: 15px;
+  padding: 20px;
   border-radius: 10px;
-  font-size: 14px;
+  z-index: 9999;
+  font-family: sans-serif;
+}
+
+.meme-generator-popup.hidden {
+  display: none !important;
+}
+
+.meme-generator-popup .button-container {
   text-align: center;
-  z-index: 10000;
+  margin-top: 15px;
 }
 
 .meme-generator-popup button {
-  margin-top: 12px;
-  padding: 8px 16px;
-  background-color: #00cc99;
-  color: white;
+  background: #00ff99;
   border: none;
-  border-radius: 4px;
+  padding: 10px 20px;
   font-weight: bold;
-  cursor: pointer;
+  border-radius: 6px;
+  color: black;
 }
-
-#memeGeneratorPopup {
-  background: red !important;
-  z-index: 9999 !important;
-}
-
 
   </style>
 
@@ -1399,26 +1399,28 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   <p id="degenProphecy">Loading prophecy...</p>
 </div>
 
-<!-- Meme Generator Button & Modal -->
+   <!-- Meme Generator Button & Modal -->
 <button class="floating-button meme-toggle-btn" onclick="toggleMeme()">🎭 Meme Generator</button>
+
 <div class="modal" id="memeModal">
   <button class="close-btn" onclick="toggleMeme()">✖</button>
   <div class="console-container">
     <img src="console-layout.png" class="console-bg" alt="MEME Generator">
+  </div>
 
-
-   <div id="memeGeneratorPopup" class="meme-generator-popup">
-  <div class="modal-content">
-    <h2>🔥 Welcome!</h2>
-    <p style="margin-top: 10px;">
-      For the best experience, tap <strong>Share</strong> → <strong>Add to Home Screen</strong> to use this as an app.
-    </p>
-    <div class="button-container">
-      <button onclick="dismissMemePopupp()">Got it!</button>
+  <!-- Meme Generator Popup -->
+  <div id="memeGeneratorPopup" class="meme-generator-popup">
+    <div class="modal-content">
+      <h2>🔥 Welcome!</h2>
+      <p style="margin-top: 10px;">
+        For the best experience, tap <strong>Share</strong> → <strong>Add to Home Screen</strong> to use this as an app.
+      </p>
+      <div class="button-container">
+        <button onclick="dismissMemePopup()">Got it!</button>
+      </div>
     </div>
   </div>
 </div>
-
 
     <!-- 🎛 Controls Section -->
     <div class="console-controls">
@@ -1648,17 +1650,21 @@ function toggleDegen() {
 
 function toggleMeme() {
   const memeModal = document.getElementById('memeModal');
+  const popup = document.getElementById("memeGeneratorPopup");
+ 
   const loreBtn = document.querySelector('.lore-toggle-btn');
   const degenBtn = document.querySelector('.degen-toggle-btn');
   const memeBtn = document.querySelector('.meme-toggle-btn');
 
   memeModal.classList.toggle('active');
 
-// 🔧 TEMP: Show popup on every open for debugging
-const popup = document.getElementById("memeGeneratorPopup");
-if (popup) {
-  console.log("Popup trigger running");
-}
+  // ✅ Show popup on mobile browser only, NOT standalone app or desktop
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+
+  if (window.innerWidth < 768 && isMobile && !isStandalone && memeModal.classList.contains('active')) {
+    popup?.classList.remove("hidden");
+  }
 
   if (window.innerWidth < 768) {
     const isActive = memeModal.classList.contains('active');
@@ -1671,6 +1677,12 @@ if (popup) {
     document.body.style.overflow = isActive ? 'hidden' : '';
   }
 }
+
+  function dismissMemePopup() {
+  const popup = document.getElementById("memeGeneratorPopup");
+  if (popup) popup.classList.add("hidden");
+}
+
   </script>
 
 <script>
@@ -2369,16 +2381,6 @@ function shareToX() {
 <script>
   if (window.matchMedia('(display-mode: standalone)').matches) {
     document.body.classList.add('standalone');
-  }
-</script>
-
-<script>
-  function dismissMemePopup() {
-    const popup = document.getElementById("memeGeneratorPopup");
-    if (popup) {
-      popup.style.display = "none";
-      localStorage.setItem("memePopupShown", "true");
-    }
   }
 </script>
 
