@@ -2780,8 +2780,47 @@ document.addEventListener('DOMContentLoaded', () => {
         logOutput("❌ Airdrop failed.");
         console.error(err);
       }
+     } 
+    
+      else if (cmd.startsWith("send ")) {
+  const parts = cmd.split(" ");
+  if (parts.length !== 3) {
+    logOutput("❌ Usage: send <recipient> <amount>");
+    return;
+  }
 
-    } else {
+  const recipient = parts[1];
+  const amount = parseFloat(parts[2]);
+
+  if (!recipient || isNaN(amount)) {
+    logOutput("❌ Invalid address or amount.");
+    return;
+  }
+
+  try {
+    const toPubkey = new window.SolanaTools.PublicKey(recipient);
+    const fromPubkey = walletPublicKey;
+
+    const tx = new window.SolanaTools.Transaction().add(
+      window.SolanaTools.SystemProgram.transfer({
+        fromPubkey,
+        toPubkey,
+        lamports: amount * window.SolanaTools.LAMPORTS_PER_SOL,
+      })
+    );
+
+    const { signature } = await window.solana.signAndSendTransaction(tx);
+    logOutput(`📤 TX sent: ${signature}`);
+
+    await window.solanaConnection.confirmTransaction(signature, 'confirmed');
+    logOutput("✅ Transaction confirmed.");
+  } catch (err) {
+    logOutput("❌ Transaction failed.");
+    console.error(err);
+  }
+}
+   
+    else {
       logOutput(`❓ Unknown command: ${cmd}`);
     }
   });
