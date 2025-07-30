@@ -2713,30 +2713,6 @@ function shareToX() {
   }
 </script>
 
-<!-- ✅ PART 1: Load Solana SDK first -->
-<script>
-let solanaReady = false;
-
-(async () => {
-  try {
-    const web3 = await import('https://cdn.jsdelivr.net/npm/@solana/web3.js/+esm');
-
-    window.solanaConnection = new web3.Connection(web3.clusterApiUrl("devnet"), "confirmed");
-    window.SolanaTools = {
-      PublicKey: web3.PublicKey,
-      LAMPORTS_PER_SOL: web3.LAMPORTS_PER_SOL,
-      Transaction: web3.Transaction,
-      SystemProgram: web3.SystemProgram
-    };
-
-    solanaReady = true;
-    console.log("✅ Solana SDK loaded");
-  } catch (err) {
-    console.error("❌ Failed to load Solana SDK", err);
-  }
-})();
-</script>
-
 <!-- ✅ PART 2: DOM and terminal logic (runs immediately) -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -2833,6 +2809,31 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 }
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.1/lib/index.iife.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!window.solanaWeb3) {
+      console.error("❌ Solana SDK not loaded.");
+      return;
+    }
+
+    window.solanaConnection = new solanaWeb3.Connection(
+      solanaWeb3.clusterApiUrl('devnet'),
+      'confirmed'
+    );
+
+    window.SolanaTools = {
+      PublicKey: solanaWeb3.PublicKey,
+      LAMPORTS_PER_SOL: solanaWeb3.LAMPORTS_PER_SOL,
+      Transaction: solanaWeb3.Transaction,
+      SystemProgram: solanaWeb3.SystemProgram
+    };
+
+    console.log("✅ Solana SDK ready.");
+  });
+</script>
 
 <!-- Mobile Wallet Popup -->
 <div id="mobileWalletPopup" class="mobile-popup">
