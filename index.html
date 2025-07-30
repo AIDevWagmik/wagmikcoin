@@ -2764,44 +2764,46 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // === Run commands ===
-  runBtn?.addEventListener('click', () => {
-    const cmd = input.value.trim().toLowerCase();
-    input.value = '';
+ runBtn?.addEventListener('click', async () => {
+  const cmd = input.value.trim().toLowerCase();
+  input.value = '';
 
-    if (!walletPublicKey) {
-      logOutput("❌ Connect wallet first");
-      return;
+  if (!walletPublicKey) {
+    logOutput("❌ Connect wallet first");
+    return;
+  }
+
+  // 🧪 Ensure connection is ready
+  if (!window.solanaConnection || !window.SolanaTools) {
+    logOutput("⚠️ Solana connection not initialized yet.");
+    return;
+  }
+
+  if (cmd === 'balance') {
+    try {
+      const lamports = await window.solanaConnection.getBalance(walletPublicKey);
+      const sol = lamports / window.SolanaTools.LAMPORTS_PER_SOL;
+      logOutput(`💰 Balance: ${sol.toFixed(4)} SOL`);
+    } catch (err) {
+      logOutput("❌ Failed to fetch balance.");
+      console.error(err);
     }
 
-    if (cmd === 'balance') {
-      window.solanaConnection?.getBalance(walletPublicKey)
-        .then(lamports => {
-          const sol = lamports / window.SolanaTools.LAMPORTS_PER_SOL;
-          logOutput(`💰 Balance: ${sol.toFixed(4)} SOL`);
-        })
-        .catch(err => {
-          logOutput("❌ Failed to fetch balance.");
-          console.error(err);
-        });
-
-    } else if (cmd === 'airdrop') {
-      window.solanaConnection?.requestAirdrop(walletPublicKey, window.SolanaTools.LAMPORTS_PER_SOL)
-        .then(sig => {
-          logOutput(`🚰 Airdrop requested. TX: ${sig}`);
-          return window.solanaConnection.confirmTransaction(sig, 'confirmed');
-        })
-        .then(() => {
-          logOutput("✅ Airdrop confirmed");
-        })
-        .catch(err => {
-          logOutput("❌ Airdrop failed");
-          console.error(err);
-        });
-
-    } else {
-      logOutput(`❓ Unknown command: ${cmd}`);
+  } else if (cmd === 'airdrop') {
+    try {
+      const sig = await window.solanaConnection.requestAirdrop(walletPublicKey, window.SolanaTools.LAMPORTS_PER_SOL);
+      logOutput(`🚰 Airdrop requested. TX: ${sig}`);
+      await window.solanaConnection.confirmTransaction(sig, 'confirmed');
+      logOutput("✅ Airdrop confirmed");
+    } catch (err) {
+      logOutput("❌ Airdrop failed.");
+      console.error(err);
     }
-  });
+
+  } else {
+    logOutput(`❓ Unknown command: ${cmd}`);
+  }
+});
 
   // === Log to output div ===
   function logOutput(msg) {
