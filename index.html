@@ -1481,11 +1481,6 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
  <body>
 
 <header class="hero-banner"></header>
-
-<!-- 🌐 Solana Dev Icon (Clickable) -->
-<div id="solanaAppIcon" class="solana-icon-launcher">
-  <img src="solana.png" alt="Solana App" />
-</div>
   
 <div class="body-background-fade"></div>
 
@@ -1784,6 +1779,10 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
 <!-- 🌐 Floating App Links (Left Center) -->
 <div class="floating-apps">
+ <!-- Solana App Icon for Developer Terminal -->
+<a id="solanaAppIcon" onclick="toggleSolanaDev()">
+  <img src="solana.png" alt="Solana Dev" class="app-logo" />
+</a>
  <a href="https://x.com/WAGMIKdotSOL" target="_blank">
     <img src="x_image.png" alt="Twitter X" class="app-logo" />
   </a>
@@ -2770,6 +2769,7 @@ function logOutput(msg) {
   output.scrollTop = output.scrollHeight;
 }
 
+<script>
 function toggleSolanaDev() {
   document.getElementById('solanaDevModal').classList.toggle('active');
 }
