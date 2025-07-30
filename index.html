@@ -2730,86 +2730,95 @@ function shareToX() {
 })();
 </script>
   
- <script>
-document.addEventListener('DOMContentLoaded', () => {
-  let walletPublicKey = null;
+<script>
+(async () => {
+  const web3 = await import('https://cdn.jsdelivr.net/npm/@solana/web3.js/+esm');
 
-  const walletDisplay = document.getElementById('walletAddressDisplay');
-  const connectBtn = document.getElementById('connectWalletBtn');
-  const runBtn = document.getElementById('runCommandBtn');
-  const output = document.getElementById('terminalOutput');
-  const input = document.getElementById('terminalInput');
-  const modal = document.getElementById('solanaDevModal');
-  const solanaIcon = document.getElementById('solanaAppIcon');
+  // Expose globally
+  window.solanaConnection = new web3.Connection(web3.clusterApiUrl("devnet"), "confirmed");
+  window.SolanaTools = {
+    PublicKey: web3.PublicKey,
+    LAMPORTS_PER_SOL: web3.LAMPORTS_PER_SOL,
+    Transaction: web3.Transaction,
+    SystemProgram: web3.SystemProgram
+  };
 
-  connectBtn?.addEventListener('click', async () => {
-    try {
-      if (window.solana?.isPhantom) {
-        const resp = await window.solana.connect();
-        walletPublicKey = resp.publicKey;
-        walletDisplay.textContent = `✅ ${walletPublicKey.toBase58()}`;
-        logOutput("🟢 Wallet connected.");
-      } else {
-        logOutput("⚠️ Phantom not found.");
+  console.log("✅ Solana SDK loaded");
+
+  // === Now that SDK is ready, wait for DOM to load
+  document.addEventListener('DOMContentLoaded', () => {
+    let walletPublicKey = null;
+
+    const walletDisplay = document.getElementById('walletAddressDisplay');
+    const connectBtn = document.getElementById('connectWalletBtn');
+    const runBtn = document.getElementById('runCommandBtn');
+    const output = document.getElementById('terminalOutput');
+    const input = document.getElementById('terminalInput');
+    const modal = document.getElementById('solanaDevModal');
+    const solanaIcon = document.getElementById('solanaAppIcon');
+
+    function logOutput(msg) {
+      output.innerHTML += `\n> ${msg}`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    connectBtn?.addEventListener('click', async () => {
+      try {
+        if (window.solana?.isPhantom) {
+          const resp = await window.solana.connect();
+          walletPublicKey = resp.publicKey;
+          walletDisplay.textContent = `✅ ${walletPublicKey.toBase58()}`;
+          logOutput("🟢 Wallet connected.");
+        } else {
+          logOutput("⚠️ Phantom not found.");
+        }
+      } catch (err) {
+        logOutput("❌ Wallet connection failed.");
       }
-    } catch (err) {
-      logOutput("❌ Wallet connection failed.");
-    }
-  });
+    });
 
-  runBtn?.addEventListener('click', () => {
-    const cmd = input.value.trim().toLowerCase();
-    input.value = '';
+    runBtn?.addEventListener('click', async () => {
+      const cmd = input.value.trim().toLowerCase();
+      input.value = '';
 
-    if (!walletPublicKey) {
-      logOutput("❌ Connect wallet first");
-      return;
-    }
+      if (!walletPublicKey) {
+        logOutput("❌ Connect wallet first");
+        return;
+      }
 
-    if (!window.solanaConnection || !window.SolanaTools) {
-      logOutput("⚠️ Solana connection not initialized yet.");
-      return;
-    }
-
-    if (cmd === 'balance') {
-      window.solanaConnection.getBalance(walletPublicKey)
-        .then(lamports => {
+      if (cmd === 'balance') {
+        try {
+          const lamports = await window.solanaConnection.getBalance(walletPublicKey);
           const sol = lamports / window.SolanaTools.LAMPORTS_PER_SOL;
           logOutput(`💰 Balance: ${sol.toFixed(4)} SOL`);
-        })
-        .catch(err => {
+        } catch (err) {
           logOutput("❌ Failed to fetch balance.");
           console.error(err);
-        });
-    } else if (cmd === 'airdrop') {
-      window.solanaConnection.requestAirdrop(walletPublicKey, window.SolanaTools.LAMPORTS_PER_SOL)
-        .then(sig => {
+        }
+
+      } else if (cmd === 'airdrop') {
+        try {
+          const sig = await window.solanaConnection.requestAirdrop(walletPublicKey, window.SolanaTools.LAMPORTS_PER_SOL);
           logOutput(`🚰 Airdrop requested. TX: ${sig}`);
-          return window.solanaConnection.confirmTransaction(sig, 'confirmed');
-        })
-        .then(() => {
+          await window.solanaConnection.confirmTransaction(sig, 'confirmed');
           logOutput("✅ Airdrop confirmed");
-        })
-        .catch(err => {
-          logOutput("❌ Airdrop failed");
+        } catch (err) {
+          logOutput("❌ Airdrop failed.");
           console.error(err);
-        });
-    } else {
-      logOutput(`❓ Unknown command: ${cmd}`);
+        }
+
+      } else {
+        logOutput(`❓ Unknown command: ${cmd}`);
+      }
+    });
+
+    function toggleSolanaDev() {
+      if (modal) modal.classList.toggle('active');
     }
+
+    solanaIcon?.addEventListener('click', toggleSolanaDev);
   });
-
-  function logOutput(msg) {
-    output.innerHTML += `\n> ${msg}`;
-    output.scrollTop = output.scrollHeight;
-  }
-
-  function toggleSolanaDev() {
-    if (modal) modal.classList.toggle('active');
-  }
-
-  solanaIcon?.addEventListener('click', toggleSolanaDev);
-});
+})();
 </script>
 
 <style>
