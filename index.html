@@ -2756,7 +2756,8 @@ document.addEventListener('DOMContentLoaded', () => {
   solanaConnection.getBalance(walletPublicKey).then(lamports => {
     const sol = lamports / SolanaTools.LAMPORTS_PER_SOL;
     logOutput(`💰 Balance: ${sol.toFixed(4)} SOL`);
-  }).catch(err => {
+  })
+   .catch(err => {
     logOutput("❌ Failed to fetch balance.");
     console.error(err);
   });
