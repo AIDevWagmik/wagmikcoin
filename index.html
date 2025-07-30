@@ -2752,28 +2752,33 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (cmd === 'balance') {
-  solanaConnection.getBalance(walletPublicKey).then(lamports => {
-    const sol = lamports / SolanaTools.LAMPORTS_PER_SOL;
-    logOutput(`💰 Balance: ${sol.toFixed(4)} SOL`);
-  })
-   .catch(err => {
-    logOutput("❌ Failed to fetch balance.");
-    console.error(err);
-  });
+   if (cmd === 'balance') {
+  solanaConnection.getBalance(walletPublicKey)
+    .then(lamports => {
+      const sol = lamports / SolanaTools.LAMPORTS_PER_SOL;
+      logOutput(`💰 Balance: ${sol.toFixed(4)} SOL`);
+    })
+    .catch(err => {
+      logOutput("❌ Failed to fetch balance.");
+      console.error(err);
+    });
 }
-    } else if (cmd === 'airdrop') {
+
+else if (cmd === 'airdrop') {
   solanaConnection.requestAirdrop(walletPublicKey, SolanaTools.LAMPORTS_PER_SOL)
     .then(sig => {
       logOutput(`🚰 Airdrop requested. TX: ${sig}`);
       return solanaConnection.confirmTransaction(sig, 'confirmed');
     })
-    .then(() => logOutput("✅ Airdrop confirmed"))
+    .then(() => {
+      logOutput("✅ Airdrop confirmed");
+    })
     .catch(err => {
       logOutput("❌ Airdrop failed");
       console.error(err);
     });
 }
+
     } else {
       logOutput(`❓ Unknown command: ${cmd}`);
     }
