@@ -2720,7 +2720,7 @@ function shareToX() {
 <!-- ✅ PART 2: DOM and terminal logic (runs immediately) -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  let walletPublicKey = null;
+  window.walletPublicKey = null;
 
   const walletDisplay = document.getElementById('walletAddressDisplay');
   const connectBtn = document.getElementById('connectWalletBtn');
@@ -2739,8 +2739,8 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       if (window.solana?.isPhantom) {
         const resp = await window.solana.connect();
-        walletPublicKey = resp.publicKey;
-        walletDisplay.textContent = `✅ ${walletPublicKey.toBase58()}`;
+        window.walletPublicKey = resp.publicKey;
+        walletDisplay.textContent = `✅ ${window.walletPublicKey.toBase58()}`;
         logOutput("🟢 Wallet connected.");
       } else {
         logOutput("⚠️ Phantom not found.");
