@@ -2713,6 +2713,27 @@ function shareToX() {
   }
 </script>
 
+<script type="module">
+import {
+  Connection,
+  PublicKey,
+  clusterApiUrl,
+  LAMPORTS_PER_SOL,
+  Transaction,
+  SystemProgram
+} from "https://cdn.jsdelivr.net/npm/@solana/web3.js/+esm";
+
+// Bind to window in a safe async context
+window.solanaConnection = new Connection(clusterApiUrl("devnet"), "confirmed");
+
+window.SolanaTools = {
+  PublicKey,
+  LAMPORTS_PER_SOL,
+  Transaction,
+  SystemProgram
+};
+</script>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   // === Element references ===
@@ -2726,7 +2747,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('solanaDevModal');
   const solanaIcon = document.getElementById('solanaAppIcon');
 
-  // === Solana connect logic ===
+  // === Connect wallet ===
   connectBtn?.addEventListener('click', async () => {
     try {
       if (window.solana?.isPhantom) {
@@ -2742,7 +2763,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // === Command runner ===
+  // === Run commands ===
   runBtn?.addEventListener('click', () => {
     const cmd = input.value.trim().toLowerCase();
     input.value = '';
@@ -2753,7 +2774,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (cmd === 'balance') {
-      window.solanaConnection.getBalance(walletPublicKey)
+      window.solanaConnection?.getBalance(walletPublicKey)
         .then(lamports => {
           const sol = lamports / window.SolanaTools.LAMPORTS_PER_SOL;
           logOutput(`💰 Balance: ${sol.toFixed(4)} SOL`);
@@ -2764,7 +2785,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     } else if (cmd === 'airdrop') {
-      window.solanaConnection.requestAirdrop(walletPublicKey, window.SolanaTools.LAMPORTS_PER_SOL)
+      window.solanaConnection?.requestAirdrop(walletPublicKey, window.SolanaTools.LAMPORTS_PER_SOL)
         .then(sig => {
           logOutput(`🚰 Airdrop requested. TX: ${sig}`);
           return window.solanaConnection.confirmTransaction(sig, 'confirmed');
@@ -2782,7 +2803,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // === Log output helper ===
+  // === Log to output div ===
   function logOutput(msg) {
     output.innerHTML += `\n> ${msg}`;
     output.scrollTop = output.scrollHeight;
@@ -2795,29 +2816,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   solanaIcon?.addEventListener('click', toggleSolanaDev);
 });
-</script>
-
-<script type="module">
-import {
-  Connection,
-  PublicKey,
-  clusterApiUrl,
-  LAMPORTS_PER_SOL,
-  Transaction,
-  SystemProgram
-} from "https://cdn.jsdelivr.net/npm/@solana/web3.js/+esm";
-
-// ✅ Make connection global so regular scripts can access it
-window.solanaConnection = new Connection(clusterApiUrl("devnet"), "confirmed");
-
-// ✅ Expose tools globally as well
-window.SolanaTools = {
-  PublicKey,
-  LAMPORTS_PER_SOL,
-  Transaction,
-  SystemProgram
-};
-</script> 
+</script>  
 
 <style>
 @media screen and (min-width: 769px) {
