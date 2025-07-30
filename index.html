@@ -2786,7 +2786,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
      } 
     
-   } else if (cmd.startsWith("send ")) {
+   else if (cmd.startsWith("send ")) {
   const parts = cmd.split(" ");
   if (parts.length !== 3) {
     logOutput("❌ Usage: send <recipient> <amount>");
