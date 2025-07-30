@@ -2819,10 +2819,12 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    window.solanaConnection = new solanaWeb3.Connection(
-      solanaWeb3.clusterApiUrl('devnet'),
-      'confirmed'
-    );
+   window.solanaConnection = new solanaWeb3.Connection(
+  solanaWeb3.clusterApiUrl("devnet"),
+  "confirmed"
+);
+
+    window.solanaReady = true; // ✅ Add this
 
     window.SolanaTools = {
       PublicKey: solanaWeb3.PublicKey,
