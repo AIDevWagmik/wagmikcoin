@@ -2768,17 +2768,20 @@ function logOutput(msg) {
   output.innerHTML += `\n> ${msg}`;
   output.scrollTop = output.scrollHeight;
 }
-
-<script>
-function toggleSolanaDev() {
-  document.getElementById('solanaDevModal').classList.toggle('active');
-}
 </script>
 
 <script>
-  document.getElementById('solanaAppIcon').addEventListener('click', () => {
-    toggleSolanaDev();
-  });
+document.addEventListener('DOMContentLoaded', () => {
+  function toggleSolanaDev() {
+    const modal = document.getElementById('solanaDevModal');
+    if (modal) modal.classList.toggle('active');
+  }
+
+  const solanaIcon = document.getElementById('solanaAppIcon');
+  if (solanaIcon) {
+    solanaIcon.addEventListener('click', toggleSolanaDev);
+  }
+});
 </script>
 
 <style>
