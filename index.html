@@ -1380,7 +1380,98 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   cursor: pointer;
  }
 }
- 
+
+ @media (max-width: 768px) {
+  #memeBoostPopup:not(.hidden),
+  #lorePopup:not(.hidden) {
+    display: none !important;
+  }
+}
+
+/* 🌐 Solana Icon Launcher */
+.solana-icon-launcher {
+  position: absolute;
+  top: 440px;
+  left: 20px;
+  z-index: 999;
+  cursor: pointer;
+}
+
+.solana-icon-launcher img {
+  width: 48px;
+  height: 48px;
+  transition: transform 0.3s ease;
+}
+
+.solana-icon-launcher img:hover {
+  transform: scale(1.1);
+}
+
+/* 🧠 Dev Terminal Modal */
+#solanaDevModal .solana-dev-content {
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  color: #fff;
+  font-family: monospace;
+  box-shadow: 0 0 18px rgba(0,255,200,0.3);
+}
+
+#solanaDevModal input {
+  padding: 10px;
+  border-radius: 6px;
+  width: 100%;
+  margin-top: 10px;
+  font-family: monospace;
+  border: none;
+}
+
+#solanaDevModal button {
+  background: #00ffa1;
+  color: #000;
+  border: none;
+  padding: 10px 16px;
+  font-weight: bold;
+  border-radius: 6px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.terminal-box {
+  text-align: left;
+  background: #000;
+  padding: 10px;
+  margin: 10px 0;
+  height: 150px;
+  overflow-y: auto;
+  border-radius: 8px;
+  font-size: 0.9em;
+  white-space: pre-wrap;
+  color: #00ffcc;
+  box-shadow: inset 0 0 10px #00ffc3;
+}
+
+/* 📱 Mobile Adjustments */
+@media (max-width: 768px) {
+  .solana-icon-launcher {
+    top: 360px;
+    left: 10px;
+  }
+
+  #solanaDevModal .solana-dev-content {
+    font-size: 0.9em;
+    padding: 16px;
+  }
+
+  .terminal-box {
+    font-size: 0.8em;
+    height: 120px;
+  }
+}
+
   </style>
 
   <script src="https://terminal.jup.ag/main-v4.js"></script>
@@ -1390,6 +1481,11 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
  <body>
 
 <header class="hero-banner"></header>
+
+<!-- 🌐 Solana Dev Icon (Clickable) -->
+<div id="solanaAppIcon" class="solana-icon-launcher">
+  <img src="solana.png" alt="Solana App" />
+</div>
   
 <div class="body-background-fade"></div>
 
@@ -1700,6 +1796,26 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   <a href="https://photon-sol.tinyastro.io/" target="_blank">
     <img src="photon.png" alt="Photon" class="app-logo" />
   </a>
+</div>
+
+<!-- 🔧 Solana Dev Terminal Modal -->
+<div class="modal" id="solanaDevModal">
+  <button class="close-btn" onclick="toggleSolanaDev()">✖</button>
+  <div class="solana-dev-content">
+    <h2>🛠 WAGMIK Dev Terminal</h2>
+    <p>Connect your wallet. Deploy vibes. Meme responsibly.</p>
+
+    <button id="connectWalletBtn">🔌 Connect Wallet</button>
+    <p id="walletAddressDisplay">Wallet not connected</p>
+
+    <div id="terminalOutput" class="terminal-box">
+      <p>Welcome to the $WAGMIK Solana Console 🧠</p>
+      <p>Type: <code>balance</code> or <code>airdrop</code> or <code>send</code></p>
+    </div>
+
+    <input id="terminalInput" type="text" placeholder="> Enter command" />
+    <button onclick="runCommand()">Run</button>
+  </div>
 </div>
   
   <script>
@@ -2595,6 +2711,74 @@ function shareToX() {
   if (window.matchMedia('(display-mode: standalone)').matches) {
     document.body.classList.add('standalone');
   }
+</script>
+
+<script type="module">
+import {
+  Connection,
+  PublicKey,
+  clusterApiUrl,
+  Keypair,
+  LAMPORTS_PER_SOL
+} from "https://cdn.jsdelivr.net/npm/@solana/web3.js/+esm";
+
+let provider = null;
+let walletPublicKey = null;
+const output = document.getElementById('terminalOutput');
+const input = document.getElementById('terminalInput');
+const connectBtn = document.getElementById('connectWalletBtn');
+const walletDisplay = document.getElementById('walletAddressDisplay');
+const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+
+connectBtn.onclick = async () => {
+  try {
+    if (window.solana?.isPhantom) {
+      const resp = await window.solana.connect();
+      walletPublicKey = new PublicKey(resp.publicKey.toString());
+      walletDisplay.textContent = `✅ ${walletPublicKey.toBase58()}`;
+      logOutput("Wallet connected.");
+    } else {
+      logOutput("⚠️ Phantom not found.");
+    }
+  } catch (err) {
+    logOutput("❌ Connection failed.");
+  }
+};
+
+function runCommand() {
+  const cmd = input.value.trim();
+  input.value = '';
+
+  if (!walletPublicKey) return logOutput("❌ Connect wallet first");
+
+  if (cmd === 'balance') {
+    connection.getBalance(walletPublicKey).then(lamports => {
+      const sol = lamports / LAMPORTS_PER_SOL;
+      logOutput(`💰 Balance: ${sol.toFixed(4)} SOL`);
+    });
+  } else if (cmd === 'airdrop') {
+    connection.requestAirdrop(walletPublicKey, LAMPORTS_PER_SOL).then(sig => {
+      logOutput(`🚰 Airdrop requested. Signature: ${sig}`);
+    }).catch(err => logOutput("❌ Airdrop failed"));
+  } else {
+    logOutput(`Unknown command: ${cmd}`);
+  }
+}
+
+function logOutput(msg) {
+  output.innerHTML += `\n> ${msg}`;
+  output.scrollTop = output.scrollHeight;
+}
+
+function toggleSolanaDev() {
+  document.getElementById('solanaDevModal').classList.toggle('active');
+}
+</script>
+
+<script>
+  document.getElementById('solanaAppIcon').addEventListener('click', () => {
+    toggleSolanaDev();
+  });
 </script>
 
 <style>
