@@ -2713,28 +2713,6 @@ function shareToX() {
   }
 </script>
 
-<script type="module">
-  import {
-    Connection,
-    PublicKey,
-    clusterApiUrl,
-    LAMPORTS_PER_SOL,
-    Transaction,
-    SystemProgram
-  } from "https://cdn.jsdelivr.net/npm/@solana/web3.js/+esm";
-
-  // Make available globally
-  window.solanaConnection = new Connection(clusterApiUrl("devnet"), "confirmed");
-  window.SolanaTools = {
-    PublicKey,
-    LAMPORTS_PER_SOL,
-    Transaction,
-    SystemProgram
-  };
-
-  console.log("✅ Solana SDK initialized");
-</script>
-
  <script>
 document.addEventListener('DOMContentLoaded', () => {
   let walletPublicKey = null;
@@ -2844,6 +2822,28 @@ document.addEventListener('DOMContentLoaded', () => {
     <button onclick="document.getElementById('mobileWalletPopup').style.display='none'">Got it!</button>
   </div>
 </div>
+
+<script type="module">
+  import {
+    Connection,
+    PublicKey,
+    clusterApiUrl,
+    LAMPORTS_PER_SOL,
+    Transaction,
+    SystemProgram
+  } from "https://cdn.jsdelivr.net/npm/@solana/web3.js/+esm";
+
+  // ✅ Make connection global so your other script can use it
+  window.solanaConnection = new Connection(clusterApiUrl("devnet"), "confirmed");
+
+  // ✅ Expose Solana tools to window
+  window.SolanaTools = {
+    PublicKey,
+    LAMPORTS_PER_SOL,
+    Transaction,
+    SystemProgram
+  };
+</script>
   
  </body>
 </html>
