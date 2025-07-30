@@ -2786,32 +2786,31 @@ document.addEventListener('DOMContentLoaded', () => {
       }
      } 
     
-   else if (cmd.startsWith("send ")) {
+    else if (cmd.startsWith("send ")) {
   const parts = cmd.split(" ");
   if (parts.length !== 3) {
     logOutput("❌ Usage: send <recipient> <amount>");
     return;
   }
 
-  const recipientAddress = parts[1].trim();
+  // Clean and extract values
+  const recipient = parts[1].replace(/[^\x20-\x7E]/g, '').trim();
   const amount = parseFloat(parts[2]);
 
-  // Validate address
-  const base58Regex = /^[1-9A-HJ-NP-Za-km-z]+$/;
-  if (!base58Regex.test(recipientAddress)) {
-    logOutput("❌ Invalid address format (not base58)");
+  console.log("Recipient raw:", parts[1]);
+  console.log("Recipient cleaned:", recipient);
+  console.log("Amount parsed:", amount);
+
+  if (!recipient || isNaN(amount)) {
+    logOutput("❌ Invalid address or amount.");
     return;
   }
 
-  if (isNaN(amount)) {
-    logOutput("❌ Invalid amount.");
-    return;
-  }
+  // ✅ Show user what we're attempting
+  logOutput(`🔄 Sending ${amount} SOL to ${recipient}`);
 
   try {
-    logOutput(`🟣 Sending ${amount} SOL to ${recipientAddress}`);
-
-    const toPubkey = new window.SolanaTools.PublicKey(recipientAddress);
+    const toPubkey = new window.SolanaTools.PublicKey(recipient);
     const fromPubkey = walletPublicKey;
 
     const tx = new window.SolanaTools.Transaction().add(
@@ -2826,12 +2825,12 @@ document.addEventListener('DOMContentLoaded', () => {
     logOutput(`📤 TX sent: ${signature}`);
 
     await window.solanaConnection.confirmTransaction(signature, 'confirmed');
-    logOutput(`✅ Transaction confirmed.`);
+    logOutput("✅ Transaction confirmed.");
   } catch (err) {
-    logOutput(`❌ Transaction failed.`);
+    logOutput("❌ Transaction failed.");
     console.error(err);
   }
-}     
+}    
    
     else {
       logOutput(`❓ Unknown command: ${cmd}`);
