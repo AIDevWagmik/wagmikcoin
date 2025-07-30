@@ -2752,37 +2752,35 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-   if (cmd === 'balance') {
-  solanaConnection.getBalance(walletPublicKey)
-    .then(lamports => {
-      const sol = lamports / SolanaTools.LAMPORTS_PER_SOL;
-      logOutput(`💰 Balance: ${sol.toFixed(4)} SOL`);
-    })
-    .catch(err => {
-      logOutput("❌ Failed to fetch balance.");
-      console.error(err);
-    });
-}
+    if (cmd === 'balance') {
+      window.solanaConnection.getBalance(walletPublicKey)
+        .then(lamports => {
+          const sol = lamports / window.SolanaTools.LAMPORTS_PER_SOL;
+          logOutput(`💰 Balance: ${sol.toFixed(4)} SOL`);
+        })
+        .catch(err => {
+          logOutput("❌ Failed to fetch balance.");
+          console.error(err);
+        });
 
-else if (cmd === 'airdrop') {
-  solanaConnection.requestAirdrop(walletPublicKey, SolanaTools.LAMPORTS_PER_SOL)
-    .then(sig => {
-      logOutput(`🚰 Airdrop requested. TX: ${sig}`);
-      return solanaConnection.confirmTransaction(sig, 'confirmed');
-    })
-    .then(() => {
-      logOutput("✅ Airdrop confirmed");
-    })
-    .catch(err => {
-      logOutput("❌ Airdrop failed");
-      console.error(err);
-    });
-}
+    } else if (cmd === 'airdrop') {
+      window.solanaConnection.requestAirdrop(walletPublicKey, window.SolanaTools.LAMPORTS_PER_SOL)
+        .then(sig => {
+          logOutput(`🚰 Airdrop requested. TX: ${sig}`);
+          return window.solanaConnection.confirmTransaction(sig, 'confirmed');
+        })
+        .then(() => {
+          logOutput("✅ Airdrop confirmed");
+        })
+        .catch(err => {
+          logOutput("❌ Airdrop failed");
+          console.error(err);
+        });
 
-else {
-  logOutput(`❓ Unknown command: ${cmd}`);
- } 
-});
+    } else {
+      logOutput(`❓ Unknown command: ${cmd}`);
+    }
+  });
 
   // === Log output helper ===
   function logOutput(msg) {
@@ -2809,17 +2807,17 @@ import {
   SystemProgram
 } from "https://cdn.jsdelivr.net/npm/@solana/web3.js/+esm";
 
-// ✅ Make connection global so we can reuse
+// ✅ Make connection global so regular scripts can access it
 window.solanaConnection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
-// ✅ Save tools globally so your other scripts can access
+// ✅ Expose tools globally as well
 window.SolanaTools = {
   PublicKey,
   LAMPORTS_PER_SOL,
   Transaction,
   SystemProgram
 };
-</script>
+</script> 
 
 <style>
 @media screen and (min-width: 769px) {
