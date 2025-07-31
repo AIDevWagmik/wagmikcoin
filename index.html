@@ -2786,7 +2786,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
      } 
     
-  else if (cmd.startsWith("send ")) {
+ else if (cmd.startsWith("send ")) {
   const parts = cmd.split(" ");
   if (parts.length !== 3) {
     logOutput("❌ Usage: send <recipient> <amount>");
@@ -2796,32 +2796,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const recipientRaw = parts[1];
   const amount = parseFloat(parts[2]);
 
-  // Log raw input (shows hidden characters)
-  console.log("Raw input:", JSON.stringify(recipientRaw));
-
-  // Strip all invisible/control characters from pasted address
+  // Normalize and clean recipient input
   const cleanedRecipient = recipientRaw
     .normalize("NFKC")
-    .replace(/[^\x21-\x7E]/g, '') // strips all non-printables
-    .replace(/\s/g, '') // removes all whitespace (space, tabs, etc.)
+    .replace(/[^\x21-\x7E]/g, '')
+    .replace(/\s/g, '')
     .trim();
 
-  console.log("Cleaned:", cleanedRecipient);
+  console.log("Cleaned recipient:", JSON.stringify(cleanedRecipient));
   console.log("Length:", cleanedRecipient.length);
-
-  const isBase58 = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(cleanedRecipient);
-  console.log("Base58 valid:", isBase58);
-
-  if (!isBase58 || isNaN(amount)) {
-    logOutput("❌ Invalid recipient address or amount.");
-    return;
-  }
 
   let toPubkey;
   try {
     toPubkey = new window.SolanaTools.PublicKey(cleanedRecipient);
   } catch (e) {
     logOutput(`❌ Invalid recipient address: ${e.message}`);
+    return;
+  }
+
+  if (isNaN(amount)) {
+    logOutput("❌ Invalid amount.");
     return;
   }
 
