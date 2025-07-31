@@ -1808,6 +1808,8 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
     <button id="connectWalletBtn">🔌 Connect Wallet</button>
     <p id="walletAddressDisplay">Wallet not connected</p>
 
+   <button id="disconnectWalletBtn" style="margin-top: 8px;">🚪 Disconnect</button>
+
     <div id="terminalOutput" class="terminal-box">
       <p>Welcome to the $WAGMIK Solana Console 💀</p>
       <p>
@@ -2739,6 +2741,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const walletDisplay = document.getElementById('walletAddressDisplay');
   const connectBtn = document.getElementById('connectWalletBtn');
+  const disconnectBtn = document.getElementById('disconnectWalletBtn');
   const runBtn = document.getElementById('runCommandBtn');
   const output = document.getElementById('terminalOutput');
   const input = document.getElementById('terminalInput');
@@ -2746,10 +2749,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const solanaIcon = document.getElementById('solanaAppIcon');
 
  // === Cluster Select Handler ===
-function getClusterUrl(cluster) {
-  if (cluster === "localhost") return "http://127.0.0.1:8899";
-  return solanaWeb3.clusterApiUrl(cluster);
-}
+ 
 
 const defaultCluster = "devnet";
 const selectedCluster = localStorage.getItem("solanaCluster") || defaultCluster;
@@ -2786,6 +2786,22 @@ if (clusterSelect) {
       logOutput("❌ Wallet connection failed.");
     }
   });
+
+ disconnectBtn?.addEventListener('click', async () => {
+  try {
+    if (window.solana?.disconnect) {
+      await window.solana.disconnect();
+      window.walletPublicKey = null;
+      walletDisplay.textContent = "Wallet not connected";
+      logOutput("🔌 Wallet disconnected.");
+    } else {
+      logOutput("⚠️ Wallet doesn't support disconnect.");
+    }
+  } catch (err) {
+    logOutput("❌ Disconnect failed.");
+    console.error(err);
+  }
+});
 
   runBtn?.addEventListener('click', async () => {
     const cmd = input.value.trim();
