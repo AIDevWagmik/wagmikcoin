@@ -2812,13 +2812,14 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  let toPubkey;
-  try {
-    toPubkey = new window.SolanaTools.PublicKey(cleanedRecipient);
-  } catch (e) {
-    logOutput(`❌ Invalid recipient address: ${e.message}`);
-    return;
-  }
+ let toPubkey;
+try {
+  const pubKeyBytes = window.SolanaTools.Base58.decode(cleanedRecipient);
+  toPubkey = new window.SolanaTools.PublicKey(pubKeyBytes);
+} catch (e) {
+  logOutput(`❌ Invalid recipient address: ${e.message}`);
+  return;
+}
 
   const fromPubkey = walletPublicKey;
 
