@@ -2803,21 +2803,18 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log("Base58 valid:", /^[1-9A-HJ-NP-Za-km-z]+$/.test(recipient));
   console.log("Length:", recipient.length);
 
-  // ✅ Base58 check (length 32–44 and allowed chars)
-  const base58Valid = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(recipient);
+ if (isNaN(amount)) {
+  logOutput("❌ Invalid amount.");
+  return;
+}
 
-  if (!base58Valid || isNaN(amount)) {
-    logOutput("❌ Invalid recipient address or amount.");
-    return;
-  }
-
-  let toPubkey;
-  try {
-    toPubkey = new window.SolanaTools.PublicKey(recipient);
-  } catch (e) {
-    logOutput(`❌ Invalid recipient address: ${e.message}`);
-    return;
-  }
+let toPubkey;
+try {
+  toPubkey = new window.SolanaTools.PublicKey(recipient);
+} catch (e) {
+  logOutput(`❌ Invalid recipient address: ${e.message}`);
+  return;
+}
 
   const fromPubkey = walletPublicKey;
 
