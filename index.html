@@ -2927,6 +2927,12 @@ document.addEventListener('DOMContentLoaded', () => {
   window.__debug_bs58 = bs58Module;
 </script>
 
+<script type="module">
+  import { Buffer } from 'https://cdn.jsdelivr.net/npm/buffer@6.0.3/+esm';
+  window.Buffer = Buffer;
+  console.log('✅ Buffer polyfill added');
+</script>
+
 <!-- Mobile Wallet Popup -->
 <div id="mobileWalletPopup" class="mobile-popup">
   <div class="popup-content">
