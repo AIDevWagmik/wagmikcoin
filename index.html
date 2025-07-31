@@ -1812,12 +1812,15 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
     <div id="terminalOutput" class="terminal-box">
       <p>Welcome to the $WAGMIK Solana Console 💀</p>
-      <p>
-  Type: <code>balance</code> or <code>airdrop</code> or
-  <code>send &lt;recipient&gt; &lt;amount&gt;</code>
-</p>
-
-    </div>
+     <div style="margin-top: 12px; font-size: 0.95em;">
+  <strong>Available Commands:</strong>
+  <ul id="commandList" style="padding-left: 20px; margin-top: 8px; color: #00ffa1;">
+    <li><code>balance</code> — check wallet SOL</li>
+    <li class="airdropCommand"><code>airdrop</code> — devnet only</li>
+    <li><code>send &lt;recipient&gt; &lt;amount&gt;</code> — transfer SOL</li>
+  </ul>
+ </div>
+</div>
 
    <label for="clusterSelect" style="margin-top: 12px; color: #00ffa1;">Network:</label>
 <select id="clusterSelect" style="margin-bottom: 10px;">
@@ -2771,6 +2774,11 @@ document.addEventListener('DOMContentLoaded', () => {
     "confirmed"
   );
 
+ if (selectedCluster === "mainnet-beta") {
+  const airdropItem = document.querySelector(".airdropCommand");
+  if (airdropItem) airdropItem.style.display = "none";
+}
+
   const clusterSelect = document.getElementById("clusterSelect");
   if (clusterSelect) {
     clusterSelect.value = selectedCluster;
@@ -2844,16 +2852,27 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
     } else if (cmd.toLowerCase() === 'airdrop') {
-      try {
-        const sig = await window.solanaConnection.requestAirdrop(walletPublicKey, window.SolanaTools.LAMPORTS_PER_SOL);
-        logOutput(`🚰 Airdrop requested. TX: ${sig}`);
-        await window.solanaConnection.confirmTransaction(sig, 'confirmed');
-        logOutput("✅ Airdrop confirmed");
-      } catch (err) {
-        logOutput("❌ Airdrop failed.");
-        console.error(err);
-      }
-    } 
+  if (selectedCluster === "mainnet-beta") {
+    logOutput("🚫 Airdrop is not available on Mainnet.");
+    return;
+  }
+
+  try {
+    const sig = await window.solanaConnection.requestAirdrop(walletPublicKey, window.SolanaTools.LAMPORTS_PER_SOL);
+    logOutput(`🚰 Airdrop requested. TX: ${sig}`);
+    await window.solanaConnection.confirmTransaction(sig, 'confirmed');
+    logOutput("✅ Airdrop confirmed");
+
+    const explorer = `https://explorer.solana.com/tx/${sig}?cluster=${selectedCluster}`;
+    const linkHTML = `<a href="${explorer}" target="_blank" style="color:#00ffa1;">🔗 View on Solana Explorer</a>`;
+    output.innerHTML += `<br>> ${linkHTML}`;
+    output.scrollTop = output.scrollHeight;
+
+  } catch (err) {
+    logOutput("❌ Airdrop failed.");
+    console.error(err);
+  }
+}
 
     else if (cmd.toLowerCase().startsWith("send ")) {
       const parts = cmd.split(" ");
