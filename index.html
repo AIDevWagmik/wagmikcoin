@@ -2786,27 +2786,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
      } 
     
-    else if (cmd.startsWith("send ")) {
+     else if (cmd.startsWith("send ")) {
   const parts = cmd.split(" ");
   if (parts.length !== 3) {
     logOutput("❌ Usage: send <recipient> <amount>");
     return;
   }
 
-  // Clean and extract values
-  const recipient = parts[1].replace(/[^\x20-\x7E]/g, '').trim();
+  const recipient = parts[1].normalize('NFKC').replace(/\s/g, '');
   const amount = parseFloat(parts[2]);
-
-  console.log("Recipient raw:", parts[1]);
-  console.log("Recipient cleaned:", recipient);
-  console.log("Amount parsed:", amount);
 
   if (!recipient || isNaN(amount)) {
     logOutput("❌ Invalid address or amount.");
     return;
   }
 
-  // ✅ Show user what we're attempting
   logOutput(`🔄 Sending ${amount} SOL to ${recipient}`);
 
   try {
@@ -2830,8 +2824,8 @@ document.addEventListener('DOMContentLoaded', () => {
     logOutput("❌ Transaction failed.");
     console.error(err);
   }
-}    
-   
+}
+ 
     else {
       logOutput(`❓ Unknown command: ${cmd}`);
     }
