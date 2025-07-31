@@ -2799,6 +2799,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const recipient = recipientRaw.normalize("NFKC").replace(/[^\x21-\x7E]/g, '').trim();
 
+  console.log("Recipient string:", recipient);
+  console.log("Base58 valid:", /^[1-9A-HJ-NP-Za-km-z]+$/.test(recipient));
+  console.log("Length:", recipient.length);
+
   // ✅ Base58 check (length 32–44 and allowed chars)
   const base58Valid = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(recipient);
 
