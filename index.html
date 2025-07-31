@@ -2722,6 +2722,14 @@ function shareToX() {
 document.addEventListener('DOMContentLoaded', () => {
   window.walletPublicKey = null;
 
+ function cleanBase58Input(input) {
+  return input
+    .normalize("NFKD")
+    .replace(/[\u0000-\u001F\u007F-\u009F\u00A0\u200B\u200C\u200D\u200E\u200F\u2028\u2029\u2060\uFEFF]/g, '')
+    .replace(/[^\x21-\x7E]/g, '') // Remove any remaining non-visible
+    .trim();
+}
+
   const walletDisplay = document.getElementById('walletAddressDisplay');
   const connectBtn = document.getElementById('connectWalletBtn');
   const runBtn = document.getElementById('runCommandBtn');
@@ -2796,21 +2804,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const rawInput = parts[1];
   const amount = parseFloat(parts[2]);
 
-  // Remove any non-visible characters explicitly
-  const cleanedRecipient = rawInput
-    .normalize("NFKD")
-    .replace(/[\u0000-\u001F\u007F-\u009F\u00A0\u200B\u200C\u200D\uFEFF]/g, '') // control + space + zero-width + BOM
-    .replace(/[^\x21-\x7E]/g, '') // everything outside visible ASCII
-    .trim();
+  const cleanedRecipient = cleanBase58Input(rawInput);
 
-  console.log("Raw:", JSON.stringify(rawInput));
-  console.log("Cleaned:", JSON.stringify(cleanedRecipient));
+  // Debugging logs
+  console.log("Raw input:", JSON.stringify(rawInput));
+  console.log("Cleaned recipient:", JSON.stringify(cleanedRecipient));
   console.log("Length:", cleanedRecipient.length);
   console.log("Char codes:", [...cleanedRecipient].map(c => c.charCodeAt(0)));
 
+  // Validate PublicKey by attempting instantiation
   let base58Valid = true;
   try {
-    new window.SolanaTools.PublicKey(cleanedRecipient); // will throw if invalid
+    new window.SolanaTools.PublicKey(cleanedRecipient);
   } catch (e) {
     base58Valid = false;
   }
@@ -2853,7 +2858,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error(err);
   }
 }
-       
+         
     else {
       logOutput(`❓ Unknown command: ${cmd}`);
     }
