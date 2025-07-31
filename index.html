@@ -2793,7 +2793,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  const recipientInput = parts[1].trim();
+  const recipient = parts[1].trim().replace(/[^\x20-\x7E]/g, '');
   const amount = parseFloat(parts[2]);
   if (!recipientInput || isNaN(amount)) {
     logOutput("❌ Invalid address or amount.");
