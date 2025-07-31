@@ -2717,166 +2717,168 @@ function shareToX() {
   }
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bs58@5.0.0/dist/bs58.min.js"></script>
+<!-- ✅ Load bs58 UMD build to ensure it's globally accessible -->
+<script src="https://cdn.jsdelivr.net/npm/bs58@5.0.0/dist/index.umd.min.js"></script>
 
-<!-- ✅ PART 2: DOM and terminal logic (runs immediately) -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  window.walletPublicKey = null;
+  window.walletPublicKey = null;
 
- function cleanBase58Input(input) {
-  return input
-    .normalize("NFKD")
-    .replace(/[\u0000-\u001F\u007F-\u009F\u00A0\u200B\u200C\u200D\u200E\u200F\u2028\u2029\u2060\uFEFF]/g, '')
-    .replace(/[^\x21-\x7E]/g, '') // Remove any remaining non-visible
-    .trim();
-}
+  // ✅ Utility to clean recipient input for Base58 decoding
+  function cleanBase58Input(input) {
+    return input
+      .normalize("NFKD")
+      .replace(/[\u0000-\u001F\u007F-\u009F\u00A0\u200B\u200C\u200D\u200E\u200F\u2028\u2029\u2060\uFEFF]/g, '')
+      .replace(/[^\x21-\x7E]/g, '') // Remove non-visible characters
+      .trim();
+  }
 
-  const walletDisplay = document.getElementById('walletAddressDisplay');
-  const connectBtn = document.getElementById('connectWalletBtn');
-  const runBtn = document.getElementById('runCommandBtn');
-  const output = document.getElementById('terminalOutput');
-  const input = document.getElementById('terminalInput');
-  const modal = document.getElementById('solanaDevModal');
-  const solanaIcon = document.getElementById('solanaAppIcon');
+  const walletDisplay = document.getElementById('walletAddressDisplay');
+  const connectBtn = document.getElementById('connectWalletBtn');
+  const runBtn = document.getElementById('runCommandBtn');
+  const output = document.getElementById('terminalOutput');
+  const input = document.getElementById('terminalInput');
+  const modal = document.getElementById('solanaDevModal');
+  const solanaIcon = document.getElementById('solanaAppIcon');
 
-  function logOutput(msg) {
-    output.innerHTML += `\n> ${msg}`;
-    output.scrollTop = output.scrollHeight;
-  }
+  function logOutput(msg) {
+    output.innerHTML += `\n> ${msg}`;
+    output.scrollTop = output.scrollHeight;
+  }
 
-  connectBtn?.addEventListener('click', async () => {
-    try {
-      if (window.solana?.isPhantom) {
-        const resp = await window.solana.connect();
-        window.walletPublicKey = resp.publicKey;
-        walletDisplay.textContent = `✅ ${window.walletPublicKey.toBase58()}`;
-        logOutput("🟢 Wallet connected.");
-      } else {
-        logOutput("⚠️ Phantom not found.");
-      }
-    } catch (err) {
-      logOutput("❌ Wallet connection failed.");
-    }
-  });
+  connectBtn?.addEventListener('click', async () => {
+    try {
+      if (window.solana?.isPhantom) {
+        const resp = await window.solana.connect();
+        window.walletPublicKey = resp.publicKey;
+        walletDisplay.textContent = `✅ ${window.walletPublicKey.toBase58()}`;
+        logOutput("🟢 Wallet connected.");
+      } else {
+        logOutput("⚠️ Phantom not found.");
+      }
+    } catch (err) {
+      logOutput("❌ Wallet connection failed.");
+    }
+  });
 
-  runBtn?.addEventListener('click', async () => {
-    const cmd = input.value.trim().toLowerCase();
-    input.value = '';
+  runBtn?.addEventListener('click', async () => {
+    const cmd = input.value.trim();
+    input.value = '';
 
-    if (!walletPublicKey) {
-      logOutput("❌ Connect wallet first");
-      return;
-    }
+    if (!walletPublicKey) {
+      logOutput("❌ Connect wallet first");
+      return;
+    }
 
-    if (!solanaReady || !window.solanaConnection) {
-      logOutput("❌ Solana not ready yet.");
-      return;
-    }
+    if (!solanaReady || !window.solanaConnection) {
+      logOutput("❌ Solana not ready yet.");
+      return;
+    }
 
-    if (cmd === 'balance') {
-      try {
-        const lamports = await window.solanaConnection.getBalance(walletPublicKey);
-        const sol = lamports / window.SolanaTools.LAMPORTS_PER_SOL;
-        logOutput(`💰 Balance: ${sol.toFixed(4)} SOL`);
-      } catch (err) {
-        logOutput("❌ Failed to fetch balance.");
-        console.error(err);
-      }
+    if (cmd.toLowerCase() === 'balance') {
+      try {
+        const lamports = await window.solanaConnection.getBalance(walletPublicKey);
+        const sol = lamports / window.SolanaTools.LAMPORTS_PER_SOL;
+        logOutput(`💰 Balance: ${sol.toFixed(4)} SOL`);
+      } catch (err) {
+        logOutput("❌ Failed to fetch balance.");
+        console.error(err);
+      }
 
-    } else if (cmd === 'airdrop') {
-      try {
-        const sig = await window.solanaConnection.requestAirdrop(walletPublicKey, window.SolanaTools.LAMPORTS_PER_SOL);
-        logOutput(`🚰 Airdrop requested. TX: ${sig}`);
-        await window.solanaConnection.confirmTransaction(sig, 'confirmed');
-        logOutput("✅ Airdrop confirmed");
-      } catch (err) {
-        logOutput("❌ Airdrop failed.");
-        console.error(err);
-      }
-     } 
-    
-   else if (cmd.startsWith("send ")) {
-  const parts = cmd.split(" ");
-  if (parts.length !== 3) {
-    logOutput("❌ Usage: send <recipient> <amount>");
-    return;
-  }
+    } else if (cmd.toLowerCase() === 'airdrop') {
+      try {
+        const sig = await window.solanaConnection.requestAirdrop(walletPublicKey, window.SolanaTools.LAMPORTS_PER_SOL);
+        logOutput(`🚰 Airdrop requested. TX: ${sig}`);
+        await window.solanaConnection.confirmTransaction(sig, 'confirmed');
+        logOutput("✅ Airdrop confirmed");
+      } catch (err) {
+        logOutput("❌ Airdrop failed.");
+        console.error(err);
+      }
+    } 
 
-  const rawInput = parts[1];
-  const amount = parseFloat(parts[2]);
+    else if (cmd.toLowerCase().startsWith("send ")) {
+      const parts = cmd.split(" ");
+      if (parts.length !== 3) {
+        logOutput("❌ Usage: send <recipient> <amount>");
+        return;
+      }
 
-  const cleanedRecipient = cleanBase58Input(rawInput);
+      const rawInput = parts[1];
+      const amount = parseFloat(parts[2]);
 
-  // Debugging logs
-  console.log("Raw input:", JSON.stringify(rawInput));
-  console.log("Cleaned recipient:", JSON.stringify(cleanedRecipient));
-  console.log("Length:", cleanedRecipient.length);
-  console.log("Char codes:", [...cleanedRecipient].map(c => c.charCodeAt(0)));
+      const cleanedRecipient = cleanBase58Input(rawInput);
 
-  // Validate PublicKey by attempting instantiation
-  let base58Valid = true;
-let decoded = null;
-try {
-  decoded = bs58.decode(cleanedRecipient);
-  console.log("Decoded bytes:", decoded);
-  console.log("Decoded length:", decoded.length);
-  base58Valid = decoded.length === 32;
-} catch (err) {
-  console.log("Decode error:", err.message);
-  base58Valid = false;
-}
-console.log("Base58 valid:", base58Valid);
+      // Debug logging
+      console.log("Raw input:", JSON.stringify(rawInput));
+      console.log("Cleaned recipient:", JSON.stringify(cleanedRecipient));
+      console.log("Length:", cleanedRecipient.length);
+      console.log("Char codes:", [...cleanedRecipient].map(c => c.charCodeAt(0)));
 
-  if (!base58Valid || isNaN(amount)) {
-    logOutput("❌ Invalid recipient address or amount.");
-    return;
-  }
+      let base58Valid = true;
+      let decoded = null;
 
-  let toPubkey;
-  try {
-    toPubkey = new window.SolanaTools.PublicKey(cleanedRecipient);
-  } catch (e) {
-    logOutput(`❌ Invalid recipient address: ${e.message}`);
-    return;
-  }
+      try {
+        decoded = bs58.decode(cleanedRecipient);
+        console.log("Decoded bytes:", decoded);
+        console.log("Decoded length:", decoded.length);
+        base58Valid = decoded.length === 32;
+      } catch (err) {
+        console.log("Decode error:", err.message);
+        base58Valid = false;
+      }
 
-  const fromPubkey = walletPublicKey;
+      console.log("Base58 valid:", base58Valid);
 
-  try {
-    logOutput(`🧠 Sending ${amount} SOL to ${cleanedRecipient}...`);
+      if (!base58Valid || isNaN(amount)) {
+        logOutput("❌ Invalid recipient address or amount.");
+        return;
+      }
 
-    const tx = new window.SolanaTools.Transaction().add(
-      window.SolanaTools.SystemProgram.transfer({
-        fromPubkey,
-        toPubkey,
-        lamports: amount * window.SolanaTools.LAMPORTS_PER_SOL,
-      })
-    );
+      let toPubkey;
+      try {
+        toPubkey = new window.SolanaTools.PublicKey(cleanedRecipient);
+      } catch (e) {
+        logOutput(`❌ Invalid recipient address: ${e.message}`);
+        return;
+      }
 
-    const { signature } = await window.solana.signAndSendTransaction(tx);
-    logOutput(`📤 TX sent: ${signature}`);
+      const fromPubkey = walletPublicKey;
 
-    await window.solanaConnection.confirmTransaction(signature, 'confirmed');
-    logOutput("✅ Transaction confirmed.");
-  } catch (err) {
-    logOutput("❌ Transaction failed.");
-    console.error(err);
-  }
-}
-         
-    else {
-      logOutput(`❓ Unknown command: ${cmd}`);
-    }
-  });
+      try {
+        logOutput(`🧠 Sending ${amount} SOL to ${cleanedRecipient}...`);
 
-  function toggleSolanaDev() {
-    modal?.classList.toggle('active');
-  }
+        const tx = new window.SolanaTools.Transaction().add(
+          window.SolanaTools.SystemProgram.transfer({
+            fromPubkey,
+            toPubkey,
+            lamports: amount * window.SolanaTools.LAMPORTS_PER_SOL,
+          })
+        );
 
-  solanaIcon?.addEventListener('click', toggleSolanaDev);
+        const { signature } = await window.solana.signAndSendTransaction(tx);
+        logOutput(`📤 TX sent: ${signature}`);
+
+        await window.solanaConnection.confirmTransaction(signature, 'confirmed');
+        logOutput("✅ Transaction confirmed.");
+      } catch (err) {
+        logOutput("❌ Transaction failed.");
+        console.error(err);
+      }
+    }
+
+    else {
+      logOutput(`❓ Unknown command: ${cmd}`);
+    }
+  });
+
+  function toggleSolanaDev() {
+    modal?.classList.toggle('active');
+  }
+
+  solanaIcon?.addEventListener('click', toggleSolanaDev);
 });
-</script>
+</script> 
 
 <style>
 @media screen and (min-width: 769px) {
