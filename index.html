@@ -5,9 +5,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- ✅ Load bs58 correctly and expose it globally -->
-<script src="https://cdn.jsdelivr.net/npm/bs58@5.0.0/dist/bs58.umd.min.js" onload="window.bs58 = window.bs58 || this.exports || window.exports || {};"></script>
-
   <!-- Basic Meta -->
 <meta name="description" content="WAGMIK — The next legendary meme coin movement on Solana.">
 <meta name="theme-color" content="#1a0e2d" />
@@ -24,6 +21,22 @@
 <meta name="twitter:title" content="WAGMIK – Bonks Cousin rises from the trenches.">
 <meta name="twitter:description" content="The next meme empire, born on Solana.">
 <meta name="twitter:image" content="https://wagmik.xyz/preview.png">
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/bs58@5.0.0/dist/bs58.umd.min.js';
+    script.onload = () => {
+      if (typeof window.exports === 'object' && typeof window.exports.decode === 'function') {
+        window.bs58 = window.exports;
+        console.log('✅ bs58 loaded');
+      } else {
+        console.error('❌ bs58 did not export properly');
+      }
+    };
+    document.head.appendChild(script);
+  });
+</script>
 
 <script type="application/ld+json">
 {
