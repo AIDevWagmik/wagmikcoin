@@ -26,14 +26,27 @@
   window.addEventListener('DOMContentLoaded', () => {
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/bs58@5.0.0/dist/bs58.umd.min.js';
+
     script.onload = () => {
-      if (typeof window.exports === 'object' && typeof window.exports.decode === 'function') {
-        window.bs58 = window.exports;
-        console.log('✅ bs58 loaded');
-      } else {
-        console.error('❌ bs58 did not export properly');
-      }
+      // Retry check every 100ms up to 2s
+      let attempts = 0;
+      const maxAttempts = 20;
+
+      const tryExpose = () => {
+        if (typeof window.exports === 'object' && typeof window.exports.decode === 'function') {
+          window.bs58 = window.exports;
+          console.log('✅ bs58 assigned from exports');
+        } else if (attempts < maxAttempts) {
+          attempts++;
+          setTimeout(tryExpose, 100);
+        } else {
+          console.error('❌ bs58 export never appeared');
+        }
+      };
+
+      tryExpose();
     };
+
     document.head.appendChild(script);
   });
 </script>
