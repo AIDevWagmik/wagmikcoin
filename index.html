@@ -2749,11 +2749,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const solanaIcon = document.getElementById('solanaAppIcon');
 
  // === Cluster Select Handler ===
- 
 
+// ✅ Define the function FIRST
+function getClusterUrl(cluster) {
+  if (cluster === "localhost") return "http://127.0.0.1:8899";
+  return solanaWeb3.clusterApiUrl(cluster);
+}
+
+// ✅ Now you can safely use it here:
 const defaultCluster = "devnet";
 const selectedCluster = localStorage.getItem("solanaCluster") || defaultCluster;
-window.solanaConnection = new solanaWeb3.Connection(getClusterUrl(selectedCluster), "confirmed");
+
+window.solanaConnection = new solanaWeb3.Connection(
+  getClusterUrl(selectedCluster),
+  "confirmed"
+);
 
 const clusterSelect = document.getElementById("clusterSelect");
 if (clusterSelect) {
