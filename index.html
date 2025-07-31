@@ -2786,40 +2786,34 @@ document.addEventListener('DOMContentLoaded', () => {
       }
      } 
     
-    else if (cmd.startsWith("send ")) {
-  const parts = cmd.split(" ");
+   else if (cmd.startsWith("send ")) {
+  const parts = cmd.trim().split(" ");
   if (parts.length !== 3) {
     logOutput("❌ Usage: send <recipient> <amount>");
     return;
   }
 
- const recipientRaw = parts[1];
-const recipient = recipientRaw
-  .normalize("NFKC")
-  .replace(/\s/g, '')
-  .replace(/[\u200B-\u200D\uFEFF]/g, '')
-  .replace(/[^\x21-\x7E]/g, '')
-  .trim();
+  const rawRecipient = parts[1];
+  const recipient = rawRecipient.trim().replace(/[^\x20-\x7E]/g, ""); // clean invisible chars
+  const amount = parseFloat(parts[2]);
 
-const amount = parseFloat(parts[2]);
+  if (!recipient || isNaN(amount)) {
+    logOutput("❌ Invalid address or amount.");
+    return;
+  }
 
-if (isNaN(amount)) {
-  logOutput("❌ Invalid amount.");
-  return;
-}
-
-let toPubkey;
-try {
-  toPubkey = new window.SolanaTools.PublicKey(recipient);
-} catch (e) {
-  logOutput("❌ Invalid recipient address: " + e.message);
-  return;
-}
+  let toPubkey;
+  try {
+    toPubkey = new window.SolanaTools.PublicKey(recipient);
+  } catch (e) {
+    logOutput(`❌ Invalid recipient address: ${e.message}`);
+    return;
+  }
 
   const fromPubkey = walletPublicKey;
 
   try {
-    logOutput(`🔄 Sending ${amount} SOL to ${recipientInput}...`);
+    logOutput(`🟣 Sending ${amount} SOL to ${recipient}...`);
 
     const tx = new window.SolanaTools.Transaction().add(
       window.SolanaTools.SystemProgram.transfer({
@@ -2831,15 +2825,13 @@ try {
 
     const { signature } = await window.solana.signAndSendTransaction(tx);
     logOutput(`📤 TX sent: ${signature}`);
-
     await window.solanaConnection.confirmTransaction(signature, 'confirmed');
-    logOutput("✅ Transaction confirmed.");
+    logOutput(`✅ Transaction confirmed.`);
   } catch (err) {
-    logOutput("❌ Transaction failed.");
+    logOutput(`❌ Transaction failed: ${err.message}`);
     console.error(err);
   }
-}
- 
+
     else {
       logOutput(`❓ Unknown command: ${cmd}`);
     }
