@@ -2825,7 +2825,7 @@ document.addEventListener('DOMContentLoaded', () => {
       let decoded = null;
 
       try {
-        decoded = bs58.decode(cleanedRecipient);
+        decoded = bs58.default.decode(cleanedRecipient);
         console.log("Decoded bytes:", decoded);
         console.log("Decoded length:", decoded.length);
         base58Valid = decoded.length === 32;
