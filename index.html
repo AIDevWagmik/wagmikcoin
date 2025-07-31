@@ -2794,23 +2794,26 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Clean and validate inputs
-  const recipientRaw = parts[1];
-  const amount = parseFloat(parts[2]);
+  const recipient = recipientRaw.trim();
+console.log("Raw recipient:", JSON.stringify(recipient));
 
-  const recipient = recipientRaw.normalize("NFKC").replace(/[^\x21-\x7E]/g, '').trim();
+// Remove any hidden/invisible/invalid characters
+const cleanedRecipient = recipient.replace(/[^\x20-\x7E]/g, '');
+console.log("Cleaned recipient:", JSON.stringify(cleanedRecipient));
+console.log("Length:", cleanedRecipient.length);
 
-  console.log("Recipient string:", recipient);
-  console.log("Base58 valid:", /^[1-9A-HJ-NP-Za-km-z]+$/.test(recipient));
-  console.log("Length:", recipient.length);
+// Validate against base58 rules (only allowed characters, 32-44 length)
+const base58Valid = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(cleanedRecipient);
+console.log("Base58 valid:", base58Valid);
 
- if (isNaN(amount)) {
-  logOutput("❌ Invalid amount.");
-  return;
+if (!base58Valid || isNaN(amount)) {
+  logOutput("❌ Invalid recipient address or amount.");
+  return;
 }
 
 let toPubkey;
 try {
-  toPubkey = new window.SolanaTools.PublicKey(recipient);
+  toPubkey = new window.SolanaTools.PublicKey(cleanedRecipient);
 } catch (e) {
   logOutput(`❌ Invalid recipient address: ${e.message}`);
   return;
