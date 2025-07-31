@@ -2787,54 +2787,57 @@ document.addEventListener('DOMContentLoaded', () => {
      } 
     
    else if (cmd.startsWith("send ")) {
-  const parts = cmd.trim().split(" ");
+  const parts = cmd.split(" ");
   if (parts.length !== 3) {
     logOutput("❌ Usage: send <recipient> <amount>");
     return;
   }
-    
-const recipientRaw = parts[1];
-const amount = parseFloat(parts[2]);
 
-const recipient = recipientRaw.trim().replace(/[^\x20-\x7E]/g, '');
+  // Clean and validate inputs
+  const recipientRaw = parts[1];
+  const amount = parseFloat(parts[2]);
 
-console.log("Recipient string:", recipient);
-console.log("Length:", recipient.length);
-console.log("Base58 valid:", /^[1-9A-HJ-NP-Za-km-z]+$/.test(recipient));
+  const recipient = recipientRaw.normalize("NFKC").replace(/[^\x21-\x7E]/g, '').trim();
 
-let toPubkey;
-try {
-  toPubkey = new window.SolanaTools.PublicKey(recipient);
-} catch (e) {
-  logOutput(`❌ Invalid recipient address: ${e.message}`);
-  return;
-}
+  // ✅ Base58 check (length 32–44 and allowed chars)
+  const base58Valid = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(recipient);
 
-if (isNaN(amount)) {
-  logOutput(`❌ Invalid amount.`);
-  return;
-}
-
-const fromPubkey = walletPublicKey;
-
-try {
-  logOutput(`📤 Sending ${amount} SOL to ${recipient}...`);
-  const tx = new window.SolanaTools.Transaction().add(
-    window.SolanaTools.SystemProgram.transfer({
-      fromPubkey,
-      toPubkey,
-      lamports: amount * window.SolanaTools.LAMPORTS_PER_SOL,
-    })
-  );
-  const { signature } = await window.solana.signAndSendTransaction(tx);
-  logOutput(`🔁 TX sent: ${signature}`);
-  await window.solanaConnection.confirmTransaction(signature, 'confirmed');
-  logOutput(`✅ Transaction confirmed.`);
-} catch (err) {
-  logOutput(`❌ Transaction failed.`);
-  console.error(err);
-} 
+  if (!base58Valid || isNaN(amount)) {
+    logOutput("❌ Invalid recipient address or amount.");
+    return;
   }
+
+  let toPubkey;
+  try {
+    toPubkey = new window.SolanaTools.PublicKey(recipient);
+  } catch (e) {
+    logOutput(`❌ Invalid recipient address: ${e.message}`);
+    return;
+  }
+
+  const fromPubkey = walletPublicKey;
+
+  try {
+    logOutput(`🧠 Sending ${amount} SOL to ${recipient}...`);
+
+    const tx = new window.SolanaTools.Transaction().add(
+      window.SolanaTools.SystemProgram.transfer({
+        fromPubkey,
+        toPubkey,
+        lamports: amount * window.SolanaTools.LAMPORTS_PER_SOL,
+      })
+    );
+
+    const { signature } = await window.solana.signAndSendTransaction(tx);
+    logOutput(`📤 TX sent: ${signature}`);
+
+    await window.solanaConnection.confirmTransaction(signature, 'confirmed');
+    logOutput("✅ Transaction confirmed.");
+  } catch (err) {
+    logOutput("❌ Transaction failed.");
+    console.error(err);
+  }
+}
 
     else {
       logOutput(`❓ Unknown command: ${cmd}`);
