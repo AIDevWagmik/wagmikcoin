@@ -2793,31 +2793,26 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-const recipientRaw = parts[1];
-
-// 🔒 Extra-safe cleanup for pasted input
+ const recipientRaw = parts[1];
 const recipient = recipientRaw
   .normalize("NFKC")
-  .replace(/\s/g, '')                             // Remove all whitespace
-  .replace(/[\u200B-\u200D\uFEFF]/g, '')          // Remove invisible chars
-  .replace(/[^\x21-\x7E]/g, '')                   // Remove non-printables
+  .replace(/\s/g, '')
+  .replace(/[\u200B-\u200D\uFEFF]/g, '')
+  .replace(/[^\x21-\x7E]/g, '')
   .trim();
 
-// Optional debug
-console.log("Recipient string:", recipient);
-console.log("Length:", recipient.length);
-console.log("Base58 valid:", /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(recipient));
-
-let toPubkey;
-try {
-  toPubkey = new window.SolanaTools.PublicKey(recipient);
-} catch (e) {
-  logOutput(`❌ Invalid recipient address: ${e.message}`);
-  return;
-}
+const amount = parseFloat(parts[2]);
 
 if (isNaN(amount)) {
   logOutput("❌ Invalid amount.");
+  return;
+}
+
+let toPubkey;
+try {
+  toPubkey = new window.SolanaTools.PublicKey(recipient);
+} catch (e) {
+  logOutput("❌ Invalid recipient address: " + e.message);
   return;
 }
 
