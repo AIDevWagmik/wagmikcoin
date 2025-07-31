@@ -2786,7 +2786,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
      } 
     
-else if (cmd.startsWith("send ")) {
+     else if (cmd.startsWith("send ")) {
   const parts = cmd.split(" ");
   if (parts.length !== 3) {
     logOutput("❌ Usage: send <recipient> <amount>");
@@ -2796,13 +2796,15 @@ else if (cmd.startsWith("send ")) {
   const recipientRaw = parts[1];
   const amount = parseFloat(parts[2]);
 
-  // Clean recipient string
-  const recipient = recipientRaw.trim().normalize("NFKC").replace(/[^\x21-\x7E]/g, '');
-  console.log("Cleaned recipient:", JSON.stringify(recipient));
-  console.log("Length:", recipient.length);
+  // Clean and validate inputs
+  const recipient = recipientRaw.replace(/[^\x21-\x7E]/g, '').trim(); // Remove invisible/non-printables
+  const cleanedRecipient = recipient.replace(/[^1-9A-HJ-NP-Za-km-z]/g, ''); // Allow only base58 chars
 
-  // Base58 validation regex
-  const base58Valid = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(recipient);
+  console.log("Cleaned recipient:", JSON.stringify(cleanedRecipient));
+  console.log("Length:", cleanedRecipient.length);
+  console.log("Char codes:", [...cleanedRecipient].map(c => c.charCodeAt(0)));
+
+  const base58Valid = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(cleanedRecipient);
   console.log("Base58 valid:", base58Valid);
 
   if (!base58Valid || isNaN(amount)) {
@@ -2812,7 +2814,7 @@ else if (cmd.startsWith("send ")) {
 
   let toPubkey;
   try {
-    toPubkey = new window.SolanaTools.PublicKey(recipient);
+    toPubkey = new window.SolanaTools.PublicKey(cleanedRecipient);
   } catch (e) {
     logOutput(`❌ Invalid recipient address: ${e.message}`);
     return;
@@ -2821,7 +2823,7 @@ else if (cmd.startsWith("send ")) {
   const fromPubkey = walletPublicKey;
 
   try {
-    logOutput(`🧠 Sending ${amount} SOL to ${recipient}...`);
+    logOutput(`🧠 Sending ${amount} SOL to ${cleanedRecipient}...`);
 
     const tx = new window.SolanaTools.Transaction().add(
       window.SolanaTools.SystemProgram.transfer({
@@ -2840,7 +2842,7 @@ else if (cmd.startsWith("send ")) {
     logOutput("❌ Transaction failed.");
     console.error(err);
   }
-}
+}   
      
     else {
       logOutput(`❓ Unknown command: ${cmd}`);
