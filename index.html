@@ -2748,7 +2748,7 @@ document.addEventListener('DOMContentLoaded', () => {
  // === Cluster Select Handler ===
 function getClusterUrl(cluster) {
   if (cluster === "localhost") return "http://127.0.0.1:8899";
-  return clusterApiUrl(cluster);
+  return solanaWeb3.clusterApiUrl(cluster);
 }
 
 const defaultCluster = "devnet";
