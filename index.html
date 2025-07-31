@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ✅ Load bs58 correctly and expose it globally -->
-<script src="https://cdn.jsdelivr.net/npm/bs58@5.0.0/dist/bs58.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bs58@5.0.0/dist/bs58.umd.min.js"></script>
 
   <!-- Basic Meta -->
 <meta name="description" content="WAGMIK — The next legendary meme coin movement on Solana.">
@@ -2819,7 +2819,7 @@ document.addEventListener('DOMContentLoaded', () => {
       let decoded = null;
 
       try {
-        decoded = bs58.default.decode(cleanedRecipient);
+        decoded = bs58.decode(cleanedRecipient);
         console.log("Decoded bytes:", decoded);
         console.log("Decoded length:", decoded.length);
         base58Valid = decoded.length === 32;
