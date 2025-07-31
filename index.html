@@ -1814,7 +1814,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
       <p>Welcome to the $WAGMIK Solana Console 💀</p>
      <div style="margin-top: 12px; font-size: 0.95em;">
   <strong>Available Commands:</strong>
-  <ul id="commandList" style="padding-left: 20px; margin-top: 8px; color: #00ffa1;">
+  <ul id="commandList" style="padding-left: 16px; margin-top: 6px; color: #00ffa1; list-style: disc; line-height: 1.4em;">
     <li><code>balance</code> — check wallet SOL</li>
     <li class="airdropCommand"><code>airdrop</code> — devnet only</li>
     <li><code>send &lt;recipient&gt; &lt;amount&gt;</code> — transfer SOL</li>
@@ -2783,13 +2783,18 @@ document.addEventListener('DOMContentLoaded', () => {
   if (clusterSelect) {
     clusterSelect.value = selectedCluster;
 
-    clusterSelect.addEventListener("change", (e) => {
-      const newCluster = e.target.value;
-      localStorage.setItem("solanaCluster", newCluster);
-      window.solanaConnection = new solanaWeb3.Connection(getClusterUrl(newCluster), "confirmed");
-      logOutput(`🔁 Switched to cluster: ${newCluster}`);
-    });
+   clusterSelect.addEventListener("change", (e) => {
+  const newCluster = e.target.value;
+  localStorage.setItem("solanaCluster", newCluster);
+  window.solanaConnection = new solanaWeb3.Connection(getClusterUrl(newCluster), "confirmed");
+  logOutput(`🔁 Switched to cluster: ${newCluster}`);
+
+  // 🔄 Show or hide airdrop command based on selected cluster
+  const airdropItem = document.querySelector(".airdropCommand");
+  if (airdropItem) {
+    airdropItem.style.display = newCluster === "mainnet-beta" ? "none" : "list-item";
   }
+});
  
   function logOutput(msg) {
     output.innerHTML += `\n> ${msg}`;
