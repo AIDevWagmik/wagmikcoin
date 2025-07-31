@@ -2813,14 +2813,6 @@ if (isNaN(amount)) {
   return;
 }
 
-let toPubkey;
-try {
-  toPubkey = new window.SolanaTools.PublicKey(recipient);
-} catch (e) {
-  logOutput("❌ Invalid recipient address.");
-  return;
-}
-
   const fromPubkey = walletPublicKey;
 
   try {
