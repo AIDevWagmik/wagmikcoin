@@ -2730,10 +2730,17 @@ function shareToX() {
 document.addEventListener('DOMContentLoaded', () => {
 
   // ✅ FIX: define this first so it's available for all calls
-  function getClusterUrl(cluster) {
-    if (cluster === "localhost") return "http://127.0.0.1:8899";
-    return solanaWeb3.clusterApiUrl(cluster);
+ function getClusterUrl(cluster) {
+  if (cluster === "localhost") return "http://127.0.0.1:8899";
+
+  // ✅ Use Helius for mainnet
+  if (cluster === "mainnet-beta") {
+    return "https://mainnet.helius-rpc.com/?api-key=ab50cc7f-3c60-42b0-a3b4-4944c5263912";
   }
+
+  // Use Solana's default for devnet
+  return solanaWeb3.clusterApiUrl(cluster);
+}
 
   window.walletPublicKey = null;
 
@@ -2917,10 +2924,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
      // ✅ Send manually
      const signature = await window.solanaConnection.sendRawTransaction(signedTx.serialize());
-     logOutput(`📤 TX sent: ${signature}`);
+    logOutput(`📤 TX sent: ${signature}`);
 
-     const explorer = `https://solscan.io/tx/${signature}?cluster=${selectedCluster}`;
-     logOutput(`🔗 View: ${explorer}`);
+    const explorer = `https://explorer.solana.com/tx/${signature}?cluster=${selectedCluster}`;
+    const linkHTML = `<a href="${explorer}" target="_blank" style="color:#00ffa1;">🔗 View on Solana Explorer</a>`;
+    output.innerHTML += `<br>> ${linkHTML}`;
+    output.scrollTop = output.scrollHeight;
 
      // ✅ Confirm
     await window.solanaConnection.confirmTransaction(signature, 'confirmed');
