@@ -2728,55 +2728,54 @@ function shareToX() {
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  window.walletPublicKey = null;
 
-  // ✅ Utility to clean recipient input for Base58 decoding
-  function cleanBase58Input(input) {
-    return input
-      .normalize("NFKD")
-      .replace(/[\u0000-\u001F\u007F-\u009F\u00A0\u200B\u200C\u200D\u200E\u200F\u2028\u2029\u2060\uFEFF]/g, '')
-      .replace(/[^\x21-\x7E]/g, '') // Remove non-visible characters
-      .trim();
-  }
+  // ✅ FIX: define this first so it's available for all calls
+  function getClusterUrl(cluster) {
+    if (cluster === "localhost") return "http://127.0.0.1:8899";
+    return solanaWeb3.clusterApiUrl(cluster);
+  }
 
-  const walletDisplay = document.getElementById('walletAddressDisplay');
-  const connectBtn = document.getElementById('connectWalletBtn');
+  window.walletPublicKey = null;
+
+  // ✅ Utility to clean recipient input for Base58 decoding
+  function cleanBase58Input(input) {
+    return input
+      .normalize("NFKD")
+      .replace(/[\u0000-\u001F\u007F-\u009F\u00A0\u200B\u200C\u200D\u200E\u200F\u2028\u2029\u2060\uFEFF]/g, '')
+      .replace(/[^\x21-\x7E]/g, '') // Remove non-visible characters
+      .trim();
+  }
+
+  const walletDisplay = document.getElementById('walletAddressDisplay');
+  const connectBtn = document.getElementById('connectWalletBtn');
   const disconnectBtn = document.getElementById('disconnectWalletBtn');
-  const runBtn = document.getElementById('runCommandBtn');
-  const output = document.getElementById('terminalOutput');
-  const input = document.getElementById('terminalInput');
-  const modal = document.getElementById('solanaDevModal');
-  const solanaIcon = document.getElementById('solanaAppIcon');
+  const runBtn = document.getElementById('runCommandBtn');
+  const output = document.getElementById('terminalOutput');
+  const input = document.getElementById('terminalInput');
+  const modal = document.getElementById('solanaDevModal');
+  const solanaIcon = document.getElementById('solanaAppIcon');
 
- // === Cluster Select Handler ===
+  // === Cluster Select Handler ===
+  const defaultCluster = "devnet";
+  const selectedCluster = localStorage.getItem("solanaCluster") || defaultCluster;
 
-// ✅ Define the function FIRST
-function getClusterUrl(cluster) {
-  if (cluster === "localhost") return "http://127.0.0.1:8899";
-  return solanaWeb3.clusterApiUrl(cluster);
-}
+  window.solanaConnection = new solanaWeb3.Connection(
+    getClusterUrl(selectedCluster),
+    "confirmed"
+  );
 
-// ✅ Now you can safely use it here:
-const defaultCluster = "devnet";
-const selectedCluster = localStorage.getItem("solanaCluster") || defaultCluster;
+  const clusterSelect = document.getElementById("clusterSelect");
+  if (clusterSelect) {
+    clusterSelect.value = selectedCluster;
 
-window.solanaConnection = new solanaWeb3.Connection(
-  getClusterUrl(selectedCluster),
-  "confirmed"
-);
-
-const clusterSelect = document.getElementById("clusterSelect");
-if (clusterSelect) {
-  clusterSelect.value = selectedCluster;
-
-  clusterSelect.addEventListener("change", (e) => {
-    const newCluster = e.target.value;
-    localStorage.setItem("solanaCluster", newCluster);
-    window.solanaConnection = new solanaWeb3.Connection(getClusterUrl(newCluster), "confirmed");
-    logOutput(`🔁 Switched to cluster: ${newCluster}`);
-  });
-}
-
+    clusterSelect.addEventListener("change", (e) => {
+      const newCluster = e.target.value;
+      localStorage.setItem("solanaCluster", newCluster);
+      window.solanaConnection = new solanaWeb3.Connection(getClusterUrl(newCluster), "confirmed");
+      logOutput(`🔁 Switched to cluster: ${newCluster}`);
+    });
+  }
+ 
   function logOutput(msg) {
     output.innerHTML += `\n> ${msg}`;
     output.scrollTop = output.scrollHeight;
