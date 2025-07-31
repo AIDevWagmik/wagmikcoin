@@ -2717,6 +2717,8 @@ function shareToX() {
   }
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/bs58@5.0.0/dist/bs58.min.js"></script>
+
 <!-- ✅ PART 2: DOM and terminal logic (runs immediately) -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -2814,12 +2816,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Validate PublicKey by attempting instantiation
   let base58Valid = true;
-  try {
-    new window.SolanaTools.PublicKey(cleanedRecipient);
-  } catch (e) {
-    base58Valid = false;
-  }
-
+try {
+  const decoded = bs58.decode(cleanedRecipient);
+  base58Valid = decoded.length === 32;
+} catch {
+  base58Valid = false;
+}
+    
   console.log("Base58 valid:", base58Valid);
 
   if (!base58Valid || isNaN(amount)) {
