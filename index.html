@@ -2753,7 +2753,7 @@ function getClusterUrl(cluster) {
 
 const defaultCluster = "devnet";
 const selectedCluster = localStorage.getItem("solanaCluster") || defaultCluster;
-window.solanaConnection = new Connection(getClusterUrl(selectedCluster), "confirmed");
+window.solanaConnection = new solanaWeb3.Connection(getClusterUrl(selectedCluster), "confirmed");
 
 const clusterSelect = document.getElementById("clusterSelect");
 if (clusterSelect) {
@@ -2762,7 +2762,7 @@ if (clusterSelect) {
   clusterSelect.addEventListener("change", (e) => {
     const newCluster = e.target.value;
     localStorage.setItem("solanaCluster", newCluster);
-    window.solanaConnection = new Connection(getClusterUrl(newCluster), "confirmed");
+    window.solanaConnection = new solanaWeb3.Connection(getClusterUrl(newCluster), "confirmed");
     logOutput(`🔁 Switched to cluster: ${newCluster}`);
   });
 }
