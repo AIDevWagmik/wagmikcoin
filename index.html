@@ -2919,6 +2919,9 @@ document.addEventListener('DOMContentLoaded', () => {
      const signature = await window.solanaConnection.sendRawTransaction(signedTx.serialize());
      logOutput(`📤 TX sent: ${signature}`);
 
+     const explorer = `https://solscan.io/tx/${signature}?cluster=${selectedCluster}`;
+     logOutput(`🔗 View: ${explorer}`);
+
      // ✅ Confirm
     await window.solanaConnection.confirmTransaction(signature, 'confirmed');
     logOutput("✅ Transaction confirmed.");
