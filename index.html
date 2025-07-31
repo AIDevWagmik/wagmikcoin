@@ -2793,7 +2793,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  const recipient = parts[1].normalize('NFKC').replace(/\s/g, '');
+  const recipient = [...parts[1]].filter(c =>
+  '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'.includes(c)
+).join('');
+
   const amount = parseFloat(parts[2]);
 
   if (!recipient || isNaN(amount)) {
