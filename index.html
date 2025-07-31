@@ -2846,24 +2846,30 @@ document.addEventListener('DOMContentLoaded', () => {
         logOutput(`🧠 Sending ${amount} SOL to ${cleanedRecipient}...`);
 
         const tx = new window.SolanaTools.Transaction().add(
-          window.SolanaTools.SystemProgram.transfer({
-            fromPubkey,
-            toPubkey,
-            lamports: amount * window.SolanaTools.LAMPORTS_PER_SOL,
-          })
-        );
+         window.SolanaTools.SystemProgram.transfer({
+         fromPubkey,
+         toPubkey,
+         lamports: amount * window.SolanaTools.LAMPORTS_PER_SOL,
+       })
+     );
 
-       // ✅ Inject blockhash and feePayer
-        const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
-        tx.recentBlockhash = blockhash;
-        tx.feePayer = fromPubkey;
+     // ✅ Inject required fields
+     const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
+      tx.recentBlockhash = blockhash;
+       tx.feePayer = fromPubkey;
 
-        const { signature } = await window.solana.signAndSendTransaction(tx);
-        logOutput(`📤 TX sent: ${signature}`);
+     // ✅ Sign manually
+     const signedTx = await window.solana.signTransaction(tx);
 
-        await window.solanaConnection.confirmTransaction(signature, 'confirmed');
-        logOutput("✅ Transaction confirmed.");
-      } catch (err) {
+     // ✅ Send manually
+     const signature = await window.solanaConnection.sendRawTransaction(signedTx.serialize());
+     logOutput(`📤 TX sent: ${signature}`);
+
+     // ✅ Confirm
+    await window.solanaConnection.confirmTransaction(signature, 'confirmed');
+    logOutput("✅ Transaction confirmed.");
+
+    } catch (err) {
         logOutput("❌ Transaction failed.");
         console.error(err);
       }
