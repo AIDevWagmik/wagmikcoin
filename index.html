@@ -2786,7 +2786,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
      } 
     
-     else if (cmd.startsWith("send ")) {
+  else if (cmd.startsWith("send ")) {
   const parts = cmd.split(" ");
   if (parts.length !== 3) {
     logOutput("❌ Usage: send <recipient> <amount>");
@@ -2796,14 +2796,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const recipientRaw = parts[1];
   const amount = parseFloat(parts[2]);
 
-  // Clean and validate inputs
-  const recipient = recipientRaw.replace(/[^\x21-\x7E]/g, '').trim(); // Remove invisible/non-printables
-  const cleanedRecipient = recipient.replace(/[^1-9A-HJ-NP-Za-km-z]/g, ''); // Allow only base58 chars
+  // Keep original input for debugging
+  console.log("Raw input:", JSON.stringify(recipientRaw));
+  console.log("Length:", recipientRaw.length);
 
+  // Remove only invisible characters (e.g. newline, control)
+  const cleanedRecipient = recipientRaw.normalize("NFKC").replace(/[^\x21-\x7E]/g, '');
   console.log("Cleaned recipient:", JSON.stringify(cleanedRecipient));
-  console.log("Length:", cleanedRecipient.length);
+  console.log("Length after cleaning:", cleanedRecipient.length);
   console.log("Char codes:", [...cleanedRecipient].map(c => c.charCodeAt(0)));
 
+  // Validate Base58 with correct charset and length
   const base58Valid = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(cleanedRecipient);
   console.log("Base58 valid:", base58Valid);
 
@@ -2812,14 +2815,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
- let toPubkey;
-try {
-  const pubKeyBytes = window.SolanaTools.Base58.decode(cleanedRecipient);
-  toPubkey = new window.SolanaTools.PublicKey(pubKeyBytes);
-} catch (e) {
-  logOutput(`❌ Invalid recipient address: ${e.message}`);
-  return;
-}
+  let toPubkey;
+  try {
+    toPubkey = new window.SolanaTools.PublicKey(cleanedRecipient);
+  } catch (e) {
+    logOutput(`❌ Invalid recipient address: ${e.message}`);
+    return;
+  }
 
   const fromPubkey = walletPublicKey;
 
@@ -2843,8 +2845,8 @@ try {
     logOutput("❌ Transaction failed.");
     console.error(err);
   }
-}   
-     
+}
+  
     else {
       logOutput(`❓ Unknown command: ${cmd}`);
     }
