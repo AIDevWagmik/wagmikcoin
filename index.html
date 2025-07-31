@@ -2853,6 +2853,11 @@ document.addEventListener('DOMContentLoaded', () => {
           })
         );
 
+       // ✅ Inject blockhash and feePayer
+        const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
+        tx.recentBlockhash = blockhash;
+        tx.feePayer = fromPubkey;
+
         const { signature } = await window.solana.signAndSendTransaction(tx);
         logOutput(`📤 TX sent: ${signature}`);
 
