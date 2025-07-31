@@ -2793,12 +2793,20 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
- const recipientRaw = parts[1];
-const recipient = recipientRaw.trim().replace(/[^1-9A-HJ-NP-Za-km-z]/g, '')
+const recipientRaw = parts[1];
 
+// ✅ Clean pasted input: normalize & remove hidden/invisible characters
+const recipient = recipientRaw
+  .normalize("NFKC")                            // Normalize Unicode
+  .replace(/[\u200B-\u200D\uFEFF]/g, '')       // Strip zero-width chars
+  .replace(/[^\x21-\x7E]/g, '')                // Strip non-visible ASCII
+  .trim();
+
+// ✅ Debug check (optional)
 console.log("Recipient string:", recipient);
 console.log("Length:", recipient.length);
-console.log("Base58 valid:", /^[1-9A-HJ-NP-Za-km-z]+$/.test(recipient));
+console.log("Base58 valid:", /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(recipient));
+
 
 let toPubkey;
 try {
