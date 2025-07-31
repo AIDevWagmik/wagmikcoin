@@ -2921,9 +2921,10 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script type="module">
-  import * as bs58raw from 'https://cdn.jsdelivr.net/npm/bs58@5.0.0/+esm';
-  window.bs58 = bs58raw.default || bs58raw;
-  console.log('✅ bs58 assigned from default', window.bs58);
+  import bs58Module from 'https://cdn.jsdelivr.net/npm/bs58@5.0.0/+esm';
+  console.log('bs58 module imported:', bs58Module);
+  window.bs58 = bs58Module;
+  window.__debug_bs58 = bs58Module;
 </script>
 
 <!-- Mobile Wallet Popup -->
