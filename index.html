@@ -2786,29 +2786,33 @@ document.addEventListener('DOMContentLoaded', () => {
       }
      } 
     
-     else if (cmd.startsWith("send ")) {
+    else if (cmd.startsWith("send ")) {
   const parts = cmd.split(" ");
   if (parts.length !== 3) {
     logOutput("❌ Usage: send <recipient> <amount>");
     return;
   }
 
-  const recipient = [...parts[1]].filter(c =>
-  '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'.includes(c)
-).join('');
-
+  const recipientInput = parts[1].trim();
   const amount = parseFloat(parts[2]);
-
-  if (!recipient || isNaN(amount)) {
+  if (!recipientInput || isNaN(amount)) {
     logOutput("❌ Invalid address or amount.");
     return;
   }
 
-  logOutput(`🔄 Sending ${amount} SOL to ${recipient}`);
+  let toPubkey;
+  try {
+    // ✅ Try parsing recipient into a PublicKey
+    toPubkey = new window.SolanaTools.PublicKey(recipientInput);
+  } catch (e) {
+    logOutput("❌ Invalid recipient address.");
+    return;
+  }
+
+  const fromPubkey = walletPublicKey;
 
   try {
-    const toPubkey = new window.SolanaTools.PublicKey(recipient);
-    const fromPubkey = walletPublicKey;
+    logOutput(`🔄 Sending ${amount} SOL to ${recipientInput}...`);
 
     const tx = new window.SolanaTools.Transaction().add(
       window.SolanaTools.SystemProgram.transfer({
