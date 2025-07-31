@@ -2796,6 +2796,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const recipient = parts[1].trim().replace(/[^\x20-\x7E]/g, '');
 const amount = parseFloat(parts[2]);
 
+ console.log("Recipient string:", recipient);
+console.log("Base58 valid:", /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(recipient));
+
 if (!recipient || isNaN(amount)) {
   logOutput("❌ Invalid address or amount.");
   return;
