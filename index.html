@@ -2786,7 +2786,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
      } 
     
- else if (cmd.startsWith("send ")) {
+else if (cmd.startsWith("send ")) {
   const parts = cmd.split(" ");
   if (parts.length !== 3) {
     logOutput("❌ Usage: send <recipient> <amount>");
@@ -2796,33 +2796,32 @@ document.addEventListener('DOMContentLoaded', () => {
   const recipientRaw = parts[1];
   const amount = parseFloat(parts[2]);
 
-  // Normalize and clean recipient input
-  const cleanedRecipient = recipientRaw
-    .normalize("NFKC")
-    .replace(/[^\x21-\x7E]/g, '')
-    .replace(/\s/g, '')
-    .trim();
+  // Clean recipient string
+  const recipient = recipientRaw.trim().normalize("NFKC").replace(/[^\x21-\x7E]/g, '');
+  console.log("Cleaned recipient:", JSON.stringify(recipient));
+  console.log("Length:", recipient.length);
 
-  console.log("Cleaned recipient:", JSON.stringify(cleanedRecipient));
-  console.log("Length:", cleanedRecipient.length);
+  // Base58 validation regex
+  const base58Valid = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(recipient);
+  console.log("Base58 valid:", base58Valid);
 
-  let toPubkey;
-  try {
-    toPubkey = new window.SolanaTools.PublicKey(cleanedRecipient);
-  } catch (e) {
-    logOutput(`❌ Invalid recipient address: ${e.message}`);
+  if (!base58Valid || isNaN(amount)) {
+    logOutput("❌ Invalid recipient address or amount.");
     return;
   }
 
-  if (isNaN(amount)) {
-    logOutput("❌ Invalid amount.");
+  let toPubkey;
+  try {
+    toPubkey = new window.SolanaTools.PublicKey(recipient);
+  } catch (e) {
+    logOutput(`❌ Invalid recipient address: ${e.message}`);
     return;
   }
 
   const fromPubkey = walletPublicKey;
 
   try {
-    logOutput(`🧠 Sending ${amount} SOL to ${cleanedRecipient}...`);
+    logOutput(`🧠 Sending ${amount} SOL to ${recipient}...`);
 
     const tx = new window.SolanaTools.Transaction().add(
       window.SolanaTools.SystemProgram.transfer({
@@ -2842,7 +2841,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error(err);
   }
 }
-
+     
     else {
       logOutput(`❓ Unknown command: ${cmd}`);
     }
