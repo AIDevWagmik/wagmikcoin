@@ -2786,7 +2786,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
      } 
     
-  else if (cmd.startsWith("send ")) {
+else if (cmd.startsWith("send ")) {
   const parts = cmd.split(" ");
   if (parts.length !== 3) {
     logOutput("❌ Usage: send <recipient> <amount>");
@@ -2796,30 +2796,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const recipientRaw = parts[1];
   const amount = parseFloat(parts[2]);
 
-  // Keep original input for debugging
-  console.log("Raw input:", JSON.stringify(recipientRaw));
-  console.log("Length:", recipientRaw.length);
+  // Clean + normalize input
+  const cleanedRecipient = recipientRaw
+    .normalize("NFKC")
+    .replace(/[^\x21-\x7E]/g, '')     // strip non-visible
+    .replace(/\u200B/g, '')          // remove zero-width
+    .trim();
 
-  // Remove only invisible characters (e.g. newline, control)
-  const cleanedRecipient = recipientRaw.normalize("NFKC").replace(/[^\x21-\x7E]/g, '');
+  // Debug logs
   console.log("Cleaned recipient:", JSON.stringify(cleanedRecipient));
-  console.log("Length after cleaning:", cleanedRecipient.length);
+  console.log("Length:", cleanedRecipient.length);
   console.log("Char codes:", [...cleanedRecipient].map(c => c.charCodeAt(0)));
 
-  // Validate Base58 with correct charset and length
-let base58Valid = true;
-try {
-  new window.SolanaTools.PublicKey(cleanedRecipient); // throws if invalid
-} catch {
-  base58Valid = false;
-}
-console.log("Base58 valid:", base58Valid);
+  // Check for valid amount
+  if (isNaN(amount)) {
+    logOutput("❌ Invalid amount.");
+    return;
+  }
 
-if (!base58Valid || isNaN(amount)) {
-  logOutput("❌ Invalid recipient address or amount.");
-  return;
-}
-
+  // Validate address using Solana PublicKey parser
   let toPubkey;
   try {
     toPubkey = new window.SolanaTools.PublicKey(cleanedRecipient);
@@ -2851,7 +2846,7 @@ if (!base58Valid || isNaN(amount)) {
     console.error(err);
   }
 }
-  
+     
     else {
       logOutput(`❓ Unknown command: ${cmd}`);
     }
