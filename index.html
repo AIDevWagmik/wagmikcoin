@@ -2793,18 +2793,19 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  const recipient = parts[1].trim().replace(/[^\x20-\x7E]/g, '');
-const amount = parseFloat(parts[2]);
+ const recipientRaw = parts[1];
+const recipient = recipientRaw.trim().replace(/[^1-9A-HJ-NP-Za-km-z]/g, '')
 
- console.log("Recipient string:", recipient);
-console.log("Base58 valid:", /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(recipient));
+console.log("Recipient string:", recipient);
+console.log("Length:", recipient.length);
+console.log("Base58 valid:", /^[1-9A-HJ-NP-Za-km-z]+$/.test(recipient));
 
+let toPubkey;
 try {
-  new window.SolanaTools.PublicKey(recipient);
+  toPubkey = new window.SolanaTools.PublicKey(recipient);
 } catch (e) {
-  logOutput("❌ Invalid address format.");
-  console.error("Recipient error:", e);
-  return;
+  logOutput(`❌ Invalid recipient address: ${e.message}`);
+  return;
 }
 
 if (isNaN(amount)) {
