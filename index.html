@@ -2794,20 +2794,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const recipient = parts[1].trim().replace(/[^\x20-\x7E]/g, '');
-  const amount = parseFloat(parts[2]);
-  if (!recipientInput || isNaN(amount)) {
-    logOutput("❌ Invalid address or amount.");
-    return;
-  }
+const amount = parseFloat(parts[2]);
 
-  let toPubkey;
-  try {
-    // ✅ Try parsing recipient into a PublicKey
-    toPubkey = new window.SolanaTools.PublicKey(recipientInput);
-  } catch (e) {
-    logOutput("❌ Invalid recipient address.");
-    return;
-  }
+if (!recipient || isNaN(amount)) {
+  logOutput("❌ Invalid address or amount.");
+  return;
+}
+
+let toPubkey;
+try {
+  toPubkey = new window.SolanaTools.PublicKey(recipient);
+} catch (e) {
+  logOutput("❌ Invalid recipient address.");
+  return;
+}
 
   const fromPubkey = walletPublicKey;
 
