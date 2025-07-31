@@ -1817,6 +1817,13 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
     </div>
 
+   <label for="clusterSelect" style="margin-top: 12px; color: #00ffa1;">Network:</label>
+<select id="clusterSelect" style="margin-bottom: 10px;">
+  <option value="devnet" selected>Devnet</option>
+  <option value="mainnet-beta">Mainnet</option>
+  <option value="localhost">Localhost</option>
+</select>
+
     <input id="terminalInput" type="text" placeholder="> Enter command" />
     <button id="runCommandBtn">Run</button>
   </div>
@@ -2737,6 +2744,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const input = document.getElementById('terminalInput');
   const modal = document.getElementById('solanaDevModal');
   const solanaIcon = document.getElementById('solanaAppIcon');
+
+ // === Cluster Select Handler ===
+function getClusterUrl(cluster) {
+  if (cluster === "localhost") return "http://127.0.0.1:8899";
+  return clusterApiUrl(cluster);
+}
+
+const defaultCluster = "devnet";
+const selectedCluster = localStorage.getItem("solanaCluster") || defaultCluster;
+window.solanaConnection = new Connection(getClusterUrl(selectedCluster), "confirmed");
+
+const clusterSelect = document.getElementById("clusterSelect");
+if (clusterSelect) {
+  clusterSelect.value = selectedCluster;
+
+  clusterSelect.addEventListener("change", (e) => {
+    const newCluster = e.target.value;
+    localStorage.setItem("solanaCluster", newCluster);
+    window.solanaConnection = new Connection(getClusterUrl(newCluster), "confirmed");
+    logOutput(`🔁 Switched to cluster: ${newCluster}`);
+  });
+}
 
   function logOutput(msg) {
     output.innerHTML += `\n> ${msg}`;
