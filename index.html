@@ -2799,8 +2799,16 @@ const amount = parseFloat(parts[2]);
  console.log("Recipient string:", recipient);
 console.log("Base58 valid:", /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(recipient));
 
-if (!recipient || isNaN(amount)) {
-  logOutput("❌ Invalid address or amount.");
+try {
+  new window.SolanaTools.PublicKey(recipient);
+} catch (e) {
+  logOutput("❌ Invalid address format.");
+  console.error("Recipient error:", e);
+  return;
+}
+
+if (isNaN(amount)) {
+  logOutput("❌ Invalid amount.");
   return;
 }
 
