@@ -2786,67 +2786,74 @@ document.addEventListener('DOMContentLoaded', () => {
       }
      } 
     
-else if (cmd.startsWith("send ")) {
-  const parts = cmd.split(" ");
-  if (parts.length !== 3) {
-    logOutput("❌ Usage: send <recipient> <amount>");
-    return;
-  }
+   else if (cmd.startsWith("send ")) {
+  const parts = cmd.split(" ");
+  if (parts.length !== 3) {
+    logOutput("❌ Usage: send <recipient> <amount>");
+    return;
+  }
 
-  const recipientRaw = parts[1];
-  const amount = parseFloat(parts[2]);
+  const rawInput = parts[1];
+  const amount = parseFloat(parts[2]);
 
-  // Clean + normalize input
-  const cleanedRecipient = recipientRaw
-    .normalize("NFKC")
-    .replace(/[^\x21-\x7E]/g, '')     // strip non-visible
-    .replace(/\u200B/g, '')          // remove zero-width
-    .trim();
+  // Remove any non-visible characters explicitly
+  const cleanedRecipient = rawInput
+    .normalize("NFKD")
+    .replace(/[\u0000-\u001F\u007F-\u009F\u00A0\u200B\u200C\u200D\uFEFF]/g, '') // control + space + zero-width + BOM
+    .replace(/[^\x21-\x7E]/g, '') // everything outside visible ASCII
+    .trim();
 
-  // Debug logs
-  console.log("Cleaned recipient:", JSON.stringify(cleanedRecipient));
-  console.log("Length:", cleanedRecipient.length);
-  console.log("Char codes:", [...cleanedRecipient].map(c => c.charCodeAt(0)));
+  console.log("Raw:", JSON.stringify(rawInput));
+  console.log("Cleaned:", JSON.stringify(cleanedRecipient));
+  console.log("Length:", cleanedRecipient.length);
+  console.log("Char codes:", [...cleanedRecipient].map(c => c.charCodeAt(0)));
 
-  // Check for valid amount
-  if (isNaN(amount)) {
-    logOutput("❌ Invalid amount.");
-    return;
-  }
+  let base58Valid = true;
+  try {
+    new window.SolanaTools.PublicKey(cleanedRecipient); // will throw if invalid
+  } catch (e) {
+    base58Valid = false;
+  }
 
-  // Validate address using Solana PublicKey parser
-  let toPubkey;
-  try {
-    toPubkey = new window.SolanaTools.PublicKey(cleanedRecipient);
-  } catch (e) {
-    logOutput(`❌ Invalid recipient address: ${e.message}`);
-    return;
-  }
+  console.log("Base58 valid:", base58Valid);
 
-  const fromPubkey = walletPublicKey;
+  if (!base58Valid || isNaN(amount)) {
+    logOutput("❌ Invalid recipient address or amount.");
+    return;
+  }
 
-  try {
-    logOutput(`🧠 Sending ${amount} SOL to ${cleanedRecipient}...`);
+  let toPubkey;
+  try {
+    toPubkey = new window.SolanaTools.PublicKey(cleanedRecipient);
+  } catch (e) {
+    logOutput(`❌ Invalid recipient address: ${e.message}`);
+    return;
+  }
 
-    const tx = new window.SolanaTools.Transaction().add(
-      window.SolanaTools.SystemProgram.transfer({
-        fromPubkey,
-        toPubkey,
-        lamports: amount * window.SolanaTools.LAMPORTS_PER_SOL,
-      })
-    );
+  const fromPubkey = walletPublicKey;
 
-    const { signature } = await window.solana.signAndSendTransaction(tx);
-    logOutput(`📤 TX sent: ${signature}`);
+  try {
+    logOutput(`🧠 Sending ${amount} SOL to ${cleanedRecipient}...`);
 
-    await window.solanaConnection.confirmTransaction(signature, 'confirmed');
-    logOutput("✅ Transaction confirmed.");
-  } catch (err) {
-    logOutput("❌ Transaction failed.");
-    console.error(err);
-  }
+    const tx = new window.SolanaTools.Transaction().add(
+      window.SolanaTools.SystemProgram.transfer({
+        fromPubkey,
+        toPubkey,
+        lamports: amount * window.SolanaTools.LAMPORTS_PER_SOL,
+      })
+    );
+
+    const { signature } = await window.solana.signAndSendTransaction(tx);
+    logOutput(`📤 TX sent: ${signature}`);
+
+    await window.solanaConnection.confirmTransaction(signature, 'confirmed');
+    logOutput("✅ Transaction confirmed.");
+  } catch (err) {
+    logOutput("❌ Transaction failed.");
+    console.error(err);
+  }
 }
-     
+       
     else {
       logOutput(`❓ Unknown command: ${cmd}`);
     }
