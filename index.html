@@ -2795,18 +2795,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const recipientRaw = parts[1];
 
-// ✅ Clean pasted input: normalize & remove hidden/invisible characters
+// 🔒 Extra-safe cleanup for pasted input
 const recipient = recipientRaw
-  .normalize("NFKC")                            // Normalize Unicode
-  .replace(/[\u200B-\u200D\uFEFF]/g, '')       // Strip zero-width chars
-  .replace(/[^\x21-\x7E]/g, '')                // Strip non-visible ASCII
+  .normalize("NFKC")
+  .replace(/\s/g, '')                             // Remove all whitespace
+  .replace(/[\u200B-\u200D\uFEFF]/g, '')          // Remove invisible chars
+  .replace(/[^\x21-\x7E]/g, '')                   // Remove non-printables
   .trim();
 
-// ✅ Debug check (optional)
+// Optional debug
 console.log("Recipient string:", recipient);
 console.log("Length:", recipient.length);
 console.log("Base58 valid:", /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(recipient));
-
 
 let toPubkey;
 try {
