@@ -2792,45 +2792,48 @@ document.addEventListener('DOMContentLoaded', () => {
     logOutput("❌ Usage: send <recipient> <amount>");
     return;
   }
+    
+const recipientRaw = parts[1];
+const amount = parseFloat(parts[2]);
 
-  const rawRecipient = parts[1];
-  const recipient = rawRecipient.trim().replace(/[^\x20-\x7E]/g, ""); // clean invisible chars
-  const amount = parseFloat(parts[2]);
+const recipient = recipientRaw.trim().replace(/[^\x20-\x7E]/g, '');
 
-  if (!recipient || isNaN(amount)) {
-    logOutput("❌ Invalid address or amount.");
-    return;
-  }
+console.log("Recipient string:", recipient);
+console.log("Length:", recipient.length);
+console.log("Base58 valid:", /^[1-9A-HJ-NP-Za-km-z]+$/.test(recipient));
 
-  let toPubkey;
-  try {
-    toPubkey = new window.SolanaTools.PublicKey(recipient);
-  } catch (e) {
-    logOutput(`❌ Invalid recipient address: ${e.message}`);
-    return;
-  }
+let toPubkey;
+try {
+  toPubkey = new window.SolanaTools.PublicKey(recipient);
+} catch (e) {
+  logOutput(`❌ Invalid recipient address: ${e.message}`);
+  return;
+}
 
-  const fromPubkey = walletPublicKey;
+if (isNaN(amount)) {
+  logOutput(`❌ Invalid amount.`);
+  return;
+}
 
-  try {
-    logOutput(`🟣 Sending ${amount} SOL to ${recipient}...`);
+const fromPubkey = walletPublicKey;
 
-    const tx = new window.SolanaTools.Transaction().add(
-      window.SolanaTools.SystemProgram.transfer({
-        fromPubkey,
-        toPubkey,
-        lamports: amount * window.SolanaTools.LAMPORTS_PER_SOL,
-      })
-    );
-
-    const { signature } = await window.solana.signAndSendTransaction(tx);
-    logOutput(`📤 TX sent: ${signature}`);
-    await window.solanaConnection.confirmTransaction(signature, 'confirmed');
-    logOutput(`✅ Transaction confirmed.`);
-  } catch (err) {
-    logOutput(`❌ Transaction failed: ${err.message}`);
-    console.error(err);
-   }
+try {
+  logOutput(`📤 Sending ${amount} SOL to ${recipient}...`);
+  const tx = new window.SolanaTools.Transaction().add(
+    window.SolanaTools.SystemProgram.transfer({
+      fromPubkey,
+      toPubkey,
+      lamports: amount * window.SolanaTools.LAMPORTS_PER_SOL,
+    })
+  );
+  const { signature } = await window.solana.signAndSendTransaction(tx);
+  logOutput(`🔁 TX sent: ${signature}`);
+  await window.solanaConnection.confirmTransaction(signature, 'confirmed');
+  logOutput(`✅ Transaction confirmed.`);
+} catch (err) {
+  logOutput(`❌ Transaction failed.`);
+  console.error(err);
+} 
   }
 
     else {
