@@ -2807,13 +2807,18 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log("Char codes:", [...cleanedRecipient].map(c => c.charCodeAt(0)));
 
   // Validate Base58 with correct charset and length
-  const base58Valid = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(cleanedRecipient);
-  console.log("Base58 valid:", base58Valid);
+let base58Valid = true;
+try {
+  new window.SolanaTools.PublicKey(cleanedRecipient); // throws if invalid
+} catch {
+  base58Valid = false;
+}
+console.log("Base58 valid:", base58Valid);
 
-  if (!base58Valid || isNaN(amount)) {
-    logOutput("❌ Invalid recipient address or amount.");
-    return;
-  }
+if (!base58Valid || isNaN(amount)) {
+  logOutput("❌ Invalid recipient address or amount.");
+  return;
+}
 
   let toPubkey;
   try {
