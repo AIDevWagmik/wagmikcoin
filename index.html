@@ -2788,24 +2788,23 @@ document.addEventListener('DOMContentLoaded', () => {
     
    else if (cmd.startsWith("send ")) {
   const parts = cmd.split(" ");
-  if (parts.length !== 3) {
-    logOutput("❌ Usage: send <recipient> <amount>");
-    return;
-  }
+if (parts.length !== 3) {
+  logOutput("❌ Usage: send <recipient> <amount>");
+  return;
+}
 
-  // Clean and validate inputs
-  const recipient = recipientRaw.trim();
+const recipientRaw = parts[1]; // ✅ YOU NEED THIS LINE
+const recipient = recipientRaw.trim();
 console.log("Raw recipient:", JSON.stringify(recipient));
 
-// Remove any hidden/invisible/invalid characters
 const cleanedRecipient = recipient.replace(/[^\x20-\x7E]/g, '');
 console.log("Cleaned recipient:", JSON.stringify(cleanedRecipient));
 console.log("Length:", cleanedRecipient.length);
 
-// Validate against base58 rules (only allowed characters, 32-44 length)
 const base58Valid = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(cleanedRecipient);
 console.log("Base58 valid:", base58Valid);
 
+const amount = parseFloat(parts[2]);
 if (!base58Valid || isNaN(amount)) {
   logOutput("❌ Invalid recipient address or amount.");
   return;
