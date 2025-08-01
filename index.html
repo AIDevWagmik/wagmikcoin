@@ -3204,12 +3204,22 @@ if (clusterSelect) {
 </script>
 
 <script type="module">
-  import * as spl from "https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/+esm";
+  import {
+    getOrCreateAssociatedTokenAccount,
+    createMintToInstruction,
+    createTransferInstruction,
+    TOKEN_PROGRAM_ID
+  } from "https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/+esm";
 
-  // ✅ Expose to global scope
-  window.splToken = spl;
+  // ✅ Assign these one-by-one so your existing code works
+  window.splToken = {
+    getOrCreateAssociatedTokenAccount,
+    createMintToInstruction,
+    createTransferInstruction,
+    TOKEN_PROGRAM_ID
+  };
 
-  console.log("✅ SPL Token module loaded via ESM");
+  console.log("✅ SPL Token functions assigned to window.splToken");
 </script>
 
 <!-- Mobile Wallet Popup -->
