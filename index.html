@@ -2744,6 +2744,23 @@ function shareToX() {
 </script>
 
 <script>
+
+function waitForSplToken(maxWait = 3000) {
+  return new Promise((resolve, reject) => {
+    const interval = setInterval(() => {
+      if (window.splToken?.getOrCreateAssociatedTokenAccount) {
+        clearInterval(interval);
+        resolve();
+      }
+    }, 50);
+
+    setTimeout(() => {
+      clearInterval(interval);
+      reject(new Error("❌ SPL Token module failed to load in time."));
+    }, maxWait);
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
   // ✅ FIX: define this first so it's available for all calls
@@ -2858,19 +2875,31 @@ if (clusterSelect) {
   }
 });
 
-  runBtn?.addEventListener('click', async () => {
-    const cmd = input.value.trim();
-    input.value = '';
+ runBtn?.addEventListener('click', async () => {
+  const cmd = input.value.trim();
+  input.value = '';
 
-    if (!walletPublicKey) {
-      logOutput("❌ Connect wallet first");
-      return;
-    }
+  // ✅ Check SPL readiness for any spl* command
+  if (cmd.toLowerCase().startsWith("spl")) {
+    try {
+      await waitForSplToken(); // ⏳ Wait until splToken is ready
+    } catch (e) {
+      logOutput(e.message);
+      return;
+    }
+  }
 
-   if (!window.solanaReady || !window.solanaConnection) {
-  logOutput("❌ Solana not ready yet.");
-  return;
-}
+  if (!walletPublicKey) {
+    logOutput("❌ Connect wallet first");
+    return;
+  }
+
+  if (!window.solanaReady || !window.solanaConnection) {
+    logOutput("❌ Solana not ready yet.");
+    return;
+  }
+
+  // ... your command handling continues here
 
     if (cmd.toLowerCase() === 'balance') {
       try {
