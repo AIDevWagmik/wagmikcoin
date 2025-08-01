@@ -1810,29 +1810,51 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
    <button id="disconnectWalletBtn" style="margin-top: 8px;">🚪 Disconnect</button>
 
-  <div id="terminalOutput" class="terminal-box" style="padding: 8px 10px; font-size: 0.9em; white-space: normal; line-height: 1.3;">
-  <div style="margin-bottom: 6px; line-height: 1.3;">
-    <div style="margin: 0; font-weight: bold;">Welcome to the $WAGMIK Solana Console 💀</div>
-    <div style="margin-top: 4px; font-weight: bold;">Available Commands:</div>
-    <ul id="commandList" style="margin: 4px 0 0 16px; padding: 0; list-style: disc; color: #00ffa1;">
+ <div id="terminalOutput" class="terminal-box" style="
+  padding: 10px;
+  font-size: 0.9em;
+  line-height: 1.35;
+  white-space: pre-wrap;
+  background-color: #111;
+  color: #eee;
+  border-radius: 8px;
+  margin-bottom: 10px;
+">
+
+  <div style="margin-bottom: 8px;">
+    <div style="font-weight: bold; margin-bottom: 6px;">
+      Welcome to the $WAGMIK Solana Console 💀
+    </div>
+
+    <div style="font-weight: bold; margin-bottom: 4px;">
+      Available Commands:
+    </div>
+
+    <ul id="commandList" style="
+      margin: 0 0 8px 16px;
+      padding: 0;
+      list-style: disc;
+      color: #00ffa1;
+      line-height: 1.3;
+    ">
       <li style="margin-bottom: 2px;"><code>balance</code> — check wallet SOL</li>
       <li style="margin-bottom: 2px;" class="airdropCommand"><code>airdrop</code> — devnet only</li>
-      <li style="margin-bottom: 0;"><code>send &lt;recipient&gt; &lt;amount&gt;</code> — transfer SOL</li>
+      <li><code>send &lt;recipient&gt; &lt;amount&gt;</code> — transfer SOL</li>
     </ul>
   </div>
 </div>
 
-   <label for="clusterSelect" style="margin-top: 12px; color: #00ffa1;">Network:</label>
+<!-- Dropdown + input stays the same -->
+<label for="clusterSelect" style="margin-top: 12px; color: #00ffa1;">Network:</label>
 <select id="clusterSelect" style="margin-bottom: 10px;">
   <option value="devnet" selected>Devnet</option>
   <option value="mainnet-beta">Mainnet</option>
   <option value="localhost">Localhost</option>
 </select>
 
-    <input id="terminalInput" type="text" placeholder="> Enter command" />
-    <button id="runCommandBtn">Run</button>
-  </div>
-</div>
+<input id="terminalInput" type="text" placeholder="> Enter command" />
+<button id="runCommandBtn">Run</button>
+
   
   <script>
    function createCoin() {
