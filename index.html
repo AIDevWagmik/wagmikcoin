@@ -1475,9 +1475,11 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   </style>
 
 <script>
+  // ✅ Clean SPL UMD loader with Promise support
   window.splTokenReady = new Promise((resolve, reject) => {
     const script = document.createElement("script");
     script.src = "https://cdn.jsdelivr.net/npm/@solana/spl-token@0.1.8/lib/index.iife.js";
+
     script.onload = () => {
       if (typeof splToken !== "undefined") {
         window.splToken = splToken;
@@ -1487,7 +1489,9 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
         reject(new Error("❌ splToken global not found"));
       }
     };
+
     script.onerror = () => reject(new Error("❌ Failed to load SPL Token script"));
+
     document.head.appendChild(script);
   });
 </script>
@@ -2772,13 +2776,6 @@ function waitForSplToken(maxWait = 3000) {
       }, maxWait);
     })
   ]);
-}
-
-    setTimeout(() => {
-      clearInterval(interval);
-      reject(new Error("❌ SPL Token module failed to load in time."));
-    }, maxWait);
-  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
