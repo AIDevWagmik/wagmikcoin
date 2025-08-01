@@ -1818,6 +1818,11 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
       <li style="margin: 0 0 2px;"><code>balance</code> — check wallet SOL</li>
       <li class="airdropCommand" style="margin: 0 0 2px;"><code>airdrop</code> — devnet only</li>
       <li style="margin: 0;"><code>send &lt;recipient&gt; &lt;amount&gt;</code> — transfer SOL</li>
+      <li style="margin-bottom: 2px;"><code>spltokens</code> — list SPL token balances</li>
+      <li style="margin-bottom: 2px;"><code>splsend &lt;mint&gt; &lt;recipient&gt; &lt;amount&gt;</code> — send SPL tokens</li>
+      <li class="splAirdropCommand" style="margin-bottom: 2px;">
+      <code>spltokenairdrop</code> — get 100 WAGMIK (devnet only)
+      </li>
     </ul>
   </div>
 </div>
@@ -2724,6 +2729,8 @@ function shareToX() {
   }
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/lib/index.iife.min.js"></script>
+
 <script>
   if (window.matchMedia('(display-mode: standalone)').matches) {
     document.body.classList.add('standalone');
@@ -2775,27 +2782,38 @@ document.addEventListener('DOMContentLoaded', () => {
     "confirmed"
   );
 
- const airdropItem = document.querySelector(".airdropCommand");
+const airdropItem = document.querySelector(".airdropCommand");
 if (airdropItem) {
   airdropItem.style.display = selectedCluster === "mainnet-beta" ? "none" : "list-item";
 }
 
-  const clusterSelect = document.getElementById("clusterSelect");
-  if (clusterSelect) {
-    clusterSelect.value = selectedCluster;
+const splAirdropItem = document.querySelector(".splAirdropCommand");
+if (splAirdropItem) {
+  splAirdropItem.style.display = selectedCluster === "devnet" ? "list-item" : "none";
+}
 
-   clusterSelect.addEventListener("change", (e) => {
-  const newCluster = e.target.value;
-  localStorage.setItem("solanaCluster", newCluster);
-  window.solanaConnection = new solanaWeb3.Connection(getClusterUrl(newCluster), "confirmed");
-  logOutput(`🔁 Switched to cluster: ${newCluster}`);
+const clusterSelect = document.getElementById("clusterSelect");
+if (clusterSelect) {
+  clusterSelect.value = selectedCluster;
 
-  // 🔄 Show or hide airdrop command based on selected cluster
-  const airdropItem = document.querySelector(".airdropCommand");
-  if (airdropItem) {
-    airdropItem.style.display = newCluster === "mainnet-beta" ? "none" : "list-item";
-  }
- });
+  clusterSelect.addEventListener("change", (e) => {
+    const newCluster = e.target.value;
+    localStorage.setItem("solanaCluster", newCluster);
+    window.solanaConnection = new solanaWeb3.Connection(getClusterUrl(newCluster), "confirmed");
+    logOutput(`🔁 Switched to cluster: ${newCluster}`);
+
+    // 🔄 Show or hide airdrop command
+    const airdropItem = document.querySelector(".airdropCommand");
+    if (airdropItem) {
+      airdropItem.style.display = newCluster === "mainnet-beta" ? "none" : "list-item";
+    }
+
+    // 🔄 Show or hide SPL token airdrop command
+    const splAirdropItem = document.querySelector(".splAirdropCommand");
+    if (splAirdropItem) {
+      splAirdropItem.style.display = newCluster === "devnet" ? "list-item" : "none";
+    }
+  });
 }
  
   function logOutput(msg) {
@@ -2875,6 +2893,53 @@ if (airdropItem) {
     output.innerHTML += `<br>> ${linkHTML}`;
     output.scrollTop = output.scrollHeight;
 
+  } catch (err) {
+    logOutput("❌ Airdrop failed.");
+    console.error(err);
+  }
+}
+
+   else if (cmd.toLowerCase() === "spltokenairdrop") {
+  if (selectedCluster !== "devnet") {
+    logOutput("🚫 This token airdrop only works on devnet.");
+    return;
+  }
+
+  try {
+    const mint = new window.SolanaTools.PublicKey("Ggpt9vQZQFRLReaWL9xxzBycZuTSmWNPoef7cQUjq2E5");
+
+    const token = new window.SolanaTools.Token(
+      window.solanaConnection,
+      mint,
+      window.SolanaTools.TOKEN_PROGRAM_ID,
+      walletPublicKey
+    );
+
+    const tokenAccount = await token.getOrCreateAssociatedAccountInfo(walletPublicKey);
+
+    const tx = new window.SolanaTools.Transaction().add(
+      window.SolanaTools.Token.createMintToInstruction(
+        window.SolanaTools.TOKEN_PROGRAM_ID,
+        mint,
+        tokenAccount.address,
+        walletPublicKey,
+        [],
+        100_000000 // 100 tokens, assuming 6 decimals
+      )
+    );
+
+    const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
+    tx.recentBlockhash = blockhash;
+    tx.feePayer = walletPublicKey;
+
+    const signed = await window.solana.signTransaction(tx);
+    const sig = await window.solanaConnection.sendRawTransaction(signed.serialize());
+
+    logOutput(`🍬 Airdropped 100 WAGMIK tokens.`);
+    logOutput(`🔗 https://explorer.solana.com/tx/${sig}?cluster=devnet`);
+
+    await window.solanaConnection.confirmTransaction(sig, "confirmed");
+    logOutput("✅ Token airdrop confirmed.");
   } catch (err) {
     logOutput("❌ Airdrop failed.");
     console.error(err);
@@ -2967,6 +3032,95 @@ if (airdropItem) {
       }
     }
 
+   else if (cmd.toLowerCase() === "spltokens") {
+  try {
+    const tokens = await window.solanaConnection.getParsedTokenAccountsByOwner(
+      walletPublicKey,
+      { programId: new window.SolanaTools.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA") }
+    );
+
+    if (!tokens.value.length) {
+      logOutput("🎒 No SPL tokens found.");
+      return;
+    }
+
+    logOutput("🎒 SPL Tokens:");
+    for (const acc of tokens.value) {
+      const { mint, tokenAmount } = acc.account.data.parsed.info;
+      const amount = tokenAmount.uiAmountString;
+      logOutput(`- ${mint}: ${amount}`);
+    }
+  } catch (err) {
+    logOutput("❌ Failed to fetch SPL tokens.");
+    console.error(err);
+  }
+}
+
+    else if (cmd.toLowerCase().startsWith("splsend ")) {
+  const parts = cmd.split(" ");
+  if (parts.length !== 4) {
+    logOutput("❌ Usage: splsend <mint> <recipient> <amount>");
+    return;
+  }
+
+  const [_, mintStr, recipientStr, amountStr] = parts;
+
+  try {
+    const mint = new window.SolanaTools.PublicKey(mintStr);
+    const recipient = new window.SolanaTools.PublicKey(recipientStr);
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0) throw new Error("Invalid amount");
+
+    const senderTokenAccount = await window.solanaConnection.getTokenAccountsByOwner(
+      walletPublicKey,
+      { mint }
+    );
+    if (!senderTokenAccount.value.length) {
+      logOutput("❌ No token account found for that mint.");
+      return;
+    }
+
+    const senderAccountPubkey = senderTokenAccount.value[0].pubkey;
+
+    const token = new window.SolanaTools.Token(
+      window.solanaConnection,
+      mint,
+      window.SolanaTools.TOKEN_PROGRAM_ID,
+      walletPublicKey
+    );
+
+    const recipientTokenAccount = await token.getOrCreateAssociatedAccountInfo(recipient);
+
+    const tx = new window.SolanaTools.Transaction().add(
+      window.SolanaTools.Token.createTransferInstruction(
+        window.SolanaTools.TOKEN_PROGRAM_ID,
+        senderAccountPubkey,
+        recipientTokenAccount.address,
+        walletPublicKey,
+        [],
+        amount * (10 ** recipientTokenAccount.decimals)
+      )
+    );
+
+    const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
+    tx.recentBlockhash = blockhash;
+    tx.feePayer = walletPublicKey;
+
+    const signedTx = await window.solana.signTransaction(tx);
+    const sig = await window.solanaConnection.sendRawTransaction(signedTx.serialize());
+
+    logOutput(`📤 SPL Transfer TX: ${sig}`);
+    const explorer = `https://explorer.solana.com/tx/${sig}?cluster=${selectedCluster}`;
+    logOutput(`🔗 View: ${explorer}`);
+
+    await window.solanaConnection.confirmTransaction(sig, "confirmed");
+    logOutput("✅ SPL Token transfer confirmed.");
+  } catch (err) {
+    logOutput("❌ SPL Transfer failed.");
+    console.error(err);
+  }
+}
+
     else {
       logOutput(`❓ Unknown command: ${cmd}`);
     }
@@ -3013,12 +3167,14 @@ if (airdropItem) {
 
     window.solanaReady = true; // ✅ Add this
 
-    window.SolanaTools = {
-      PublicKey: solanaWeb3.PublicKey,
-      LAMPORTS_PER_SOL: solanaWeb3.LAMPORTS_PER_SOL,
-      Transaction: solanaWeb3.Transaction,
-      SystemProgram: solanaWeb3.SystemProgram
-    };
+   window.SolanaTools = {
+  PublicKey: solanaWeb3.PublicKey,
+  LAMPORTS_PER_SOL: solanaWeb3.LAMPORTS_PER_SOL,
+  Transaction: solanaWeb3.Transaction,
+  SystemProgram: solanaWeb3.SystemProgram,
+  Token: splToken.Token,
+  TOKEN_PROGRAM_ID: splToken.TOKEN_PROGRAM_ID
+};
 
     console.log("✅ Solana SDK ready.");
   });
