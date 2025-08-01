@@ -2905,7 +2905,12 @@ if (clusterSelect) {
   }
 }
 
-   else if (cmd.toLowerCase() === "spltokenairdrop") {
+  else if (cmd.toLowerCase() === "spltokenairdrop") {
+  if (!window.splToken || !window.splToken.getOrCreateAssociatedTokenAccount) {
+    logOutput("❌ SPL Token tools not available yet. Try again shortly.");
+    return;
+  }
+
   if (localStorage.getItem("solanaCluster") !== "devnet") {
     logOutput("🚫 This token airdrop only works on devnet.");
     return;
@@ -2915,22 +2920,22 @@ if (clusterSelect) {
     const mint = new window.SolanaTools.PublicKey("Ggpt9vQZQFRLReaWL9xxzBycZuTSmWNPoef7cQUjq2E5");
 
     const tokenAccount = await window.splToken.getOrCreateAssociatedTokenAccount(
-     window.solanaConnection,
-     walletPublicKey,
-     mint,
-     walletPublicKey
-   );
+      window.solanaConnection,
+      walletPublicKey,
+      mint,
+      walletPublicKey
+    );
 
     const tx = new window.SolanaTools.Transaction().add(
-     window.splToken.createMintToInstruction(
-     mint,
-     tokenAccount.address,
-     walletPublicKey,
-     100_000000, // 100 WAGMIK, assuming 6 decimals
-     [],
-     window.splToken.TOKEN_PROGRAM_ID
-    )
-  );
+      window.splToken.createMintToInstruction(
+        mint,
+        tokenAccount.address,
+        walletPublicKey,
+        100_000000,
+        [],
+        window.splToken.TOKEN_PROGRAM_ID
+      )
+    );
 
     const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
     tx.recentBlockhash = blockhash;
@@ -3036,11 +3041,16 @@ if (clusterSelect) {
       }
     }
 
-   else if (cmd.toLowerCase() === "spltokens") {
+  else if (cmd.toLowerCase() === "spltokens") {
+  if (!window.splToken?.TOKEN_PROGRAM_ID) {
+    logOutput("❌ SPL Token module not loaded yet.");
+    return;
+  }
+
   try {
     const tokens = await window.solanaConnection.getParsedTokenAccountsByOwner(
       walletPublicKey,
-      { programId: new window.SolanaTools.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA") }
+      { programId: window.splToken.TOKEN_PROGRAM_ID }
     );
 
     if (!tokens.value.length) {
@@ -3060,7 +3070,12 @@ if (clusterSelect) {
   }
 }
 
-    else if (cmd.toLowerCase().startsWith("splsend ")) {
+else if (cmd.toLowerCase().startsWith("splsend ")) {
+  if (!window.splToken?.createTransferInstruction || !window.splToken?.getOrCreateAssociatedTokenAccount) {
+    logOutput("❌ SPL Token module not loaded yet.");
+    return;
+  }
+
   const parts = cmd.split(" ");
   if (parts.length !== 4) {
     logOutput("❌ Usage: splsend <mint> <recipient> <amount>");
@@ -3086,23 +3101,22 @@ if (clusterSelect) {
 
     const senderAccountPubkey = senderTokenAccount.value[0].pubkey;
 
-    const token = new window.SolanaTools.Token(
+    // ✅ Updated ESM-compatible call
+    const recipientTokenAccount = await window.splToken.getOrCreateAssociatedTokenAccount(
       window.solanaConnection,
+      walletPublicKey,
       mint,
-      window.SolanaTools.TOKEN_PROGRAM_ID,
-      walletPublicKey
+      recipient
     );
 
-    const recipientTokenAccount = await token.getOrCreateAssociatedAccountInfo(recipient);
-
     const tx = new window.SolanaTools.Transaction().add(
-      window.SolanaTools.Token.createTransferInstruction(
-        window.SolanaTools.TOKEN_PROGRAM_ID,
+      window.splToken.createTransferInstruction(
         senderAccountPubkey,
         recipientTokenAccount.address,
         walletPublicKey,
+        amount * (10 ** recipientTokenAccount.decimals),
         [],
-        amount * (10 ** recipientTokenAccount.decimals)
+        window.splToken.TOKEN_PROGRAM_ID
       )
     );
 
