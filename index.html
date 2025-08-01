@@ -3104,7 +3104,6 @@ else if (cmd.toLowerCase().startsWith("send ")) {
 }
 
 else if (cmd.toLowerCase().startsWith("splsend ")) {
- 
   const parts = cmd.split(" ");
   if (parts.length !== 4) {
     logOutput("❌ Usage: splsend <mint> <recipient> <amount>");
@@ -3130,62 +3129,45 @@ else if (cmd.toLowerCase().startsWith("splsend ")) {
 
     const senderAccountPubkey = senderTokenAccount.value[0].pubkey;
 
-    // ✅ Updated ESM-compatible call
-    try {
-  const token = new window.splToken.Token(
-    window.solanaConnection,
-    mint,
-    window.splToken.TOKEN_PROGRAM_ID,
-    walletPublicKey
-  );
+    const token = new window.splToken.Token(
+      window.solanaConnection,
+      mint,
+      window.splToken.TOKEN_PROGRAM_ID,
+      walletPublicKey
+    );
 
-  // ✅ Get recipient token account (create if needed)
-  const recipientTokenAccount = await token.getOrCreateAssociatedAccountInfo(recipient);
+    const recipientTokenAccount = await token.getOrCreateAssociatedAccountInfo(recipient);
 
-  // ✅ Get sender token account (you already have this logic above)
-  const senderTokenAccount = await window.solanaConnection.getTokenAccountsByOwner(
-    walletPublicKey,
-    { mint }
-  );
-  if (!senderTokenAccount.value.length) {
-    logOutput("❌ No token account found for that mint.");
-    return;
+    const mintInfo = await token.getMintInfo();
+    const decimals = mintInfo.decimals;
+
+    const tx = new window.SolanaTools.Transaction().add(
+      token.createTransferInstruction(
+        senderAccountPubkey,
+        recipientTokenAccount.address,
+        walletPublicKey,
+        [],
+        amount * Math.pow(10, decimals)
+      )
+    );
+
+    const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
+    tx.recentBlockhash = blockhash;
+    tx.feePayer = walletPublicKey;
+
+    const signedTx = await window.solana.signTransaction(tx);
+    const sig = await window.solanaConnection.sendRawTransaction(signedTx.serialize());
+
+    logOutput(`📤 SPL Transfer TX: ${sig}`);
+    const explorer = `https://explorer.solana.com/tx/${sig}?cluster=${selectedCluster}`;
+    logOutput(`🔗 View: ${explorer}`);
+
+    await window.solanaConnection.confirmTransaction(sig, "confirmed");
+    logOutput("✅ SPL Token transfer confirmed.");
+  } catch (err) {
+    logOutput("❌ SPL Transfer failed.");
+    console.error(err);
   }
-
-  const senderAccountPubkey = senderTokenAccount.value[0].pubkey;
-
-  // ✅ Fetch decimals if needed
-  const mintInfo = await token.getMintInfo();
-  const decimals = mintInfo.decimals;
-
-  // ✅ Build transaction using Token class
-  const tx = new window.SolanaTools.Transaction().add(
-    token.createTransferInstruction(
-      senderAccountPubkey,
-      recipientTokenAccount.address,
-      walletPublicKey,
-      [],
-      amount * Math.pow(10, decimals)
-    )
-  );
-
-  const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
-  tx.recentBlockhash = blockhash;
-  tx.feePayer = walletPublicKey;
-
-  const signedTx = await window.solana.signTransaction(tx);
-  const sig = await window.solanaConnection.sendRawTransaction(signedTx.serialize());
-
-  logOutput(`📤 SPL Transfer TX: ${sig}`);
-  const explorer = `https://explorer.solana.com/tx/${sig}?cluster=${selectedCluster}`;
-  logOutput(`🔗 View: ${explorer}`);
-
-  await window.solanaConnection.confirmTransaction(sig, "confirmed");
-  logOutput("✅ SPL Token transfer confirmed.");
-} catch (err) {
-  logOutput("❌ SPL Transfer failed.");
-  console.error(err);
- }
 }
 
     else {
