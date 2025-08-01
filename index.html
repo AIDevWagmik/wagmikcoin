@@ -2718,28 +2718,22 @@ function shareToX() {
 </script>
 
 <script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const splScript = document.createElement('script');
-    splScript.src = 'https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/lib/index.iife.min.js';
-    splScript.onload = () => {
-      if (typeof window.exports === 'object' && window.exports.Token) {
-        window.splToken = window.exports;
-        console.log('✅ SPL Token module loaded');
-      } else {
-        console.error('❌ SPL Token module failed to load');
-      }
-    };
-    document.head.appendChild(splScript);
-  });
-</script>
-
-<script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/wagmikcoin/service-worker.js')
         .then(reg => console.log('✅ Service Worker registered:', reg))
         .catch(err => console.error('❌ Service Worker registration failed:', err));
     });
+  }
+</script>
+
+<script>
+  function getClusterUrl(cluster) {
+    if (cluster === "localhost") return "http://127.0.0.1:8899";
+    if (cluster === "mainnet-beta") {
+      return "https://mainnet.helius-rpc.com/?api-key=ab50cc7f-3c60-42b0-a3b4-4944c5263912";
+    }
+    return solanaWeb3.clusterApiUrl(cluster);
   }
 </script>
 
@@ -2873,10 +2867,10 @@ if (clusterSelect) {
       return;
     }
 
-    if (!solanaReady || !window.solanaConnection) {
-      logOutput("❌ Solana not ready yet.");
-      return;
-    }
+   if (!window.solanaReady || !window.solanaConnection) {
+  logOutput("❌ Solana not ready yet.");
+  return;
+}
 
     if (cmd.toLowerCase() === 'balance') {
       try {
@@ -3215,7 +3209,14 @@ if (clusterSelect) {
   console.log('✅ Buffer polyfill added');
 </script>
 
+<script type="module">
+  import * as spl from "https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/+esm";
 
+  // ✅ Expose to global scope
+  window.splToken = spl;
+
+  console.log("✅ SPL Token module loaded via ESM");
+</script>
 
 <!-- Mobile Wallet Popup -->
 <div id="mobileWalletPopup" class="mobile-popup">
