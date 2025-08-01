@@ -1475,21 +1475,18 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   </style>
 
 <script>
-  // Dynamically load SPL Token UMD script and assign to window
   window.splTokenReady = new Promise((resolve, reject) => {
     const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/lib/index.iife.min.js";
-
+    script.src = "https://cdn.jsdelivr.net/npm/@solana/spl-token@0.1.8/lib/index.iife.js";
     script.onload = () => {
       if (typeof splToken !== "undefined") {
         window.splToken = splToken;
-        console.log("✅ SPL Token UMD loaded via IIFE");
+        console.log("✅ SPL Token UMD loaded via v0.1.8");
         resolve();
       } else {
         reject(new Error("❌ splToken global not found"));
       }
     };
-
     script.onerror = () => reject(new Error("❌ Failed to load SPL Token script"));
     document.head.appendChild(script);
   });
@@ -2769,9 +2766,11 @@ function shareToX() {
 function waitForSplToken(maxWait = 3000) {
   return Promise.race([
     window.splTokenReady,
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("❌ SPL Token module failed to load in time.")), maxWait)
-    )
+    new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error("❌ SPL Token module failed to load in time."));
+      }, maxWait);
+    })
   ]);
 }
 
