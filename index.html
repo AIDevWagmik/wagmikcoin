@@ -1814,7 +1814,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
       <p>Welcome to the $WAGMIK Solana Console 💀</p>
      <div style="margin-top: 12px; font-size: 0.95em;">
   <strong>Available Commands:</strong>
-  <ul id="commandList" style="padding-left: 16px; margin-top: 6px; color: #00ffa1; list-style: disc; line-height: 1.4em;">
+  <ul id="commandList" style="padding-left: 16px; margin-top: 4px; color: #00ffa1; list-style: disc; line-height: 1em;">
     <li><code>balance</code> — check wallet SOL</li>
     <li class="airdropCommand"><code>airdrop</code> — devnet only</li>
     <li><code>send &lt;recipient&gt; &lt;amount&gt;</code> — transfer SOL</li>
@@ -2774,9 +2774,9 @@ document.addEventListener('DOMContentLoaded', () => {
     "confirmed"
   );
 
- if (selectedCluster === "mainnet-beta") {
-  const airdropItem = document.querySelector(".airdropCommand");
-  if (airdropItem) airdropItem.style.display = "none";
+ const airdropItem = document.querySelector(".airdropCommand");
+if (airdropItem) {
+  airdropItem.style.display = selectedCluster === "mainnet-beta" ? "none" : "list-item";
 }
 
   const clusterSelect = document.getElementById("clusterSelect");
@@ -2975,7 +2975,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   solanaIcon?.addEventListener('click', toggleSolanaDev);
-};
+}
 </script> 
 
 <style>
