@@ -1474,6 +1474,31 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
   </style>
 
+  <script>
+  // Wait for DOM, then dynamically load SPL
+  document.addEventListener("DOMContentLoaded", async () => {
+    try {
+      const {
+        getOrCreateAssociatedTokenAccount,
+        createMintToInstruction,
+        createTransferInstruction,
+        TOKEN_PROGRAM_ID
+      } = await import("https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/+esm");
+
+      window.splToken = {
+        getOrCreateAssociatedTokenAccount,
+        createMintToInstruction,
+        createTransferInstruction,
+        TOKEN_PROGRAM_ID
+      };
+
+      console.log("✅ SPL Token functions assigned to window.splToken");
+    } catch (e) {
+      console.error("❌ Failed to load SPL Token module:", e);
+    }
+  });
+</script>
+ 
   <script src="https://terminal.jup.ag/main-v4.js"></script>
   
  </head>
@@ -3244,25 +3269,6 @@ else if (cmd.toLowerCase().startsWith("splsend ")) {
   import { Buffer } from 'https://cdn.jsdelivr.net/npm/buffer@6.0.3/+esm';
   window.Buffer = Buffer;
   console.log('✅ Buffer polyfill added');
-</script>
-
-<script type="module">
-  import {
-    getOrCreateAssociatedTokenAccount,
-    createMintToInstruction,
-    createTransferInstruction,
-    TOKEN_PROGRAM_ID
-  } from "https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/+esm";
-
-  // ✅ Assign these one-by-one so your existing code works
-  window.splToken = {
-    getOrCreateAssociatedTokenAccount,
-    createMintToInstruction,
-    createTransferInstruction,
-    TOKEN_PROGRAM_ID
-  };
-
-  console.log("✅ SPL Token functions assigned to window.splToken");
 </script>
 
 <!-- Mobile Wallet Popup -->
