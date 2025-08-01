@@ -2952,10 +2952,6 @@ if (clusterSelect) {
 }
 
   else if (cmd.toLowerCase() === "spltokenairdrop") {
-  if (!window.splToken || !window.splToken.getOrCreateAssociatedTokenAccount) {
-    logOutput("❌ SPL Token tools not available yet. Try again shortly.");
-    return;
-  }
 
   if (localStorage.getItem("solanaCluster") !== "devnet") {
     logOutput("🚫 This token airdrop only works on devnet.");
@@ -3088,10 +3084,6 @@ if (clusterSelect) {
     }
 
   else if (cmd.toLowerCase() === "spltokens") {
-  if (!window.splToken?.TOKEN_PROGRAM_ID) {
-    logOutput("❌ SPL Token module not loaded yet.");
-    return;
-  }
 
   try {
     const tokens = await window.solanaConnection.getParsedTokenAccountsByOwner(
@@ -3117,11 +3109,7 @@ if (clusterSelect) {
 }
 
 else if (cmd.toLowerCase().startsWith("splsend ")) {
-  if (!window.splToken?.createTransferInstruction || !window.splToken?.getOrCreateAssociatedTokenAccount) {
-    logOutput("❌ SPL Token module not loaded yet.");
-    return;
-  }
-
+ 
   const parts = cmd.split(" ");
   if (parts.length !== 4) {
     logOutput("❌ Usage: splsend <mint> <recipient> <amount>");
