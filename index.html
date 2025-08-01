@@ -1475,10 +1475,14 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   </style>
 
   <!-- ✅ REPLACEMENT: Load SPL Token using UMD/IIFE -->
-<script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/lib/index.iife.min.js"></script>
 <script>
-  window.splToken = splToken;
-  console.log("✅ SPL Token UMD loaded via IIFE");
+  const splScript = document.createElement('script');
+  splScript.src = "https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/lib/index.iife.min.js";
+  splScript.onload = () => {
+    window.splToken = splToken;
+    console.log("✅ SPL Token UMD loaded via IIFE");
+  };
+  document.head.appendChild(splScript);
 </script>
  
   <script src="https://terminal.jup.ag/main-v4.js"></script>
