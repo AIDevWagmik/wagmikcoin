@@ -1820,9 +1820,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
       <li style="margin: 0;"><code>send &lt;recipient&gt; &lt;amount&gt;</code> — transfer SOL</li>
       <li style="margin-bottom: 2px;"><code>spltokens</code> — list SPL token balances</li>
       <li style="margin-bottom: 2px;"><code>splsend &lt;mint&gt; &lt;recipient&gt; &lt;amount&gt;</code> — send SPL tokens</li>
-      <li class="splAirdropCommand" style="margin-bottom: 2px;">
-      <code>spltokenairdrop</code> — get 100 WAGMIK (devnet only)
-      </li>
+      <li class="splAirdropCommand" style="margin-bottom: 2px;"><code>spltokenairdrop</code> — get 100 WAGMIK (devnet only)</li>
     </ul>
   </div>
 </div>
@@ -2720,6 +2718,22 @@ function shareToX() {
 </script>
 
 <script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const splScript = document.createElement('script');
+    splScript.src = 'https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/lib/index.iife.min.js';
+    splScript.onload = () => {
+      if (typeof window.exports === 'object' && window.exports.Token) {
+        window.splToken = window.exports;
+        console.log('✅ SPL Token module loaded');
+      } else {
+        console.error('❌ SPL Token module failed to load');
+      }
+    };
+    document.head.appendChild(splScript);
+  });
+</script>
+
+<script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/wagmikcoin/service-worker.js')
@@ -2728,8 +2742,6 @@ function shareToX() {
     });
   }
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/lib/index.iife.min.js"></script>
 
 <script>
   if (window.matchMedia('(display-mode: standalone)').matches) {
@@ -2900,7 +2912,7 @@ if (clusterSelect) {
 }
 
    else if (cmd.toLowerCase() === "spltokenairdrop") {
-  if (selectedCluster !== "devnet") {
+  if (localStorage.getItem("solanaCluster") !== "devnet") {
     logOutput("🚫 This token airdrop only works on devnet.");
     return;
   }
@@ -3160,21 +3172,31 @@ if (clusterSelect) {
       return;
     }
 
-   window.solanaConnection = new solanaWeb3.Connection(
-  solanaWeb3.clusterApiUrl("devnet"),
-  "confirmed"
-);
+    if (!window.splToken) {
+      console.warn("⚠️ SPL Token module not loaded yet. SPL commands may not work.");
+    }
 
-    window.solanaReady = true; // ✅ Add this
+    // Use stored or default cluster
+    const defaultCluster = "devnet";
+    const selectedCluster = localStorage.getItem("solanaCluster") || defaultCluster;
 
-   window.SolanaTools = {
-  PublicKey: solanaWeb3.PublicKey,
-  LAMPORTS_PER_SOL: solanaWeb3.LAMPORTS_PER_SOL,
-  Transaction: solanaWeb3.Transaction,
-  SystemProgram: solanaWeb3.SystemProgram,
-  Token: splToken.Token,
-  TOKEN_PROGRAM_ID: splToken.TOKEN_PROGRAM_ID
-};
+    window.solanaConnection = new solanaWeb3.Connection(
+      getClusterUrl(selectedCluster),
+      "confirmed"
+    );
+
+    window.SolanaTools = {
+      PublicKey: solanaWeb3.PublicKey,
+      LAMPORTS_PER_SOL: solanaWeb3.LAMPORTS_PER_SOL,
+      Transaction: solanaWeb3.Transaction,
+      SystemProgram: solanaWeb3.SystemProgram,
+      ...(window.splToken && {
+        Token: splToken.Token,
+        TOKEN_PROGRAM_ID: splToken.TOKEN_PROGRAM_ID
+      })
+    };
+
+    window.solanaReady = true;
 
     console.log("✅ Solana SDK ready.");
   });
@@ -3192,6 +3214,8 @@ if (clusterSelect) {
   window.Buffer = Buffer;
   console.log('✅ Buffer polyfill added');
 </script>
+
+
 
 <!-- Mobile Wallet Popup -->
 <div id="mobileWalletPopup" class="mobile-popup">
