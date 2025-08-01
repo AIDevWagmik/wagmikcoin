@@ -2914,25 +2914,23 @@ if (clusterSelect) {
   try {
     const mint = new window.SolanaTools.PublicKey("Ggpt9vQZQFRLReaWL9xxzBycZuTSmWNPoef7cQUjq2E5");
 
-    const token = new window.SolanaTools.Token(
-      window.solanaConnection,
-      mint,
-      window.SolanaTools.TOKEN_PROGRAM_ID,
-      walletPublicKey
-    );
-
-    const tokenAccount = await token.getOrCreateAssociatedAccountInfo(walletPublicKey);
+    const tokenAccount = await window.splToken.getOrCreateAssociatedTokenAccount(
+     window.solanaConnection,
+     walletPublicKey,
+     mint,
+     walletPublicKey
+   );
 
     const tx = new window.SolanaTools.Transaction().add(
-      window.SolanaTools.Token.createMintToInstruction(
-        window.SolanaTools.TOKEN_PROGRAM_ID,
-        mint,
-        tokenAccount.address,
-        walletPublicKey,
-        [],
-        100_000000 // 100 tokens, assuming 6 decimals
-      )
-    );
+     window.splToken.createMintToInstruction(
+     mint,
+     tokenAccount.address,
+     walletPublicKey,
+     100_000000, // 100 WAGMIK, assuming 6 decimals
+     [],
+     window.splToken.TOKEN_PROGRAM_ID
+    )
+  );
 
     const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
     tx.recentBlockhash = blockhash;
@@ -3164,10 +3162,6 @@ if (clusterSelect) {
     if (!window.solanaWeb3) {
       console.error("❌ Solana SDK not loaded.");
       return;
-    }
-
-    if (!window.splToken) {
-      console.warn("⚠️ SPL Token module not loaded yet. SPL commands may not work.");
     }
 
     // Use stored or default cluster
