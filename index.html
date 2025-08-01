@@ -1474,29 +1474,11 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
   </style>
 
-  <script>
-  // Wait for DOM, then dynamically load SPL
-  document.addEventListener("DOMContentLoaded", async () => {
-    try {
-      const {
-        getOrCreateAssociatedTokenAccount,
-        createMintToInstruction,
-        createTransferInstruction,
-        TOKEN_PROGRAM_ID
-      } = await import("https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/+esm");
-
-      window.splToken = {
-        getOrCreateAssociatedTokenAccount,
-        createMintToInstruction,
-        createTransferInstruction,
-        TOKEN_PROGRAM_ID
-      };
-
-      console.log("✅ SPL Token functions assigned to window.splToken");
-    } catch (e) {
-      console.error("❌ Failed to load SPL Token module:", e);
-    }
-  });
+  <!-- ✅ REPLACEMENT: Load SPL Token using UMD/IIFE -->
+<script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/lib/index.iife.min.js"></script>
+<script>
+  window.splToken = splToken;
+  console.log("✅ SPL Token UMD loaded via IIFE");
 </script>
  
   <script src="https://terminal.jup.ag/main-v4.js"></script>
