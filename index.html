@@ -1542,21 +1542,26 @@ window.runDevnetMint = async function () {
     }
   };
 
-  const blob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
-  const form = new FormData();
-  form.append("file", blob, "metadata.json");
+const metadataBlob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
 
-  const ipfsResp = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
-    method: "POST",
-    headers: {
-      Authorization: "Bearer YOUR_PINATA_JWT_HERE"
-    },
-    body: form
-  });
+const ipfsResp = await fetch("https://api.nft.storage/upload", {
+  method: "POST",
+  headers: {
+    Authorization: "Bearer 5a3ed115.8cd08a223a0f45e98e0cce2e14d082fe",  // ⬅️ paste your API key here
+  },
+  body: metadataBlob
+});
 
-  const ipfsJson = await ipfsResp.json();
-  const metadataUri = `https://gateway.pinata.cloud/ipfs/${ipfsJson.IpfsHash}`;
-  console.log("📦 Metadata uploaded:", metadataUri);
+const ipfsJson = await ipfsResp.json();
+
+if (!ipfsJson || !ipfsJson.ok || !ipfsJson.value || !ipfsJson.value.cid) {
+  alert("Metadata upload to nft.storage failed.");
+  return;
+}
+
+const metadataUri = `https://${ipfsJson.value.cid}.ipfs.nftstorage.link/metadata.json`;
+console.log("📦 Metadata uploaded:", metadataUri);
+
 
   const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
   const mint = solanaWeb3.Keypair.generate();
