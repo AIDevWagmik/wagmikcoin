@@ -2876,7 +2876,7 @@ if (clusterSelect) {
     }
   });
 
- async function createDevnetMint() {
+ window.createDevnetMint = async function () {
   try {
     const mint = await window.splToken.Token.createMint(
       window.solanaConnection,
@@ -2893,7 +2893,7 @@ if (clusterSelect) {
     console.error("❌ Mint creation failed:", err);
     logOutput("❌ Mint creation failed. Check console.");
   }
-}
+};
 
  disconnectBtn?.addEventListener('click', async () => {
   try {
