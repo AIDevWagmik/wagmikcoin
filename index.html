@@ -1506,7 +1506,46 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.1.8/lib/index.iife.min.js"></script>
 
 <script>
-window.runDevnetMint = async function () {
+window.addEventListener("DOMContentLoaded", () => {
+  window.runDevnetMint = async function () {
+    // ✅ NFT.storage logic goes first
+    if (!window.nftStorage || !window.nftStorage.NFTStorage) {
+      alert("nftStorage not loaded");
+      return;
+    }
+
+    const client = new window.nftStorage.NFTStorage({
+      token: "5a3ed115.8cd08a223a0f45e98e0cce2e14d082fe"
+    });
+
+    const metadata = {
+  name: "WAGMIK Meme",
+  symbol: "WAGMIK",
+  description: "Forged in hopium. Minted on Solana.",
+  image: `data:image/png;base64,${base64}`,  // ✅ <— your canvas image
+  attributes: [
+    { trait_type: "Origin", value: "WAGMIK Generator" },
+    { trait_type: "Chain", value: "Solana" }
+  ],
+  properties: {
+    files: [{ uri: `data:image/png;base64,${base64}`, type: "image/png" }],
+    category: "image",
+    creators: [
+      {
+        address: from.toBase58(),
+        share: 100
+      }
+    ]
+  }
+};
+
+    const blob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
+    const file = new File([blob], "metadata.json", { type: "application/json" });
+    const cid = await client.storeBlob(file);
+    const metadataUri = `https://${cid}.ipfs.nftstorage.link/metadata.json`;
+
+    console.log("📦 Metadata URI:", metadataUri);
+   
   const TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
   const ASSOCIATED_TOKEN_PROGRAM_ID = splToken.ASSOCIATED_TOKEN_PROGRAM_ID;
   const METADATA_PROGRAM_ID = new solanaWeb3.PublicKey(
@@ -1547,17 +1586,6 @@ window.runDevnetMint = async function () {
       creators: [{ address: from.toBase58(), share: 100 }]
     }
   };
-
-const client = new nftStorage.NFTStorage({ token: "5a3ed115.8cd08a223a0f45e98e0cce2e14d082fe" });
-
-const metadataBlob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
-const file = new File([metadataBlob], "metadata.json", { type: "application/json" });
-
-const cid = await client.storeBlob(file);
-const metadataUri = `https://${cid}.ipfs.nftstorage.link/metadata.json`;
-
-console.log("📦 Metadata uploaded:", metadataUri);
-
 
   const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
   const mint = solanaWeb3.Keypair.generate();
