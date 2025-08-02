@@ -2967,6 +2967,15 @@ if (clusterSelect) {
       walletPublicKey
     );
 
+   console.log("✅ [SPLToken] Mint:", mint.toBase58());
+console.log("✅ [SPLToken] token.publicKey:", token.publicKey.toBase58());
+console.log("✅ [SPLToken] TOKEN_PROGRAM_ID:", window.splToken.TOKEN_PROGRAM_ID.toBase58());
+console.log("✅ [SPLToken] ASSOCIATED_TOKEN_PROGRAM_ID:", window.splToken.ASSOCIATED_TOKEN_PROGRAM_ID.toBase58());
+
+if (!token.publicKey.equals(mint)) {
+  console.warn("⚠️ Mismatch: token.publicKey !== mint");
+}
+
     // ✅ Check for user's ATA and create if missing
     const ata = await window.splToken.Token.getAssociatedTokenAddress(
      window.splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -3156,6 +3165,15 @@ else if (cmd.toLowerCase().startsWith("splsend ")) {
       window.splToken.TOKEN_PROGRAM_ID,
       walletPublicKey
     );
+
+   console.log("✅ [SPLToken] Mint:", mint.toBase58());
+console.log("✅ [SPLToken] token.publicKey:", token.publicKey.toBase58());
+console.log("✅ [SPLToken] TOKEN_PROGRAM_ID:", window.splToken.TOKEN_PROGRAM_ID.toBase58());
+console.log("✅ [SPLToken] ASSOCIATED_TOKEN_PROGRAM_ID:", window.splToken.ASSOCIATED_TOKEN_PROGRAM_ID.toBase58());
+
+if (!token.publicKey.equals(mint)) {
+  console.warn("⚠️ Mismatch: token.publicKey !== mint");
+}
 
     // ✅ Ensure sender has a token account
     const senderTokenAccount = await window.solanaConnection.getTokenAccountsByOwner(
