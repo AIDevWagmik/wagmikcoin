@@ -2878,7 +2878,7 @@ if (clusterSelect) {
 
  window.createDevnetMint = async function () {
   try {
-    const mintKeypair = window.SolanaTools.Keypair.generate();
+    const mintKeypair = new solanaWeb3.Keypair();
 
     const lamports = await window.solanaConnection.getMinimumBalanceForRentExemption(
       window.splToken.MINT_SIZE
