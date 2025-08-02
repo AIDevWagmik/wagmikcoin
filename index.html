@@ -1557,35 +1557,9 @@ const ata = getAssociatedTokenAddress(
   ASSOCIATED_TOKEN_PROGRAM_ID
 );
 
-const tx = new solanaWeb3.Transaction();
+const unsignedTx = new solanaWeb3.Transaction();
 
-const initMintIx = splToken.Token.createInitMintInstruction(
-  TOKEN_PROGRAM_ID,
-  mint.publicKey,
-  0,
-  from,
-  from
-);
-
-const createATAIx = splToken.Token.createAssociatedTokenAccountInstruction(
-  ASSOCIATED_TOKEN_PROGRAM_ID,
-  TOKEN_PROGRAM_ID,
-  mint.publicKey,
-  ata,
-  from,
-  from
-);
-
-const mintToIx = splToken.Token.createMintToInstruction(
-  TOKEN_PROGRAM_ID,
-  mint.publicKey,
-  ata,
-  from,
-  [],
-  1
-);
-
-tx.add(
+unsignedTx.add(
   solanaWeb3.SystemProgram.createAccount({
     fromPubkey: from,
     newAccountPubkey: mint.publicKey,
@@ -1593,26 +1567,49 @@ tx.add(
     lamports,
     programId: TOKEN_PROGRAM_ID,
   }),
-  initMintIx,
-  createATAIx,
-  mintToIx
+  splToken.Token.createInitMintInstruction(
+    TOKEN_PROGRAM_ID,
+    mint.publicKey,
+    0,
+    from,
+    from
+  ),
+  splToken.Token.createAssociatedTokenAccountInstruction(
+    ASSOCIATED_TOKEN_PROGRAM_ID,
+    TOKEN_PROGRAM_ID,
+    mint.publicKey,
+    ata,
+    from,
+    from
+  ),
+  splToken.Token.createMintToInstruction(
+    TOKEN_PROGRAM_ID,
+    mint.publicKey,
+    ata,
+    from,
+    [],
+    1
+  )
 );
 
-// ✅ MUST happen BEFORE any signing
-const latest = await connection.getLatestBlockhash("confirmed");
-tx.recentBlockhash = latest.blockhash;
-tx.feePayer = from;
+// 🔁 Get latest blockhash before Phantom
+const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
+unsignedTx.recentBlockhash = blockhash;
+unsignedTx.feePayer = from;
 
-// ✅ NOW sign
-tx.partialSign(mint);                           // ← local keypair first
-const signed = await phantom.signTransaction(tx); // ← Phantom second
+// 🔐 Let Phantom sign first
+const phantomSigned = await phantom.signTransaction(unsignedTx);
 
-const txid = await connection.sendRawTransaction(signed.serialize(), {
-  skipPreflight: false
+// ✍️ Now let your mint keypair sign the already-signed tx
+phantomSigned.partialSign(mint);
+
+// 🚀 Send it
+const txid = await connection.sendRawTransaction(phantomSigned.serialize(), {
+  skipPreflight: false,
 });
 
 await connection.confirmTransaction(
-  { signature: txid, ...latest },
+  { signature: txid, blockhash, lastValidBlockHeight },
   "confirmed"
 );
 
