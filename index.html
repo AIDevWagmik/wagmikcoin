@@ -3245,9 +3245,10 @@ if (!token.publicKey.equals(mint)) {
       setupTx.feePayer = walletPublicKey;
 
       const signed = await window.solana.signTransaction(setupTx);
-      const sig = await window.solanaConnection.sendRawTransaction(signedTx.serialize(), {
+      const sig = await window.solanaConnection.sendRawTransaction(signed.serialize(), {
       skipPreflight: true
       });
+
       await window.solanaConnection.confirmTransaction(sig, "confirmed");
 
       logOutput("✅ Associated token account created.");
