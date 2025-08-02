@@ -2878,17 +2878,44 @@ if (clusterSelect) {
 
  window.createDevnetMint = async function () {
   try {
-    const mint = await window.splToken.Token.createMint(
-      window.solanaConnection,
-      walletPublicKey,
-      walletPublicKey,
-      null,
-      6,
-      window.splToken.TOKEN_PROGRAM_ID
+    const mintKeypair = window.SolanaTools.Keypair.generate();
+
+    const lamports = await window.solanaConnection.getMinimumBalanceForRentExemption(
+      window.splToken.MINT_SIZE
     );
 
-    console.log("✅ Created new mint:", mint.toBase58());
-    logOutput(`✅ Created new mint: ${mint.toBase58()}`);
+    const mintTx = new window.SolanaTools.Transaction().add(
+      window.SolanaTools.SystemProgram.createAccount({
+        fromPubkey: walletPublicKey,
+        newAccountPubkey: mintKeypair.publicKey,
+        space: window.splToken.MINT_SIZE,
+        lamports,
+        programId: window.splToken.TOKEN_PROGRAM_ID,
+      }),
+      window.splToken.Token.createInitMintInstruction(
+        window.splToken.TOKEN_PROGRAM_ID,
+        mintKeypair.publicKey,
+        6, // decimals
+        walletPublicKey,
+        null // freeze authority
+      )
+    );
+
+    const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
+    mintTx.recentBlockhash = blockhash;
+    mintTx.feePayer = walletPublicKey;
+
+    // 🧠 Phantom can’t sign new Keypair accounts, so simulate a partial signer
+    mintTx.partialSign(mintKeypair);
+
+    const signed = await window.solana.signTransaction(mintTx);
+    const sig = await window.solanaConnection.sendRawTransaction(signed.serialize());
+
+    await window.solanaConnection.confirmTransaction(sig, "confirmed");
+
+    logOutput(`✅ Mint created: ${mintKeypair.publicKey.toBase58()}`);
+    logOutput(`🔗 https://explorer.solana.com/address/${mintKeypair.publicKey.toBase58()}?cluster=devnet`);
+
   } catch (err) {
     console.error("❌ Mint creation failed:", err);
     logOutput("❌ Mint creation failed. Check console.");
