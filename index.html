@@ -3424,10 +3424,17 @@ function handleDownload() {
 }
 
 function handleMint() {
+  if (!window.walletPublicKey) {
+    logOutput("⚠️ Please connect your wallet first.");
+    modal?.classList.add("active");
+    return;
+  }
+
   dismissPopup();
   const imgData = canvas.toDataURL("image/png");
   input.value = `mintnft ${imgData}`;
-  runBtn.click(); // run the terminal command
+  modal?.classList.add("active"); // open terminal
+  runBtn.click();
 }
 
 // ✅ NOW attach listeners AFTER functions are defined:
