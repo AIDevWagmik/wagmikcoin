@@ -3212,11 +3212,11 @@ else if (cmd.toLowerCase().startsWith("mintnft ")) {
     // Prepare NFT metadata
     const nftName = `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`;
     const connection = window.solanaConnection;
-    const metaplex = new metaplex.Metaplex(connection);
+    const mx = new metaplexFoundation.Metaplex(connection);;
 
-    metaplex.use(metaplex.plugins.keypairIdentity(solana._wallet || solana));
+    mx.use(metaplexFoundation.keypairIdentity(solana));
 
-    const result = await metaplex.nfts().create({
+    const result = await mx.nfts().create({
       uri: imageUrl,
       name: nftName,
       sellerFeeBasisPoints: 0,
