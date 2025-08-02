@@ -1500,52 +1500,30 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.1.8/lib/index.iife.min.js"></script>
 
 <script>
-function getAssociatedTokenAddress(mint, owner, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID) {
-  return solanaWeb3.PublicKey.findProgramAddressSync(
-    [owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
-    ASSOCIATED_TOKEN_PROGRAM_ID
-  )[0];
-}
-
 window.runDevnetMint = async function () {
   const TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
   const ASSOCIATED_TOKEN_PROGRAM_ID = splToken.ASSOCIATED_TOKEN_PROGRAM_ID;
+  const METADATA_PROGRAM_ID = new solanaWeb3.PublicKey(
+    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+  );
 
   const canvas = document.getElementById("memeCanvas");
-  if (!canvas) {
-    alert("Meme canvas not found.");
-    return;
-  }
+  if (!canvas) return alert("Meme canvas not found.");
 
   const base64 = canvas.toDataURL("image/png").split(",")[1];
-
   const uploadResp = await fetch("https://api.imgbb.com/1/upload?key=09ef4f5704df854b20c77b80b862b367", {
     method: "POST",
     body: new URLSearchParams({ image: base64 })
   });
-
   const uploadJson = await uploadResp.json();
   const imageUrl = uploadJson.data?.url;
+  if (!imageUrl) return alert("Image upload failed.");
 
-  if (!imageUrl) {
-    alert("Image upload failed.");
-    return;
-  }
-
-  const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
   const phantom = window.solana;
-
-  if (!phantom || !phantom.isPhantom) {
-    alert("Phantom not found.");
-    return;
-  }
-
+  if (!phantom || !phantom.isPhantom) return alert("Phantom not found.");
   await phantom.connect();
   const from = phantom.publicKey;
-  const mint = solanaWeb3.Keypair.generate();
-  const lamports = await connection.getMinimumBalanceForRentExemption(82);
 
-  // 📦 Create metadata JSON
   const metadata = {
     name: `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`,
     symbol: "WAGMIK",
@@ -1556,10 +1534,7 @@ window.runDevnetMint = async function () {
       { trait_type: "Origin", value: "WAGMIK Generator" },
       { trait_type: "Chain", value: "Solana" }
     ],
-    collection: {
-      name: "WAGMIK Memes",
-      family: "WAGMIK"
-    },
+    collection: { name: "WAGMIK Memes", family: "WAGMIK" },
     properties: {
       files: [{ uri: imageUrl, type: "image/png" }],
       category: "image",
@@ -1567,7 +1542,6 @@ window.runDevnetMint = async function () {
     }
   };
 
-  // 📤 Upload metadata to IPFS via Pinata
   const blob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
   const form = new FormData();
   form.append("file", blob, "metadata.json");
@@ -1575,7 +1549,7 @@ window.runDevnetMint = async function () {
   const ipfsResp = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
     method: "POST",
     headers: {
-      Authorization:  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJjYWZkMTliZC04YTc3LTRiM2MtOGE1Zi00YWM4N2I0YjgxMmMiLCJlbWFpbCI6ImJ1c2NoZXJ0b205MkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJGUkExIn0seyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJOWUMxIn1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiOWYyMjQ0MTRjMjhhMDE5NmYyYzEiLCJzY29wZWRLZXlTZWNyZXQiOiIyNDU4MThhMzkyYzcyNTlhNzFiYjI4ODdlMDc3OWQyMThiYzMxYzU3Yjg5NDZkNGU4NWIzYTk4NTc1YWZjYTk4IiwiZXhwIjoxNzg1NzAzOTg4fQ.E3ykzJRkLrquxg1oknPX6b2CBereTL7RxuFsQq-V3_M"
+      Authorization: "Bearer YOUR_PINATA_JWT_HERE"
     },
     body: form
   });
@@ -1584,17 +1558,20 @@ window.runDevnetMint = async function () {
   const metadataUri = `https://gateway.pinata.cloud/ipfs/${ipfsJson.IpfsHash}`;
   console.log("📦 Metadata uploaded:", metadataUri);
 
-  const ata = getAssociatedTokenAddress(
-    mint.publicKey,
-    from,
+  const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
+  const mint = solanaWeb3.Keypair.generate();
+  const lamports = await connection.getMinimumBalanceForRentExemption(82);
+
+  const ata = await splToken.Token.getAssociatedTokenAddress(
+    ASSOCIATED_TOKEN_PROGRAM_ID,
     TOKEN_PROGRAM_ID,
-    ASSOCIATED_TOKEN_PROGRAM_ID
+    mint.publicKey,
+    from
   );
 
-  const unsignedTx = new solanaWeb3.Transaction();
+  const tx = new solanaWeb3.Transaction();
 
-  // 🔧 Mint instructions
-  unsignedTx.add(
+  tx.add(
     solanaWeb3.SystemProgram.createAccount({
       fromPubkey: from,
       newAccountPubkey: mint.publicKey,
@@ -1627,11 +1604,6 @@ window.runDevnetMint = async function () {
     )
   );
 
-  // 🧾 Create metadata account for NFT
-  const METADATA_PROGRAM_ID = new solanaWeb3.PublicKey(
-    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
-  );
-
   const [metadataPDA] = await solanaWeb3.PublicKey.findProgramAddress(
     [
       Buffer.from("metadata"),
@@ -1652,22 +1624,22 @@ window.runDevnetMint = async function () {
   ];
 
   const encodedData = (() => {
-    const name = "WAGMIK Meme";
-    const symbol = "WAGMIK";
-    const uriFixed = metadataUri.padEnd(200, "\0");
-    const nameFixed = name.padEnd(32, "\0");
-    const symbolFixed = symbol.padEnd(10, "\0");
+    const name = metadata.name.padEnd(32, "\0");
+    const symbol = metadata.symbol.padEnd(10, "\0");
+    const uri = metadataUri.padEnd(200, "\0");
+    const sellerFee = Buffer.alloc(2);
+    sellerFee.writeUInt16LE(0, 0);
 
     return Buffer.concat([
-      Buffer.from([33]), // createMetadataAccountV3 instruction index
-      Buffer.from(nameFixed),
-      Buffer.from(symbolFixed),
-      Buffer.from(uriFixed),
-      Buffer.from([0, 0]), // sellerFeeBasisPoints = 0
-      Buffer.from([0]),    // no creators
-      Buffer.from([0]),    // isMutable = false
-      Buffer.from([0]),    // no collection
-      Buffer.from([0])     // no uses
+      Buffer.from([33]),
+      Buffer.from(name),
+      Buffer.from(symbol),
+      Buffer.from(uri),
+      sellerFee,
+      Buffer.from([0]),
+      Buffer.from([0]),
+      Buffer.from([0]),
+      Buffer.from([0])
     ]);
   })();
 
@@ -1677,17 +1649,16 @@ window.runDevnetMint = async function () {
     data: encodedData
   });
 
-  unsignedTx.add(metadataIx);
+  tx.add(metadataIx);
 
-  // 🧾 Finalize and send transaction
   const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
-  unsignedTx.recentBlockhash = blockhash;
-  unsignedTx.feePayer = from;
+  tx.recentBlockhash = blockhash;
+  tx.feePayer = from;
 
-  const phantomSigned = await phantom.signTransaction(unsignedTx);
-  phantomSigned.partialSign(mint);
+  tx.partialSign(mint);
+  const signed = await phantom.signTransaction(tx);
 
-  const txid = await connection.sendRawTransaction(phantomSigned.serialize(), {
+  const txid = await connection.sendRawTransaction(signed.serialize(), {
     skipPreflight: false
   });
 
