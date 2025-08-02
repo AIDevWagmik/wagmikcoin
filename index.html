@@ -1545,16 +1545,47 @@ window.runDevnetMint = async function () {
     return;
   }
 
-  await phantom.connect();
-  const from = phantom.publicKey;
-  const mint = solanaWeb3.Keypair.generate();
-  const lamports = await connection.getMinimumBalanceForRentExemption(82);
+ await phantom.connect();
+const from = phantom.publicKey;
+const mint = solanaWeb3.Keypair.generate();
+const lamports = await connection.getMinimumBalanceForRentExemption(82);
 
-  const ata = getAssociatedTokenAddress(mint.publicKey, from, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID);
+const ata = getAssociatedTokenAddress(
+  mint.publicKey,
+  from,
+  TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID
+);
 
-  const tx = new solanaWeb3.Transaction();
+const tx = new solanaWeb3.Transaction();
 
- tx.add(
+const initMintIx = splToken.Token.createInitMintInstruction(
+  TOKEN_PROGRAM_ID,
+  mint.publicKey,
+  0,
+  from,
+  from
+);
+
+const createATAIx = splToken.Token.createAssociatedTokenAccountInstruction(
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  TOKEN_PROGRAM_ID,
+  mint.publicKey,
+  ata,
+  from,
+  from
+);
+
+const mintToIx = splToken.Token.createMintToInstruction(
+  TOKEN_PROGRAM_ID,
+  mint.publicKey,
+  ata,
+  from,
+  [],
+  1
+);
+
+tx.add(
   solanaWeb3.SystemProgram.createAccount({
     fromPubkey: from,
     newAccountPubkey: mint.publicKey,
@@ -1562,29 +1593,9 @@ window.runDevnetMint = async function () {
     lamports,
     programId: TOKEN_PROGRAM_ID,
   }),
-  splToken.createInitializeMintInstruction(
-    mint.publicKey,
-    0,
-    from,
-    from,
-    TOKEN_PROGRAM_ID
-  ),
-  splToken.createAssociatedTokenAccountInstruction(
-    from,
-    ata,
-    from,
-    mint.publicKey,
-    TOKEN_PROGRAM_ID,
-    ASSOCIATED_TOKEN_PROGRAM_ID
-  ),
-  splToken.createMintToInstruction(
-    mint.publicKey,
-    ata,
-    from,
-    1,
-    [],
-    TOKEN_PROGRAM_ID
-  )
+  initMintIx,
+  createATAIx,
+  mintToIx
 );
 
   const signed = await phantom.signTransaction(tx);
