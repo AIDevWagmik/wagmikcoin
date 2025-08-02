@@ -1758,7 +1758,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
       <!-- 🧠 Stylish Buttons -->
       <div class="button-row">
         <button onclick="drawMeme()" class="console-btn">Preview</button>
-        <button onclick="showMemePopup()" class="console-btn">Download or Mint</button>
+        <button id="downloadOrMintBtn">Download or Mint</button>
         <button onclick="resetMeme()" class="console-btn full-width">Reset</button>
         <button id="shareBtn">Share on X</button>
       </div>
@@ -3359,6 +3359,8 @@ else if (cmd.toLowerCase() === "dappcheck") {
   }
 
   solanaIcon?.addEventListener('click', toggleSolanaDev);
+
+ document.getElementById("downloadOrMintBtn")?.addEventListener("click", showMemePopup);
 
  // === NFT Mint/Download Popup Logic ===
 function showMemePopup() {
