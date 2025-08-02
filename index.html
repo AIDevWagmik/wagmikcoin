@@ -3366,12 +3366,7 @@ else if (cmd.toLowerCase() === "dappcheck") {
 
   solanaIcon?.addEventListener('click', toggleSolanaDev);
 
- document.getElementById("downloadOrMintBtn")?.addEventListener("click", showMemePopup);
- document.getElementById("popupDownloadBtn")?.addEventListener("click", handleDownload);
- document.getElementById("popupMintBtn")?.addEventListener("click", handleMint);
- document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup);
-
- // === NFT Mint/Download Popup Logic ===
+// === NFT Mint/Download Popup Logic ===
 function showMemePopup() {
   document.getElementById('downloadMintPopup')?.classList.remove("hidden");
 }
@@ -3390,7 +3385,13 @@ function handleMint() {
   const imgData = canvas.toDataURL("image/png");
   input.value = `mintnft ${imgData}`;
   runBtn.click(); // run the terminal command
- }
+}
+
+// ✅ NOW attach listeners AFTER functions are defined:
+document.getElementById("downloadOrMintBtn")?.addEventListener("click", showMemePopup);
+document.getElementById("popupDownloadBtn")?.addEventListener("click", handleDownload);
+document.getElementById("popupMintBtn")?.addEventListener("click", handleMint);
+document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup);
  
 });
  
