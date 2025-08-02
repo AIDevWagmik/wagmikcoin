@@ -2889,18 +2889,13 @@ window.createDevnetMint = async function () {
       programId: window.splToken.TOKEN_PROGRAM_ID,
     });
 
-    const initMintIx = new window.splToken.Token(
-      window.solanaConnection,
-      mintKeypair.publicKey,
-      window.splToken.TOKEN_PROGRAM_ID,
-      walletPublicKey
-    ).createInitMintInstruction(
-      window.splToken.TOKEN_PROGRAM_ID,
-      mintKeypair.publicKey,
-      6, // decimals
-      walletPublicKey,
-      null
-    );
+   const initMintIx = window.splToken.Token.createInitMintInstruction(
+  window.splToken.TOKEN_PROGRAM_ID,
+  mintKeypair.publicKey,
+  6, // decimals
+  walletPublicKey,
+  null
+);
 
     const tx = new window.SolanaTools.Transaction().add(
       createAccountIx,
