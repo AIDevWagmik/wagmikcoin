@@ -3139,13 +3139,21 @@ else if (cmd.toLowerCase().startsWith("splsend ")) {
     const senderAccountPubkey = senderTokenAccount.value[0].pubkey;
 
     const token = new window.splToken.Token(
-      window.solanaConnection,
-      mint,
-      window.splToken.TOKEN_PROGRAM_ID,
-      walletPublicKey
-    );
+     window.solanaConnection,
+     mint,
+     window.splToken.TOKEN_PROGRAM_ID,
+     walletPublicKey
+   );
 
-    const recipientTokenAccount = await token.getOrCreateAssociatedAccountInfo(recipient);
+  // ✅ Safe fetch or creation of recipient token account
+   let recipientTokenAccount;
+     try {
+     recipientTokenAccount = await token.getOrCreateAssociatedAccountInfo(recipient);
+ } catch (err) {
+     logOutput("❌ Could not fetch or create recipient’s token account.");
+     console.error(err);
+   return;
+ }
 
     const mintInfo = await token.getMintInfo();
     const decimals = mintInfo.decimals;
