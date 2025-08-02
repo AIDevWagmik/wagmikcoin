@@ -2968,7 +2968,15 @@ if (clusterSelect) {
       walletPublicKey
     );
 
-    const tokenAccount = await token.getOrCreateAssociatedAccountInfo(walletPublicKey);
+    // ✅ Safe get/create with proper catch
+    let tokenAccount;
+    try {
+      tokenAccount = await token.getOrCreateAssociatedAccountInfo(walletPublicKey);
+    } catch (err) {
+      logOutput("❌ Could not fetch or create associated token account.");
+      console.error(err);
+      return;
+    }
 
     const tx = new window.SolanaTools.Transaction().add(
       token.createMintToInstruction(
@@ -2988,7 +2996,8 @@ if (clusterSelect) {
     const sig = await window.solanaConnection.sendRawTransaction(signed.serialize());
 
     logOutput(`🍬 Airdropped 100 WAGMIK tokens.`);
-    logOutput(`🔗 https://explorer.solana.com/tx/${sig}?cluster=devnet`);
+    const explorer = `https://explorer.solana.com/tx/${sig}?cluster=devnet`;
+    logOutput(`🔗 View: ${explorer}`);
 
     await window.solanaConnection.confirmTransaction(sig, "confirmed");
     logOutput("✅ Token airdrop confirmed.");
