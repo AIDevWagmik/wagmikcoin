@@ -3185,15 +3185,13 @@ else if (cmd.toLowerCase().startsWith("send ")) {
 
 else if (cmd.toLowerCase().startsWith("mintnft ")) {
   const base64Data = cmd.slice(8).trim();
-
   if (!base64Data.startsWith("data:image/")) {
     logOutput("❌ Invalid image data.");
     return;
   }
 
   try {
-    logOutput("📤 Uploading image...");
-    
+    logOutput("📤 Uploading image to imgbb...");
     const res = await fetch("https://api.imgbb.com/1/upload?key=09ef4f5704df854b20c77b80b862b367", {
       method: "POST",
       body: new URLSearchParams({
@@ -3209,22 +3207,24 @@ else if (cmd.toLowerCase().startsWith("mintnft ")) {
       return;
     }
 
-    logOutput("📸 Image uploaded.");
+    logOutput("📸 Image uploaded. Minting NFT on devnet...");
 
-    const name = `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`;
-    const metadata = {
-      name,
-      symbol: "WAGMIK",
+    // Prepare NFT metadata
+    const nftName = `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`;
+    const connection = window.solanaConnection;
+    const metaplex = new metaplex.Metaplex(connection);
+
+    metaplex.use(metaplex.plugins.keypairIdentity(solana._wallet || solana));
+
+    const result = await metaplex.nfts().create({
       uri: imageUrl,
+      name: nftName,
       sellerFeeBasisPoints: 0,
-      creators: [{ address: walletPublicKey.toBase58(), verified: true, share: 100 }]
-    };
+      maxSupply: 1,
+    }).run();
 
-    logOutput("🪙 Minting NFT...");
-
-    // You can replace this with actual mint logic via Metaplex or Helius if desired.
-    logOutput(`🧠 Simulated NFT minted:\n- Name: ${name}\n- Image: ${imageUrl}`);
-    logOutput(`📎 Not real yet — this is only a placeholder.`);
+    logOutput(`✅ NFT minted!`);
+    logOutput(`🔗 Explorer: https://explorer.solana.com/address/${result.mintAddress.toBase58()}?cluster=devnet`);
 
   } catch (err) {
     logOutput("❌ NFT minting failed.");
@@ -3497,6 +3497,8 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
     console.log("✅ Solana SDK ready.");
   });
 </script>
+
+<script src="https://unpkg.com/@metaplex-foundation/js@1.29.1/dist/index.iife.min.js"></script>
 
 <script type="module">
   import bs58Module from 'https://cdn.jsdelivr.net/npm/bs58@5.0.0/+esm';
