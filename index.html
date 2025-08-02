@@ -1513,8 +1513,8 @@ function getAssociatedTokenAddress(mint, owner, TOKEN_PROGRAM_ID, ASSOCIATED_TOK
 }
 
 window.runDevnetMint = async function () {
-  const TOKEN_PROGRAM_ID = new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
-  const ASSOCIATED_TOKEN_PROGRAM_ID = new solanaWeb3.PublicKey("ATokenGPvbdGVxr1cMNZ3RuLHDvVHZF5uV8pDqA5jxg");
+  const TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
+  const ASSOCIATED_TOKEN_PROGRAM_ID = splToken.ASSOCIATED_TOKEN_PROGRAM_ID;
 
   const canvas = document.getElementById("memeCanvas");
   if (!canvas) {
