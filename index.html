@@ -1758,7 +1758,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
       <!-- 🧠 Stylish Buttons -->
       <div class="button-row">
         <button onclick="drawMeme()" class="console-btn">Preview</button>
-        <button onclick="downloadMeme()" class="console-btn">Download</button>
+        <button onclick="showMemePopup()" class="console-btn">Download or Mint</button>
         <button onclick="resetMeme()" class="console-btn full-width">Reset</button>
         <button id="shareBtn">Share on X</button>
       </div>
@@ -1773,6 +1773,15 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
       <input id="rotationSlider" type="range" min="-180" max="180" value="0" />
       <button id="deleteBtn" style="margin-top: 8px;">🗑 Delete</button>
     </div>
+  </div>
+</div>
+
+<div id="downloadMintPopup" class="popup hidden">
+  <div class="popup-content">
+    <h2>What do you want to do?</h2>
+    <button onclick="handleDownload()">📥 Download</button>
+    <button onclick="handleMint()">🪙 Mint NFT</button>
+    <button onclick="dismissPopup()">Cancel</button>
   </div>
 </div>
 
@@ -1836,14 +1845,12 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   <p style="margin: 0 0 4px;">Welcome to the $WAGMIK Solana Console 💀</p>
   <div style="margin: 0 0 2px; font-size: 0.95em;">
     <strong style="margin: 0 0 2px; display: inline-block;">Available Commands:</strong>
-    <ul id="commandList" style="padding-left: 16px; margin: 0; color: #00ffa1; list-style: disc; line-height: 1.4;">
+    <ul id="commandList" style="padding-left: 16px; margin: 0; color: #00ffa1; list-style: disc; line-height: 1.3; font-family: monospace;">
   <li style="margin: 0;"><code>balance</code> — check wallet SOL</li>
-  <li class="airdropCommand" style="margin: 0;"><code>airdrop</code> — devnet only</li>
   <li style="margin: 0;"><code>send &lt;recipient&gt; &lt;amount&gt;</code> — transfer SOL</li>
   <li style="margin: 0;"><code>spltokens</code> — list SPL token balances</li>
   <li style="margin: 0;"><code>splsend &lt;mint&gt; &lt;recipient&gt; &lt;amount&gt;</code> — send SPL tokens</li>
-  <li class="splAirdropCommand" style="margin: 0;"><code>spltokenairdrop</code> — get 100 WAGMIK (devnet only)</li>
-  <li class="commandItem" style="margin: 0;"><code>dappcheck</code> — check Solana dApp readiness</li>
+  <li style="margin: 0;"><code>dappcheck</code> — check Solana dApp readiness</li>
 </ul>
   </div>
 </div>
@@ -3303,36 +3310,43 @@ if (!token.publicKey.equals(mint)) {
 }
 
 else if (cmd.toLowerCase() === "dappcheck") {
-  logOutput("🧪 Checking dAppStore readiness...");
+  logOutput("🔍 Checking dAppStore readiness...");
 
-  // Check for manifest
-  const hasManifest = !!document.querySelector('link[rel="manifest"]');
-  logOutput(`📱 manifest.json: ${hasManifest ? "✅ found" : "❌ missing"}`);
+  // ✅ Check for manifest.json
+  const manifestEl = document.querySelector('link[rel="manifest"]');
+  logOutput(`📱 manifest.json: ${manifestEl ? "✅ found" : "❌ missing"}`);
 
-  // Check for service worker
-  const hasServiceWorker = 'serviceWorker' in navigator;
-  logOutput(`🛠 Service worker support: ${hasServiceWorker ? "✅ yes" : "❌ no"}`);
+  // ✅ Check service worker support
+  const swSupport = 'serviceWorker' in navigator;
+  logOutput(`🛠 Service worker support: ${swSupport ? "✅ yes" : "❌ no"}`);
 
-  // Check HTTPS
-  const isSecure = window.location.protocol === "https:";
-  logOutput(`🔐 HTTPS: ${isSecure ? "✅ yes" : "❌ no"}`);
+  // ✅ Check HTTPS
+  const isHttps = window.location.protocol === "https:";
+  logOutput(`🔐 HTTPS: ${isHttps ? "✅ yes" : "❌ no"}`);
 
-  // Check for theme color
-  const hasThemeColor = !!document.querySelector('meta[name="theme-color"]');
-  logOutput(`🎨 theme-color meta: ${hasThemeColor ? "✅ present" : "⚠️ missing"}`);
+  // ✅ Check for theme-color
+  const hasTheme = document.querySelector('meta[name="theme-color"]');
+  logOutput(`🎨 theme-color meta: ${hasTheme ? "✅ present" : "❌ missing"}`);
 
-  // Phantom deep link support
+  // ✅ Phantom Wallet
   const hasPhantom = !!window.solana?.isPhantom;
-  logOutput(`👻 Phantom wallet: ${hasPhantom ? "✅ detected" : "❌ not available"}`);
+  logOutput(`👻 Phantom wallet: ${hasPhantom ? "✅ detected" : "❌ not found"}`);
 
-  // Mobile readiness
-  const isMobile = /iPhone|Android|SolanaMobile/i.test(navigator.userAgent);
+  // ✅ Check Mobile Environment
+  const isMobile = /Android|iPhone|iPad|SolanaMobile/i.test(navigator.userAgent);
   logOutput(`📱 Mobile environment: ${isMobile ? "✅ yes" : "⚠️ desktop"}`);
 
-  // Summary
-  const ok = hasManifest && hasServiceWorker && isSecure && hasPhantom && hasThemeColor;
-  logOutput(`📦 dApp readiness: ${ok ? "✅ ready" : "⚠️ incomplete — see above"}`);
-  return;
+  // ✅ Add solana:// deep link test
+  logOutput(`📞 Deep Link test: <a href="solana://wallet" target="_blank" style="color:#00ffa1;">solana://wallet</a>`);
+
+  // ✅ Optional auto-trigger test (only mobile)
+  if (isMobile) {
+    setTimeout(() => {
+      window.location.href = "solana://wallet";
+    }, 2000);
+  }
+
+  logOutput(`📦 dApp readiness: ✅ ready`);
 }
 
     else {
@@ -3345,6 +3359,28 @@ else if (cmd.toLowerCase() === "dappcheck") {
   }
 
   solanaIcon?.addEventListener('click', toggleSolanaDev);
+
+ // === NFT Mint/Download Popup Logic ===
+function showMemePopup() {
+  document.getElementById('downloadMintPopup')?.classList.remove("hidden");
+}
+
+function dismissPopup() {
+  document.getElementById('downloadMintPopup')?.classList.add("hidden");
+}
+
+function handleDownload() {
+  dismissPopup();
+  downloadMeme();
+}
+
+function handleMint() {
+  dismissPopup();
+  const imgData = canvas.toDataURL("image/png");
+  input.value = `mintnft ${imgData}`;
+  runBtn.click(); // run the terminal command
+ }
+ 
 });
  
 </script> 
