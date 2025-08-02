@@ -1518,27 +1518,6 @@ window.addEventListener("DOMContentLoaded", () => {
       token: "5a3ed115.8cd08a223a0f45e98e0cce2e14d082fe"
     });
 
-    const metadata = {
-  name: "WAGMIK Meme",
-  symbol: "WAGMIK",
-  description: "Forged in hopium. Minted on Solana.",
-  image: `data:image/png;base64,${base64}`,  // ✅ <— your canvas image
-  attributes: [
-    { trait_type: "Origin", value: "WAGMIK Generator" },
-    { trait_type: "Chain", value: "Solana" }
-  ],
-  properties: {
-    files: [{ uri: `data:image/png;base64,${base64}`, type: "image/png" }],
-    category: "image",
-    creators: [
-      {
-        address: from.toBase58(),
-        share: 100
-      }
-    ]
-  }
-};
-
     const blob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
     const file = new File([blob], "metadata.json", { type: "application/json" });
     const cid = await client.storeBlob(file);
@@ -1556,12 +1535,7 @@ window.addEventListener("DOMContentLoaded", () => {
   if (!canvas) return alert("Meme canvas not found.");
 
   const base64 = canvas.toDataURL("image/png").split(",")[1];
-  const uploadResp = await fetch("https://api.imgbb.com/1/upload?key=09ef4f5704df854b20c77b80b862b367", {
-    method: "POST",
-    body: new URLSearchParams({ image: base64 })
-  });
-  const uploadJson = await uploadResp.json();
-  const imageUrl = uploadJson.data?.url;
+  const imageUrl = `data:image/png;base64,${base64}`;
   if (!imageUrl) return alert("Image upload failed.");
 
   const phantom = window.solana;
@@ -1569,23 +1543,23 @@ window.addEventListener("DOMContentLoaded", () => {
   await phantom.connect();
   const from = phantom.publicKey;
 
-  const metadata = {
-    name: `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`,
-    symbol: "WAGMIK",
-    description: "Forged in hopium. Minted on Solana.",
-    seller_fee_basis_points: 0,
-    image: imageUrl,
-    attributes: [
-      { trait_type: "Origin", value: "WAGMIK Generator" },
-      { trait_type: "Chain", value: "Solana" }
-    ],
-    collection: { name: "WAGMIK Memes", family: "WAGMIK" },
-    properties: {
-      files: [{ uri: imageUrl, type: "image/png" }],
-      category: "image",
-      creators: [{ address: from.toBase58(), share: 100 }]
-    }
-  };
+   const metadata = {
+  name: `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`,
+  symbol: "WAGMIK",
+  description: "Forged in hopium. Minted on Solana.",
+  seller_fee_basis_points: 0,
+  image: imageUrl,
+  attributes: [
+    { trait_type: "Origin", value: "WAGMIK Generator" },
+    { trait_type: "Chain", value: "Solana" }
+  ],
+  collection: { name: "WAGMIK Memes", family: "WAGMIK" },
+  properties: {
+    files: [{ uri: imageUrl, type: "image/png" }],
+    category: "image",
+    creators: [{ address: from.toBase58(), share: 100 }]
+  }
+};
 
   const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
   const mint = solanaWeb3.Keypair.generate();
