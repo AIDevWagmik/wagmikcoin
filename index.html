@@ -1598,6 +1598,10 @@ tx.add(
   mintToIx
 );
 
+ const { blockhash } = await connection.getLatestBlockhash("confirmed");
+  tx.recentBlockhash = blockhash;
+  tx.feePayer = from;
+
   const signed = await phantom.signTransaction(tx);
   const txid = await connection.sendRawTransaction(signed.serialize());
   await connection.confirmTransaction(txid);
