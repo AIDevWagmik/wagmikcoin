@@ -3273,14 +3273,17 @@ if (!token.publicKey.equals(mint)) {
 
     // ✅ Transfer tokens
     const tx = new window.SolanaTools.Transaction().add(
-      token.createTransferInstruction(
-        senderAccountPubkey,
-        ata,
-        walletPublicKey,
-        [],
-        amount * Math.pow(10, decimals)
-      )
-    );
+  window.splToken.Token.createTransferCheckedInstruction(
+    window.splToken.TOKEN_PROGRAM_ID,
+    senderAccountPubkey,
+    mint,
+    ata,
+    walletPublicKey,
+    [],
+    amount * Math.pow(10, decimals),
+    decimals
+  )
+);
 
     const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
     tx.recentBlockhash = blockhash;
