@@ -2998,10 +2998,10 @@ window.createDevnetMint = async function () {
       programId: window.splToken.TOKEN_PROGRAM_ID,
     });
 
-   const initMintIx = window.splToken.Token.createInitMintInstruction(
-  window.splToken.TOKEN_PROGRAM_ID,
+   const initMintIx = splToken.Token.createInitMintInstruction(
+  splToken.TOKEN_PROGRAM_ID,
   mintKeypair.publicKey,
-  6, // decimals
+  0, // decimals
   walletPublicKey,
   null
 );
