@@ -1517,13 +1517,6 @@ window.addEventListener("DOMContentLoaded", () => {
     const client = new window.nftStorage.NFTStorage({
       token: "5a3ed115.8cd08a223a0f45e98e0cce2e14d082fe"
     });
-
-    const blob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
-    const file = new File([blob], "metadata.json", { type: "application/json" });
-    const cid = await client.storeBlob(file);
-    const metadataUri = `https://${cid}.ipfs.nftstorage.link/metadata.json`;
-
-    console.log("📦 Metadata URI:", metadataUri);
    
   const TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
   const ASSOCIATED_TOKEN_PROGRAM_ID = splToken.ASSOCIATED_TOKEN_PROGRAM_ID;
@@ -1543,7 +1536,8 @@ window.addEventListener("DOMContentLoaded", () => {
   await phantom.connect();
   const from = phantom.publicKey;
 
-   const metadata = {
+   // ✅ 1. Define metadata AFTER imageUrl + from are known
+const metadata = {
   name: `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`,
   symbol: "WAGMIK",
   description: "Forged in hopium. Minted on Solana.",
@@ -1560,6 +1554,14 @@ window.addEventListener("DOMContentLoaded", () => {
     creators: [{ address: from.toBase58(), share: 100 }]
   }
 };
+
+// ✅ 2. Upload metadata after it's fully defined
+const blob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
+const file = new File([blob], "metadata.json", { type: "application/json" });
+const cid = await client.storeBlob(file);
+const metadataUri = `https://${cid}.ipfs.nftstorage.link/metadata.json`;
+
+console.log("📦 Metadata URI:", metadataUri);
 
   const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
   const mint = solanaWeb3.Keypair.generate();
