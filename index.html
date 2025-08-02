@@ -3382,17 +3382,18 @@ function handleDownload() {
 }
 
 function handleMint() {
-  if (!window.walletPublicKey) {
-    logOutput("⚠️ Please connect your wallet first.");
-    modal?.classList.add("active");
-    return;
-  }
+  const waitForRunMint = async () => {
+    while (typeof window.runMint !== "function") {
+      await new Promise((r) => setTimeout(r, 50));
+    }
 
-  dismissPopup();
-  const imgData = canvas.toDataURL("image/png");
-  input.value = `mintnft ${imgData}`;
-  modal?.classList.add("active"); // open terminal
-  runBtn.click();
+    const imgData = canvas.toDataURL("image/png");
+    input.value = `mintnft ${imgData}`;
+    modal?.classList.add("active");
+    runBtn.click();
+  };
+
+  waitForRunMint();
 }
 
 // ✅ NOW attach listeners AFTER functions are defined:
