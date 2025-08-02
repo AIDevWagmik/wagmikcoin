@@ -1785,6 +1785,12 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   </div>
 </div>
 
+ <div id="downloadMintPopup" class="popup hidden">
+  <button id="popupDownloadBtn">Download</button>
+  <button id="popupMintBtn">Mint NFT</button>
+  <button id="popupCloseBtn">Cancel</button>
+</div>
+
  <!-- 📢 Share Rules Modal -->
 <div id="shareModal" class="share-modal hidden">
   <div class="modal-content">
@@ -3361,6 +3367,9 @@ else if (cmd.toLowerCase() === "dappcheck") {
   solanaIcon?.addEventListener('click', toggleSolanaDev);
 
  document.getElementById("downloadOrMintBtn")?.addEventListener("click", showMemePopup);
+ document.getElementById("popupDownloadBtn")?.addEventListener("click", handleDownload);
+ document.getElementById("popupMintBtn")?.addEventListener("click", handleMint);
+ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup);
 
  // === NFT Mint/Download Popup Logic ===
 function showMemePopup() {
