@@ -1530,7 +1530,7 @@ window.runDevnetMint = async function () {
   await phantom.connect();
   const from = phantom.publicKey;
   const mint = solanaWeb3.Keypair.generate();
-  const lamports = await solanaWeb3.Token.getMinBalanceRentForExemptMint(connection);
+  const lamports = await connection.getMinimumBalanceForRentExemption(82);
 
   const tx = new solanaWeb3.Transaction();
 
