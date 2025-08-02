@@ -3326,8 +3326,8 @@ else if (cmd.toLowerCase() === "dappcheck") {
   logOutput(`👻 Phantom wallet: ${hasPhantom ? "✅ detected" : "❌ not available"}`);
 
   // Mobile readiness
-  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  logOutput(`📱 Mobile environment: ${isMobile ? "✅ yes" : "⚠️ desktop"`);
+  const isMobile = /iPhone|Android|SolanaMobile/i.test(navigator.userAgent);
+  logOutput(`📱 Mobile environment: ${isMobile ? "✅ yes" : "⚠️ desktop"}`);
 
   // Summary
   const ok = hasManifest && hasServiceWorker && isSecure && hasPhantom && hasThemeColor;
