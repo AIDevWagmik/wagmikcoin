@@ -3012,13 +3012,13 @@ if (!token.publicKey.equals(mint)) {
     // ✅ Mint to ATA
     const tx = new window.SolanaTools.Transaction().add(
       token.createMintToInstruction(
-        token.publicKey,
+        mint,
         ata,
         walletPublicKey,
-        [],
-        100_000000
+       [walletPublicKey], // 🛠️ signer array
+       100_000000
       )
-    );
+     );
 
     const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
     tx.recentBlockhash = blockhash;
