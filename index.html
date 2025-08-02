@@ -3211,18 +3211,21 @@ else if (cmd.toLowerCase().startsWith("mintnft ")) {
 
     logOutput("📸 Image uploaded. Minting NFT...");
 
-    const umi = createUmi('https://api.devnet.solana.com')
+    const umi = umiBundleDefaults
+      .createUmi('https://api.devnet.solana.com')
       .use(mplTokenMetadata())
-      .use(walletAdapterIdentity(window.solana));
+      .use(umiBundleDefaults.walletAdapterIdentity(window.solana));
 
-    const mint = generateSigner(umi);
+    const mint = umiBundleDefaults.generateSigner(umi);
 
-    await createNft(umi, {
-      mint,
-      name: `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`,
-      uri: imageUrl,
-      sellerFeeBasisPoints: 0,
-    }).sendAndConfirm(umi);
+    await umiBundleDefaults
+      .createNft(umi, {
+        mint,
+        name: `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`,
+        uri: imageUrl,
+        sellerFeeBasisPoints: 0,
+      })
+      .sendAndConfirm(umi);
 
     logOutput(`✅ NFT minted!`);
     logOutput(`🔗 https://explorer.solana.com/address/${mint.publicKey.toString()}?cluster=devnet`);
