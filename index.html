@@ -1474,8 +1474,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
   </style>
 
-<script src="https://unpkg.com/@metaplex-foundation/umi-bundle-defaults@latest/lib/index.iife.js"></script>
-<script src="https://unpkg.com/@metaplex-foundation/mpl-token-metadata@latest/lib/index.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@metaplex-foundation/umi@0.15.4/dist/umd/index.min.js"></script>
 
 <script>
   // ✅ Clean SPL UMD loader with Promise support
@@ -3211,21 +3210,18 @@ else if (cmd.toLowerCase().startsWith("mintnft ")) {
 
     logOutput("📸 Image uploaded. Minting NFT...");
 
-    const umi = umiDefaults
-      .createUmi('https://api.devnet.solana.com')
-      .use(mplTokenMetadata())
-      .use(umiDefaults.walletAdapterIdentity(window.solana));
+    const umiInstance = umi.createUmi('https://api.devnet.solana.com')
+      .use(umi.walletAdapterIdentity(window.solana))
+      .use(umi.mplTokenMetadata());
 
-    const mint = umiDefaults.generateSigner(umi);
+    const mint = umi.generateSigner(umiInstance);
 
-    await umiDefaults
-      .createNft(umi, {
-        mint,
-        name: `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`,
-        uri: imageUrl,
-        sellerFeeBasisPoints: 0,
-      })
-      .sendAndConfirm(umi);
+    await umi.createNft(umiInstance, {
+      mint,
+      name: `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`,
+      uri: imageUrl,
+      sellerFeeBasisPoints: 0,
+    }).sendAndConfirm(umiInstance);
 
     logOutput(`✅ NFT minted!`);
     logOutput(`🔗 https://explorer.solana.com/address/${mint.publicKey.toString()}?cluster=devnet`);
