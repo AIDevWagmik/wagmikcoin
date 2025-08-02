@@ -3352,8 +3352,13 @@ else if (cmd.toLowerCase() === "dappcheck") {
 else if (cmd.toLowerCase().startsWith("mintnft ")) {
   const base64Data = cmd.slice(8).trim();
   logOutput("⏳ Uploading + minting NFT...");
-  await window.runMint(base64Data);
-  logOutput("✅ Done! Check console for Explorer link.");
+
+  if (typeof window.runMint === "function") {
+    await window.runMint(base64Data);
+    logOutput("✅ Done! Check browser console for link.");
+  } else {
+    logOutput("❌ Mint function not ready.");
+  }
 }
 
     else {
@@ -3407,13 +3412,8 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
 </script> 
 
 <script type="module">
-  import {
-    createUmi,
-    generateSigner,
-    walletAdapterIdentity,
-  } from "https://esm.sh/@metaplex-foundation/umi@0.15.4";
-
-  import { createNft, mplTokenMetadata } from "https://esm.sh/@metaplex-foundation/mpl-token-metadata";
+  import { createUmi, generateSigner, walletAdapterIdentity } from "https://esm.sh/@metaplex-foundation/umi-bundle-defaults@1.2.0";
+  import { createNft, mplTokenMetadata } from "https://esm.sh/@metaplex-foundation/mpl-token-metadata@1.2.0";
 
   window.runMint = async function (base64Data) {
     if (!base64Data.startsWith("data:image/")) {
@@ -3422,18 +3422,15 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
     }
 
     try {
-      const res = await fetch("https://api.imgbb.com/1/upload?key=09ef4f5704df854b20c77b80b862b367", {
+      const resp = await fetch("https://api.imgbb.com/1/upload?key=09ef4f5704df854b20c77b80b862b367", {
         method: "POST",
-        body: new URLSearchParams({ image: base64Data.split(",")[1] })
+        body: new URLSearchParams({ image: base64Data.split(",")[1] }),
       });
 
-      const json = await res.json();
-      const imageUrl = json.data?.url;
+      const json = await resp.json();
+      if (!json.data?.url) throw new Error("Upload failed");
 
-      if (!imageUrl) {
-        console.error("❌ Upload failed.");
-        return;
-      }
+      const imageUrl = json.data.url;
 
       const umi = createUmi("https://api.devnet.solana.com")
         .use(walletAdapterIdentity(window.solana))
@@ -3443,14 +3440,14 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
 
       await createNft(umi, {
         mint,
-        uri: imageUrl,
         name: `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`,
-        sellerFeeBasisPoints: 0
+        uri: imageUrl,
+        sellerFeeBasisPoints: 0,
       }).sendAndConfirm(umi);
 
-      console.log(`✅ NFT minted: https://explorer.solana.com/address/${mint.publicKey}?cluster=devnet`);
+      console.log(`✅ NFT minted: https://explorer.solana.com/address/${mint.publicKey.toString()}?cluster=devnet`);
     } catch (err) {
-      console.error("❌ NFT mint failed", err);
+      console.error("❌ Mint failed", err);
     }
   };
 </script>
