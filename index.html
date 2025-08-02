@@ -1598,15 +1598,21 @@ tx.add(
   mintToIx
 );
 
- const { blockhash } = await connection.getLatestBlockhash("confirmed");
-tx.recentBlockhash = blockhash;
+ // ✅ MUST be just before signing
+const latest = await connection.getLatestBlockhash("confirmed");
+tx.recentBlockhash = latest.blockhash;
 tx.feePayer = from;
 
-tx.partialSign(mint); // ← local sign first
-const signed = await phantom.signTransaction(tx); // ← Phantom sign last
+tx.partialSign(mint); // 🟢 local keypair first
 
-const txid = await connection.sendRawTransaction(signed.serialize());
-await connection.confirmTransaction(txid, "confirmed");
+const signed = await phantom.signTransaction(tx); // 🟢 Phantom second
+const txid = await connection.sendRawTransaction(signed.serialize(), {
+  skipPreflight: false,
+});
+await connection.confirmTransaction(
+  { signature: txid, ...latest },
+  "confirmed"
+);
 
   console.log("✅ Minted token:", mint.publicKey.toBase58());
   console.log("🧾 TX:", `https://explorer.solana.com/tx/${txid}?cluster=devnet`);
