@@ -3020,10 +3020,10 @@ if (!token.publicKey.equals(mint)) {
 }
 
     // ✅ Check for user's ATA and create if missing
-    const ata = await window.splToken.Token.getAssociatedTokenAddress(
+   const ata = await window.splToken.Token.getAssociatedTokenAddress(
      window.splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
      window.splToken.TOKEN_PROGRAM_ID,
-     token.publicKey,
+     mint,                     // ✅ CORRECT
      walletPublicKey
    );
 
