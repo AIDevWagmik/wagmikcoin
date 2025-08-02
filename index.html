@@ -2969,24 +2969,24 @@ if (clusterSelect) {
 
     // ✅ Check for user's ATA and create if missing
     const ata = await window.splToken.Token.getAssociatedTokenAddress(
-      token.associatedProgramId,
-      token.programId,
-      token.publicKey,
-      walletPublicKey
-    );
+     window.splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
+     window.splToken.TOKEN_PROGRAM_ID,
+     token.publicKey,
+     walletPublicKey
+   );
 
     const info = await window.solanaConnection.getAccountInfo(ata);
     if (!info) {
       logOutput("🛠 Creating associated token account...");
 
-      const createIx = window.splToken.Token.createAssociatedTokenAccountInstruction(
-        token.associatedProgramId,
-        token.programId,
-        mint,
-        ata,
-        walletPublicKey,
-        walletPublicKey
-      );
+    const createIx = window.splToken.Token.createAssociatedTokenAccountInstruction(
+     window.splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
+     window.splToken.TOKEN_PROGRAM_ID,
+     mint,
+     ata,
+     walletPublicKey,
+     walletPublicKey
+   );
 
       const setupTx = new window.SolanaTools.Transaction().add(createIx);
       const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
@@ -3170,24 +3170,25 @@ else if (cmd.toLowerCase().startsWith("splsend ")) {
 
     // ✅ Build recipient ATA and create if missing
     const ata = await window.splToken.Token.getAssociatedTokenAddress(
-      token.associatedProgramId,
-      token.programId,
-      token.publicKey,
-      recipient
-    );
+    window.splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
+    window.splToken.TOKEN_PROGRAM_ID,
+    token.publicKey,
+    recipient
+  );
 
     const info = await window.solanaConnection.getAccountInfo(ata);
     if (!info) {
       logOutput("🛠 Creating recipient associated token account...");
 
       const createIx = window.splToken.Token.createAssociatedTokenAccountInstruction(
-        token.associatedProgramId,
-        token.programId,
-        mint,
-        ata,
-        recipient,
-        walletPublicKey
-      );
+    window.splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
+    window.splToken.TOKEN_PROGRAM_ID,
+    mint,
+    ata,
+    recipient,
+    walletPublicKey
+  );
+
 
       const setupTx = new window.SolanaTools.Transaction().add(createIx);
       const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
