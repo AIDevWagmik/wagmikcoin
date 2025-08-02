@@ -2952,7 +2952,6 @@ if (clusterSelect) {
 }
 
  else if (cmd.toLowerCase() === "spltokenairdrop") {
-
   if (localStorage.getItem("solanaCluster") !== "devnet") {
     logOutput("🚫 This token airdrop only works on devnet.");
     return;
@@ -2968,20 +2967,44 @@ if (clusterSelect) {
       walletPublicKey
     );
 
-    // ✅ Safe get/create with proper catch
-    let tokenAccount;
-    try {
-      tokenAccount = await token.getOrCreateAssociatedAccountInfo(walletPublicKey);
-    } catch (err) {
-      logOutput("❌ Could not fetch or create associated token account.");
-      console.error(err);
-      return;
+    // ✅ Check for user's ATA and create if missing
+    const ata = await window.splToken.Token.getAssociatedTokenAddress(
+      token.associatedProgramId,
+      token.programId,
+      token.publicKey,
+      walletPublicKey
+    );
+
+    const info = await window.solanaConnection.getAccountInfo(ata);
+    if (!info) {
+      logOutput("🛠 Creating associated token account...");
+
+      const createIx = window.splToken.Token.createAssociatedTokenAccountInstruction(
+        token.associatedProgramId,
+        token.programId,
+        mint,
+        ata,
+        walletPublicKey,
+        walletPublicKey
+      );
+
+      const setupTx = new window.SolanaTools.Transaction().add(createIx);
+      const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
+      setupTx.recentBlockhash = blockhash;
+      setupTx.feePayer = walletPublicKey;
+
+      const signed = await window.solana.signTransaction(setupTx);
+      const sig = await window.solanaConnection.sendRawTransaction(signed.serialize());
+      await window.solanaConnection.confirmTransaction(sig, "confirmed");
+
+      logOutput("✅ Associated token account created.");
     }
 
+    // ✅ Mint to ATA
     const tx = new window.SolanaTools.Transaction().add(
       token.createMintToInstruction(
         token.publicKey,
-        tokenAccount.address,
+        ata,
         walletPublicKey,
         [],
         100_000000
@@ -3127,6 +3150,14 @@ else if (cmd.toLowerCase().startsWith("splsend ")) {
     const amount = parseFloat(amountStr);
     if (isNaN(amount) || amount <= 0) throw new Error("Invalid amount");
 
+    const token = new window.splToken.Token(
+      window.solanaConnection,
+      mint,
+      window.splToken.TOKEN_PROGRAM_ID,
+      walletPublicKey
+    );
+
+    // ✅ Ensure sender has a token account
     const senderTokenAccount = await window.solanaConnection.getTokenAccountsByOwner(
       walletPublicKey,
       { mint }
@@ -3135,33 +3166,50 @@ else if (cmd.toLowerCase().startsWith("splsend ")) {
       logOutput("❌ No token account found for that mint.");
       return;
     }
-
     const senderAccountPubkey = senderTokenAccount.value[0].pubkey;
 
-    const token = new window.splToken.Token(
-     window.solanaConnection,
-     mint,
-     window.splToken.TOKEN_PROGRAM_ID,
-     walletPublicKey
-   );
+    // ✅ Build recipient ATA and create if missing
+    const ata = await window.splToken.Token.getAssociatedTokenAddress(
+      token.associatedProgramId,
+      token.programId,
+      token.publicKey,
+      recipient
+    );
 
-  // ✅ Safe fetch or creation of recipient token account
-   let recipientTokenAccount;
-     try {
-     recipientTokenAccount = await token.getOrCreateAssociatedAccountInfo(recipient);
- } catch (err) {
-     logOutput("❌ Could not fetch or create recipient’s token account.");
-     console.error(err);
-   return;
- }
+    const info = await window.solanaConnection.getAccountInfo(ata);
+    if (!info) {
+      logOutput("🛠 Creating recipient associated token account...");
 
+      const createIx = window.splToken.Token.createAssociatedTokenAccountInstruction(
+        token.associatedProgramId,
+        token.programId,
+        mint,
+        ata,
+        recipient,
+        walletPublicKey
+      );
+
+      const setupTx = new window.SolanaTools.Transaction().add(createIx);
+      const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
+      setupTx.recentBlockhash = blockhash;
+      setupTx.feePayer = walletPublicKey;
+
+      const signed = await window.solana.signTransaction(setupTx);
+      const sig = await window.solanaConnection.sendRawTransaction(signed.serialize());
+      await window.solanaConnection.confirmTransaction(sig, "confirmed");
+
+      logOutput("✅ Associated token account created.");
+    }
+
+    // ✅ Get token mint info to calculate proper amount
     const mintInfo = await token.getMintInfo();
     const decimals = mintInfo.decimals;
 
+    // ✅ Transfer tokens
     const tx = new window.SolanaTools.Transaction().add(
       token.createTransferInstruction(
         senderAccountPubkey,
-        recipientTokenAccount.address,
+        ata,
         walletPublicKey,
         [],
         amount * Math.pow(10, decimals)
