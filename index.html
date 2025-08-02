@@ -1599,16 +1599,19 @@ tx.add(
 );
 
  // ✅ MUST be just before signing
+tx.partialSign(mint); // 🟢 local keypair signs first
+
+// 🔁 Fetch blockhash last minute to prevent expiration
 const latest = await connection.getLatestBlockhash("confirmed");
 tx.recentBlockhash = latest.blockhash;
 tx.feePayer = from;
 
-tx.partialSign(mint); // 🟢 local keypair first
+const signed = await phantom.signTransaction(tx); // 🟢 Phantom signs second
 
-const signed = await phantom.signTransaction(tx); // 🟢 Phantom second
 const txid = await connection.sendRawTransaction(signed.serialize(), {
-  skipPreflight: false,
+  skipPreflight: false
 });
+
 await connection.confirmTransaction(
   { signature: txid, ...latest },
   "confirmed"
