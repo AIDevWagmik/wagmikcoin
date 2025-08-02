@@ -1496,8 +1496,24 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   });
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.1/lib/index.iife.min.js"></script>
+
 <script>
+function getAssociatedTokenAddress(mint, owner, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID) {
+  return solanaWeb3.PublicKey.findProgramAddressSync(
+    [
+      owner.toBuffer(),
+      TOKEN_PROGRAM_ID.toBuffer(),
+      mint.toBuffer(),
+    ],
+    ASSOCIATED_TOKEN_PROGRAM_ID
+  )[0];
+}
+
 window.runDevnetMint = async function () {
+  const TOKEN_PROGRAM_ID = new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+  const ASSOCIATED_TOKEN_PROGRAM_ID = new solanaWeb3.PublicKey("ATokenGPvbdGVxr1cMNZ3RuLHDvVHZF5uV8pDqA5jxg");
+
   const canvas = document.getElementById("memeCanvas");
   if (!canvas) {
     alert("Meme canvas not found.");
@@ -1532,6 +1548,8 @@ window.runDevnetMint = async function () {
   const mint = solanaWeb3.Keypair.generate();
   const lamports = await connection.getMinimumBalanceForRentExemption(82);
 
+  const ata = getAssociatedTokenAddress(mint.publicKey, from, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID);
+
   const tx = new solanaWeb3.Transaction();
 
   tx.add(
@@ -1540,10 +1558,10 @@ window.runDevnetMint = async function () {
       newAccountPubkey: mint.publicKey,
       space: 82,
       lamports,
-      programId: solanaWeb3.TOKEN_PROGRAM_ID,
+      programId: TOKEN_PROGRAM_ID,
     }),
     solanaWeb3.Token.createInitMintInstruction(
-      solanaWeb3.TOKEN_PROGRAM_ID,
+      TOKEN_PROGRAM_ID,
       mint.publicKey,
       0,
       from,
@@ -1551,14 +1569,14 @@ window.runDevnetMint = async function () {
     ),
     solanaWeb3.Token.createAssociatedTokenAccountInstruction(
       from,
-      solanaWeb3.Token.getAssociatedTokenAddress(mint.publicKey, from),
+      ata,
       from,
       mint.publicKey
     ),
     solanaWeb3.Token.createMintToInstruction(
-      solanaWeb3.TOKEN_PROGRAM_ID,
+      TOKEN_PROGRAM_ID,
       mint.publicKey,
-      solanaWeb3.Token.getAssociatedTokenAddress(mint.publicKey, from),
+      ata,
       from,
       [],
       1
@@ -1574,8 +1592,6 @@ window.runDevnetMint = async function () {
   console.log("🖼 Image:", imageUrl);
 };
 </script>
-
- <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.1/lib/index.iife.min.js"></script>
  
   <script src="https://terminal.jup.ag/main-v4.js"></script>
   
