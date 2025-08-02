@@ -1496,6 +1496,85 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   });
 </script>
 
+<script>
+window.runDevnetMint = async function () {
+  const canvas = document.getElementById("memeCanvas");
+  if (!canvas) {
+    alert("Meme canvas not found.");
+    return;
+  }
+
+  const base64 = canvas.toDataURL("image/png").split(",")[1];
+
+  const uploadResp = await fetch("https://api.imgbb.com/1/upload?key=09ef4f5704df854b20c77b80b862b367", {
+    method: "POST",
+    body: new URLSearchParams({ image: base64 })
+  });
+
+  const uploadJson = await uploadResp.json();
+  const imageUrl = uploadJson.data?.url;
+
+  if (!imageUrl) {
+    alert("Image upload failed.");
+    return;
+  }
+
+  const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
+  const phantom = window.solana;
+
+  if (!phantom || !phantom.isPhantom) {
+    alert("Phantom not found.");
+    return;
+  }
+
+  await phantom.connect();
+  const from = phantom.publicKey;
+  const mint = solanaWeb3.Keypair.generate();
+  const lamports = await solanaWeb3.Token.getMinBalanceRentForExemptMint(connection);
+
+  const tx = new solanaWeb3.Transaction();
+
+  tx.add(
+    solanaWeb3.SystemProgram.createAccount({
+      fromPubkey: from,
+      newAccountPubkey: mint.publicKey,
+      space: 82,
+      lamports,
+      programId: solanaWeb3.TOKEN_PROGRAM_ID,
+    }),
+    solanaWeb3.Token.createInitMintInstruction(
+      solanaWeb3.TOKEN_PROGRAM_ID,
+      mint.publicKey,
+      0,
+      from,
+      from
+    ),
+    solanaWeb3.Token.createAssociatedTokenAccountInstruction(
+      from,
+      solanaWeb3.Token.getAssociatedTokenAddress(mint.publicKey, from),
+      from,
+      mint.publicKey
+    ),
+    solanaWeb3.Token.createMintToInstruction(
+      solanaWeb3.TOKEN_PROGRAM_ID,
+      mint.publicKey,
+      solanaWeb3.Token.getAssociatedTokenAddress(mint.publicKey, from),
+      from,
+      [],
+      1
+    )
+  );
+
+  const signed = await phantom.signTransaction(tx);
+  const txid = await connection.sendRawTransaction(signed.serialize());
+  await connection.confirmTransaction(txid);
+
+  console.log("✅ Minted token:", mint.publicKey.toBase58());
+  console.log("🧾 TX:", `https://explorer.solana.com/tx/${txid}?cluster=devnet`);
+  console.log("🖼 Image:", imageUrl);
+};
+</script>
+
  <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.1/lib/index.iife.min.js"></script>
  
   <script src="https://terminal.jup.ag/main-v4.js"></script>
@@ -3351,25 +3430,18 @@ else if (cmd.toLowerCase() === "dappcheck") {
   logOutput(`📦 dApp readiness: ✅ ready`);
 }
 
-else if (cmd.toLowerCase().startsWith("mintnft ")) {
-  const imageUrl = cmd.slice(8).trim();
-
-  if (!imageUrl.startsWith("http")) {
-    logOutput("❌ Invalid image URL.");
-    return;
-  }
-
-  if (typeof window.runMint !== "function") {
-    logOutput("❌ Mint function not ready.");
+else if (cmd.toLowerCase() === "mintnft") {
+  if (typeof window.runDevnetMint !== "function") {
+    logOutput("❌ Mint function not found.");
     return;
   }
 
   try {
-    logOutput("⏳ Minting NFT...");
-    await window.runMint(imageUrl);
-    logOutput("✅ NFT minted! See browser console for Explorer link.");
+    logOutput("⏳ Uploading and minting...");
+    await window.runDevnetMint();
+    logOutput("✅ Mint complete. See console for image + tx.");
   } catch (err) {
-    logOutput("❌ NFT mint failed.");
+    logOutput("❌ Mint failed.");
     console.error(err);
   }
 }
@@ -3400,38 +3472,9 @@ function handleDownload() {
 }
 
 function handleMint() {
-  const canvas = document.getElementById("memeCanvas");
-
-  if (!canvas) {
-    alert("Meme canvas not found");
-    return;
-  }
-
-  const base64 = canvas.toDataURL("image/png");
-
-  fetch("https://api.imgbb.com/1/upload?key=09ef4f5704df854b20c77b80b862b367", {
-    method: "POST",
-    body: new URLSearchParams({
-      image: base64.split(",")[1],
-    }),
-  })
-    .then(res => res.json())
-    .then(json => {
-      const url = json.data?.url;
-      if (!url) {
-        alert("Upload failed");
-        return;
-      }
-
-      // ✅ Inject the command into the terminal and run it
-      input.value = `mintnft ${url}`;
-      modal?.classList.add("active"); // re-focus the terminal
-      runBtn.click(); // trigger terminal command execution
-    })
-    .catch(err => {
-      console.error("Upload failed", err);
-      alert("Something went wrong");
-    });
+  input.value = "mintnft";
+  modal?.classList.add("active");
+  runBtn.click();
 }
 
 // ✅ NOW attach listeners AFTER functions are defined:
@@ -3519,8 +3562,6 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
     <button onclick="document.getElementById('mobileWalletPopup').style.display='none'">Got it!</button>
   </div>
 </div>
-
-<script src="mint.bundle.js"></script>
   
  </body>
 </html>
