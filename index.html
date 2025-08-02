@@ -3048,7 +3048,9 @@ if (!token.publicKey.equals(mint)) {
       setupTx.feePayer = walletPublicKey;
 
       const signed = await window.solana.signTransaction(setupTx);
-      const sig = await window.solanaConnection.sendRawTransaction(signed.serialize());
+      const sig = await window.solanaConnection.sendRawTransaction(signed.serialize(), {
+      skipPreflight: true
+      });
       await window.solanaConnection.confirmTransaction(sig, "confirmed");
 
       logOutput("✅ Associated token account created.");
@@ -3072,7 +3074,9 @@ const tx = new window.SolanaTools.Transaction().add(mintIx);
     tx.feePayer = walletPublicKey;
 
     const signed = await window.solana.signTransaction(tx);
-    const sig = await window.solanaConnection.sendRawTransaction(signed.serialize());
+    const sig = await window.solanaConnection.sendRawTransaction(tx.serialize(), {
+    skipPreflight: true
+    });
 
     logOutput(`🍬 Airdropped 100 WAGMIK tokens.`);
     const explorer = `https://explorer.solana.com/tx/${sig}?cluster=devnet`;
@@ -3081,9 +3085,17 @@ const tx = new window.SolanaTools.Transaction().add(mintIx);
     await window.solanaConnection.confirmTransaction(sig, "confirmed");
     logOutput("✅ Token airdrop confirmed.");
   } catch (err) {
-    logOutput("❌ Airdrop failed.");
-    console.error(err);
+  if (
+    err?.message?.includes("already been processed") ||
+    err?.logs?.join?.("").includes("already been processed")
+  ) {
+    logOutput("⚠️ TX already processed, skipping duplicate.");
+    return;
   }
+
+  logOutput("❌ Airdrop failed.");
+  console.error(err);
+ }
 }
 
 else if (cmd.toLowerCase().startsWith("send ")) {
@@ -3261,7 +3273,9 @@ if (!token.publicKey.equals(mint)) {
       setupTx.feePayer = walletPublicKey;
 
       const signed = await window.solana.signTransaction(setupTx);
-      const sig = await window.solanaConnection.sendRawTransaction(signed.serialize());
+      const sig = await window.solanaConnection.sendRawTransaction(signedTx.serialize(), {
+      skipPreflight: true
+      });
       await window.solanaConnection.confirmTransaction(sig, "confirmed");
 
       logOutput("✅ Associated token account created.");
@@ -3290,7 +3304,9 @@ if (!token.publicKey.equals(mint)) {
     tx.feePayer = walletPublicKey;
 
     const signedTx = await window.solana.signTransaction(tx);
-    const sig = await window.solanaConnection.sendRawTransaction(signedTx.serialize());
+    const sig = await window.solanaConnection.sendRawTransaction(signedTx.serialize(), {
+    skipPreflight: true
+    });
 
     logOutput(`📤 SPL Transfer TX: ${sig}`);
     const explorer = `https://explorer.solana.com/tx/${sig}?cluster=${selectedCluster}`;
@@ -3299,9 +3315,17 @@ if (!token.publicKey.equals(mint)) {
     await window.solanaConnection.confirmTransaction(sig, "confirmed");
     logOutput("✅ SPL Token transfer confirmed.");
   } catch (err) {
-    logOutput("❌ SPL Transfer failed.");
-    console.error(err);
+  if (
+    err?.message?.includes("already been processed") ||
+    err?.logs?.join?.("").includes("already been processed")
+  ) {
+    logOutput("⚠️ TX already processed, skipping duplicate.");
+    return;
   }
+
+  logOutput("❌ SPL Transfer failed.");
+  console.error(err);
+ }
 }
 
     else {
