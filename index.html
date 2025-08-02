@@ -1498,6 +1498,8 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
 <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.1/lib/index.iife.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.3.5/lib/index.iife.min.js"></script>
+
 <script>
 function getAssociatedTokenAddress(mint, owner, TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID) {
   return solanaWeb3.PublicKey.findProgramAddressSync(
@@ -1552,36 +1554,38 @@ window.runDevnetMint = async function () {
 
   const tx = new solanaWeb3.Transaction();
 
-  tx.add(
-    solanaWeb3.SystemProgram.createAccount({
-      fromPubkey: from,
-      newAccountPubkey: mint.publicKey,
-      space: 82,
-      lamports,
-      programId: TOKEN_PROGRAM_ID,
-    }),
-    solanaWeb3.Token.createInitMintInstruction(
-      TOKEN_PROGRAM_ID,
-      mint.publicKey,
-      0,
-      from,
-      from
-    ),
-    solanaWeb3.Token.createAssociatedTokenAccountInstruction(
-      from,
-      ata,
-      from,
-      mint.publicKey
-    ),
-    solanaWeb3.Token.createMintToInstruction(
-      TOKEN_PROGRAM_ID,
-      mint.publicKey,
-      ata,
-      from,
-      [],
-      1
-    )
-  );
+ tx.add(
+  solanaWeb3.SystemProgram.createAccount({
+    fromPubkey: from,
+    newAccountPubkey: mint.publicKey,
+    space: 82,
+    lamports,
+    programId: TOKEN_PROGRAM_ID,
+  }),
+  splToken.createInitializeMintInstruction(
+    mint.publicKey,
+    0,
+    from,
+    from,
+    TOKEN_PROGRAM_ID
+  ),
+  splToken.createAssociatedTokenAccountInstruction(
+    from,
+    ata,
+    from,
+    mint.publicKey,
+    TOKEN_PROGRAM_ID,
+    ASSOCIATED_TOKEN_PROGRAM_ID
+  ),
+  splToken.createMintToInstruction(
+    mint.publicKey,
+    ata,
+    from,
+    1,
+    [],
+    TOKEN_PROGRAM_ID
+  )
+);
 
   const signed = await phantom.signTransaction(tx);
   const txid = await connection.sendRawTransaction(signed.serialize());
@@ -3518,8 +3522,6 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
   }
 }
 </style>
-
-<script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.1/lib/index.iife.min.js"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
