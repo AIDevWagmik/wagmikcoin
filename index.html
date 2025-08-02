@@ -3493,9 +3493,10 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
 </div>
 
 <script type="module">
-  // Import modules that exist and work
-  import { createUmi, walletAdapterIdentity, generateSigner } from "https://esm.sh/@metaplex-foundation/umi@1.2.0";
-  import { mplTokenMetadata } from "https://esm.sh/@metaplex-foundation/mpl-token-metadata@3.4.0";
+  import { createUmi } from 'https://cdn.skypack.dev/@metaplex-foundation/umi';
+  import { walletAdapterIdentity } from 'https://cdn.skypack.dev/@metaplex-foundation/umi-signer-wallet-adapters';
+  import { generateSigner } from 'https://cdn.skypack.dev/@metaplex-foundation/umi';
+  import { mplTokenMetadata } from 'https://cdn.skypack.dev/@metaplex-foundation/mpl-token-metadata';
 
   window.runMint = async (base64Data) => {
     if (!base64Data.startsWith("data:image/")) {
@@ -3524,7 +3525,9 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
         sellerFeeBasisPoints: 0
       }).sendAndConfirm(umi);
 
-      console.log(`✅ NFT minted: https://explorer.solana.com/address/${mint.publicKey.toString()}?cluster=devnet`);
+      console.log(
+        `✅ NFT minted: https://explorer.solana.com/address/${mint.publicKey.toString()}?cluster=devnet`
+      );
     } catch (err) {
       console.error("❌ Mint failed:", err);
     }
