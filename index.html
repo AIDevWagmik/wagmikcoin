@@ -2876,6 +2876,25 @@ if (clusterSelect) {
     }
   });
 
+ async function createDevnetMint() {
+  try {
+    const mint = await window.splToken.Token.createMint(
+      window.solanaConnection,
+      walletPublicKey,
+      walletPublicKey,
+      null,
+      6,
+      window.splToken.TOKEN_PROGRAM_ID
+    );
+
+    console.log("✅ Created new mint:", mint.toBase58());
+    logOutput(`✅ Created new mint: ${mint.toBase58()}`);
+  } catch (err) {
+    console.error("❌ Mint creation failed:", err);
+    logOutput("❌ Mint creation failed. Check console.");
+  }
+}
+
  disconnectBtn?.addEventListener('click', async () => {
   try {
     if (window.solana?.disconnect) {
