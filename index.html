@@ -1498,6 +1498,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
 <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.1/lib/index.iife.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.1.8/lib/index.iife.min.js"></script>
+<script src="https://unpkg.com/nft.storage/dist/bundle.esm.min.js"></script>
 
 <script>
 window.runDevnetMint = async function () {
@@ -1542,24 +1543,14 @@ window.runDevnetMint = async function () {
     }
   };
 
+const client = new nftStorage.NFTStorage({ token: "5a3ed115.8cd08a223a0f45e98e0cce2e14d082fe" });
+
 const metadataBlob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
+const file = new File([metadataBlob], "metadata.json", { type: "application/json" });
 
-const ipfsResp = await fetch("https://api.nft.storage/upload", {
-  method: "POST",
-  headers: {
-    Authorization: "Bearer 5a3ed115.8cd08a223a0f45e98e0cce2e14d082fe",  // ⬅️ paste your API key here
-  },
-  body: metadataBlob
-});
+const cid = await client.storeBlob(file);
+const metadataUri = `https://${cid}.ipfs.nftstorage.link/metadata.json`;
 
-const ipfsJson = await ipfsResp.json();
-
-if (!ipfsJson || !ipfsJson.ok || !ipfsJson.value || !ipfsJson.value.cid) {
-  alert("Metadata upload to nft.storage failed.");
-  return;
-}
-
-const metadataUri = `https://${ipfsJson.value.cid}.ipfs.nftstorage.link/metadata.json`;
 console.log("📦 Metadata uploaded:", metadataUri);
 
 
