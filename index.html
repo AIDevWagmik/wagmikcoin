@@ -1601,7 +1601,8 @@ tx.add(
  const { blockhash } = await connection.getLatestBlockhash("confirmed");
   tx.recentBlockhash = blockhash;
   tx.feePayer = from;
-
+ 
+  tx.partialSign(mint); // let mintKeypair sign first
   const signed = await phantom.signTransaction(tx);
   const txid = await connection.sendRawTransaction(signed.serialize());
   await connection.confirmTransaction(txid);
