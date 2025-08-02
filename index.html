@@ -3010,15 +3010,17 @@ if (!token.publicKey.equals(mint)) {
     }
 
     // ✅ Mint to ATA
-    const tx = new window.SolanaTools.Transaction().add(
-      token.createMintToInstruction(
-        mint,
-        ata,
-        walletPublicKey,
-       [walletPublicKey], // 🛠️ signer array
-       100_000000
-      )
-     );
+    const mintIx = window.splToken.Token.createMintToCheckedInstruction(
+  window.splToken.TOKEN_PROGRAM_ID,
+  mint,
+  ata,
+  walletPublicKey,
+  [],
+  100_000000,
+  6
+);
+
+const tx = new window.SolanaTools.Transaction().add(mintIx);
 
     const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
     tx.recentBlockhash = blockhash;
