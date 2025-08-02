@@ -3353,11 +3353,16 @@ else if (cmd.toLowerCase().startsWith("mintnft ")) {
   const base64Data = cmd.slice(8).trim();
   logOutput("⏳ Uploading + minting NFT...");
 
-  if (typeof window.runMint === "function") {
-    await window.runMint(base64Data);
-    logOutput("✅ Done! Check browser console for link.");
-  } else {
-    logOutput("❌ Mint function not ready.");
+  try {
+    if (typeof window.runMint === "function") {
+      await window.runMint(base64Data);
+      logOutput("✅ Done! Check browser console for link.");
+    } else {
+      logOutput("❌ Mint function not ready. Please reload the page.");
+    }
+  } catch (err) {
+    logOutput("❌ Error during NFT mint.");
+    console.error(err);
   }
 }
 
