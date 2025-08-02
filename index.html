@@ -2876,21 +2876,48 @@ if (clusterSelect) {
     }
   });
 
- window.createDevnetMint = async function () {
+window.createDevnetMint = async function () {
   try {
     const mintKeypair = new solanaWeb3.Keypair();
+    const lamports = await window.solanaConnection.getMinimumBalanceForRentExemption(82);
 
-    const token = await window.splToken.Token.createMint(
+    const createAccountIx = solanaWeb3.SystemProgram.createAccount({
+      fromPubkey: walletPublicKey,
+      newAccountPubkey: mintKeypair.publicKey,
+      space: 82,
+      lamports,
+      programId: window.splToken.TOKEN_PROGRAM_ID,
+    });
+
+    const initMintIx = new window.splToken.Token(
       window.solanaConnection,
-      walletPublicKey,
-      walletPublicKey,
-      null,
-      6,
+      mintKeypair.publicKey,
       window.splToken.TOKEN_PROGRAM_ID,
-      mintKeypair
+      walletPublicKey
+    ).createInitMintInstruction(
+      window.splToken.TOKEN_PROGRAM_ID,
+      mintKeypair.publicKey,
+      6, // decimals
+      walletPublicKey,
+      null
     );
 
-    const mint = token.publicKey.toBase58();
+    const tx = new window.SolanaTools.Transaction().add(
+      createAccountIx,
+      initMintIx
+    );
+
+    const { blockhash } = await window.solanaConnection.getLatestBlockhash("confirmed");
+    tx.recentBlockhash = blockhash;
+    tx.feePayer = walletPublicKey;
+
+    tx.partialSign(mintKeypair);
+
+    const signed = await window.solana.signTransaction(tx);
+    const sig = await window.solanaConnection.sendRawTransaction(signed.serialize());
+    await window.solanaConnection.confirmTransaction(sig, "confirmed");
+
+    const mint = mintKeypair.publicKey.toBase58();
     logOutput(`✅ Mint created: ${mint}`);
     logOutput(`🔗 https://explorer.solana.com/address/${mint}?cluster=devnet`);
   } catch (err) {
