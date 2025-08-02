@@ -1836,14 +1836,15 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   <p style="margin: 0 0 4px;">Welcome to the $WAGMIK Solana Console 💀</p>
   <div style="margin: 0 0 2px; font-size: 0.95em;">
     <strong style="margin: 0 0 2px; display: inline-block;">Available Commands:</strong>
-    <ul id="commandList" style="padding-left: 16px; margin: 0; color: #00ffa1; list-style: disc; line-height: 1.2em;">
-      <li style="margin: 0 0 2px;"><code>balance</code> — check wallet SOL</li>
-      <li class="airdropCommand" style="margin: 0 0 2px;"><code>airdrop</code> — devnet only</li>
-      <li style="margin: 0;"><code>send &lt;recipient&gt; &lt;amount&gt;</code> — transfer SOL</li>
-      <li style="margin-bottom: 2px;"><code>spltokens</code> — list SPL token balances</li>
-      <li style="margin-bottom: 2px;"><code>splsend &lt;mint&gt; &lt;recipient&gt; &lt;amount&gt;</code> — send SPL tokens</li>
-      <li class="splAirdropCommand" style="margin-bottom: 2px;"><code>spltokenairdrop</code> — get 100 WAGMIK (devnet only)</li>
-    </ul>
+    <ul id="commandList" style="padding-left: 16px; margin: 0; color: #00ffa1; list-style: disc; line-height: 1.4;">
+  <li style="margin: 0;"><code>balance</code> — check wallet SOL</li>
+  <li class="airdropCommand" style="margin: 0;"><code>airdrop</code> — devnet only</li>
+  <li style="margin: 0;"><code>send &lt;recipient&gt; &lt;amount&gt;</code> — transfer SOL</li>
+  <li style="margin: 0;"><code>spltokens</code> — list SPL token balances</li>
+  <li style="margin: 0;"><code>splsend &lt;mint&gt; &lt;recipient&gt; &lt;amount&gt;</code> — send SPL tokens</li>
+  <li class="splAirdropCommand" style="margin: 0;"><code>spltokenairdrop</code> — get 100 WAGMIK (devnet only)</li>
+  <li class="commandItem" style="margin: 0;"><code>dappcheck</code> — check Solana dApp readiness</li>
+</ul>
   </div>
 </div>
 
@@ -3299,6 +3300,39 @@ if (!token.publicKey.equals(mint)) {
   logOutput("❌ SPL Transfer failed.");
   console.error(err);
  }
+}
+
+else if (cmd.toLowerCase() === "dappcheck") {
+  logOutput("🧪 Checking dAppStore readiness...");
+
+  // Check for manifest
+  const hasManifest = !!document.querySelector('link[rel="manifest"]');
+  logOutput(`📱 manifest.json: ${hasManifest ? "✅ found" : "❌ missing"}`);
+
+  // Check for service worker
+  const hasServiceWorker = 'serviceWorker' in navigator;
+  logOutput(`🛠 Service worker support: ${hasServiceWorker ? "✅ yes" : "❌ no"}`);
+
+  // Check HTTPS
+  const isSecure = window.location.protocol === "https:";
+  logOutput(`🔐 HTTPS: ${isSecure ? "✅ yes" : "❌ no"}`);
+
+  // Check for theme color
+  const hasThemeColor = !!document.querySelector('meta[name="theme-color"]');
+  logOutput(`🎨 theme-color meta: ${hasThemeColor ? "✅ present" : "⚠️ missing"}`);
+
+  // Phantom deep link support
+  const hasPhantom = !!window.solana?.isPhantom;
+  logOutput(`👻 Phantom wallet: ${hasPhantom ? "✅ detected" : "❌ not available"}`);
+
+  // Mobile readiness
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  logOutput(`📱 Mobile environment: ${isMobile ? "✅ yes" : "⚠️ desktop"`);
+
+  // Summary
+  const ok = hasManifest && hasServiceWorker && isSecure && hasPhantom && hasThemeColor;
+  logOutput(`📦 dApp readiness: ${ok ? "✅ ready" : "⚠️ incomplete — see above"}`);
+  return;
 }
 
     else {
