@@ -3492,16 +3492,16 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
   // Only define the function after everything (including nft.storage) is fully loaded
   window.addEventListener("DOMContentLoaded", () => {
     // ✅ Ensure nftStorage library is loaded
-    if (!window.nftStorage || !window.nftStorage.NFTStorage) {
-      console.error("❌ nftStorage not loaded.");
-      return;
-    }
+    if (!window.NFTStorage) {
+  console.error("❌ NFTStorage is not loaded.");
+  return;
+}
 
     // ✅ Define function globally
     window.runDevnetMint = async function () {
-      const client = new window.nftStorage.NFTStorage({
-        token: "5a3ed115.8cd08a223a0f45e98e0cce2e14d082fe"
-      });
+      const client = new window.NFTStorage({
+  token: "5a3ed115.8cd08a223a0f45e98e0cce2e14d082fe"
+});
 
       const TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
       const ASSOCIATED_TOKEN_PROGRAM_ID = splToken.ASSOCIATED_TOKEN_PROGRAM_ID;
