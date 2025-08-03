@@ -3530,9 +3530,10 @@ window.runDevnetMint = async function () {
     }
   };
 
- const client = new window.NFTStorage({
-  token: "8a85b9e4.18bcc151812a44bf9578a9c80b9225a3" // keep using the short one here
-});
+ const response = await fetch("http://localhost:4321/ucan-token");
+const { token } = await response.json();
+
+const client = new window.NFTStorage({ token });
 
 const metadataFile = new File(
   [JSON.stringify(metadata)],
