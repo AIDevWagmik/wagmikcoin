@@ -3674,7 +3674,7 @@ console.log("✅ Uploaded image to IPFS:", imageUrl);
   }
 
   const result = await pinataRes.json();
-  const metadataUri = `https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`;
+  const metadataUri = `ipfs://${result.IpfsHash}`;
   console.log("📦 Pinata Metadata URI:", metadataUri);
 
  console.log("📤 Sending metadata to backend:", {
