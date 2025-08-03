@@ -3604,13 +3604,18 @@ window.runDevnetMint = async function () {
   const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJjYWZkMTliZC04YTc3LTRiM2MtOGE1Zi00YWM4N2I0YjgxMmMiLCJlbWFpbCI6ImJ1c2NoZXJ0b205MkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJGUkExIn0seyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJOWUMxIn1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiNTRkMTFjZGZlNzc2MzkyN2MzN2MiLCJzY29wZWRLZXlTZWNyZXQiOiJlMDA2YWNjZGVjODFmZWI4YmQ2NjFhMTQ3N2NjYmE4N2ZmNTc2MzVmOTY2ZGVjOGFmZDlhNjc5ZDZiODRkMTA0IiwiZXhwIjoxNzg1NzcxNTA4fQ._-B0ktHsg3mTToG2JnJTvS52f0x-n5BDvnSA6jBn7Aw"; // 🔐 Replace with your full JWT again
 
   const pinataRes = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${jwt}`
+  },
+  body: JSON.stringify({
+    pinataMetadata: {
+      name: metadata.name
     },
-    body: JSON.stringify(metadata)
-  });
+    pinataContent: metadata
+  })
+});
 
   if (!pinataRes.ok) {
     throw new Error("❌ Pinata upload failed: " + pinataRes.statusText);
@@ -3621,22 +3626,37 @@ window.runDevnetMint = async function () {
   console.log("📦 Pinata Metadata URI:", metadataUri);
 
   // ✅ Encode Metaplex metadata instruction
- const name = metadata.name.slice(0, 32).padEnd(32, "\0");
-const symbol = metadata.symbol.slice(0, 10).padEnd(10, "\0");
-const uri = metadataUri.slice(0, 200).padEnd(200, "\0");
+ function encodeString(input, length) {
+  const str = input.slice(0, length);
+  const buffer = Buffer.alloc(length);
+  buffer.write(str);
+  return buffer;
+}
+
+const name = encodeString(metadata.name, 32);
+const symbol = encodeString(metadata.symbol, 10);
+const uri = encodeString(metadataUri, 200);
 const sellerFee = Buffer.alloc(2);
 sellerFee.writeUInt16LE(metadata.seller_fee_basis_points || 0, 0);
 
+// flags
+const hasCreators = Buffer.from([0]);         // no creators array
+const primarySaleHappened = Buffer.from([0]); // false
+const isMutable = Buffer.from([1]);           // true
+const collectionPresent = Buffer.from([0]);   // None
+const usesPresent = Buffer.from([0]);         // None
+
 const encodedData = Buffer.concat([
-  Buffer.from([33]),              // Instruction index: 33 = CreateMetadataAccountV3
-  Buffer.from(name),
-  Buffer.from(symbol),
-  Buffer.from(uri),
+  Buffer.from([33]),              // Instruction code
+  name,
+  symbol,
+  uri,
   sellerFee,
-  Buffer.from([0]),               // creators: none (set to 0 for now)
-  Buffer.from([0]),               // primary_sale_happened: false
-  Buffer.from([0]),               // is_mutable: false
-  Buffer.from([0])                // is_collection: false
+  hasCreators,
+  primarySaleHappened,
+  isMutable,
+  collectionPresent,
+  usesPresent
 ]);
 
   const metadataIx = new solanaWeb3.TransactionInstruction({
