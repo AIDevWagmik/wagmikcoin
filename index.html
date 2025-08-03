@@ -3484,12 +3484,12 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
 <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.1.8/lib/index.iife.min.js"></script>
 
 <script>
-  const nftScript = document.createElement("script");
-  nftScript.src = "https://unpkg.com/nft.storage/dist/bundle.umd.min.js";
-  nftScript.onload = () => {
+  const nftLoader = document.createElement("script");
+  nftLoader.src = "https://unpkg.com/nft.storage/dist/bundle.umd.min.js";
+
+  nftLoader.onload = () => {
     window.nftStorage = window.nftStorage || window["nftStorage"];
 
-    // ✅ Define your full minting function safely
     window.runDevnetMint = async function () {
       const client = new window.nftStorage.NFTStorage({
         token: "5a3ed115.8cd08a223a0f45e98e0cce2e14d082fe"
@@ -3512,7 +3512,6 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
       if (!phantom || !phantom.isPhantom) return alert("Phantom not found.");
       await phantom.connect();
       const from = phantom.publicKey;
-      console.log("✅ Phantom connected:", from.toBase58());
 
       const metadata = {
         name: `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`,
@@ -3638,6 +3637,9 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
       tx.partialSign(mint);
       const signed = await phantom.signTransaction(tx);
 
+      // 🛠 Fix for simulation issues
+      signed.verifySignatures = false;
+
       const txid = await connection.sendRawTransaction(signed.serialize(), {
         skipPreflight: false
       });
@@ -3655,25 +3657,7 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
     console.log("✅ runDevnetMint is now available.");
   };
 
-  document.body.appendChild(nftScript);
-</script>
-
-<script>
-  const nftScript = document.createElement("script");
-  nftScript.src = "https://unpkg.com/nft.storage/dist/bundle.umd.min.js";
-  nftScript.onload = () => {
-    window.nftStorage = window.nftStorage || window["nftStorage"];
-
-    // ✅ Now define the function on the window
-    window.runDevnetMint = async function () {
-      console.log("✅ runDevnetMint is now a function!");
-      // 👉 your minting logic goes here
-    };
-
-    // ✅ Confirm it's globally defined
-    console.log("✅ runDevnetMint is defined and ready");
-  };
-  document.body.appendChild(nftScript);
+  document.body.appendChild(nftLoader);
 </script>
   
  </body>
