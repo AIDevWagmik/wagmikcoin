@@ -3642,17 +3642,17 @@ sellerFee.writeUInt16LE(metadata.seller_fee_basis_points || 0, 0);
 // Metaplex expects:
 // [u8 instruction=33][Data][bool isMutable][bool collection=0][bool uses=0]
 const encodedData = Buffer.concat([
-  Buffer.from([33]),   // instruction: createMetadataAccountV3
-  name,                // 32
-  symbol,              // 10
-  uri,                 // 200
-  sellerFee,           // 2
-  Buffer.from([0]),    // no creators
-  Buffer.from([0]),    // primarySaleHappened: false
-  Buffer.from([1]),    // isMutable: true
-  Buffer.from([0]),    // no collection
-  Buffer.from([0])     // no uses
+  Buffer.from([33]), name, symbol, uri, sellerFee,
+  Buffer.from([0]), // creators: none
+  Buffer.from([0]), // primarySaleHappened: false
+  Buffer.from([1]), // isMutable: true
+  Buffer.from([0]), // collection: none
+  Buffer.from([0]), // uses: none
+  Buffer.from([0])  // collectionDetails: none (🚨 this was missing)
 ]);
+
+console.log("📏 encodedData.length:", encodedData.length);
+console.log("📦 Instruction buffer (hex):", encodedData.toString("hex"));
 
   const metadataIx = new solanaWeb3.TransactionInstruction({
     keys: [
