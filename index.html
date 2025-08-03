@@ -3532,21 +3532,21 @@ window.runDevnetMint = async function () {
     "metadata.json"
   );
 
-  const resp = await fetch("https://api.nft.storage/upload", {
-    method: "POST",
-    headers: {
-      Authorization: "Bearer 4ec75c41.536d7acaf1d749848a0ccf098df69879"
-    },
-    body: form
-  });
+ const resp = await fetch("https://api.nft.storage/store", {
+  method: "POST", // 🔧 explicit method
+  headers: {
+    Authorization: "Bearer 8a85b9e4.18bcc151812a44bf9578a9c80b9225a3"
+  },
+  body: form
+});
 
-  const data = await resp.json();
-  if (!data.ok) {
-    throw new Error("Upload failed: " + data.error.message);
-  }
+const data = await resp.json();
+if (!data.ok) {
+  throw new Error("Upload failed: " + data.error.message);
+}
 
-  const metadataUri = `https://ipfs.io/ipfs/${data.value.cid}`;
-  console.log("📦 Metadata URI:", metadataUri);
+const metadataUri = `https://ipfs.io/ipfs/${data.value.cid}`;
+console.log("📦 Metadata URI:", metadataUri);
 
       const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
       const mint = solanaWeb3.Keypair.generate();
