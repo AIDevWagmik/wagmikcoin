@@ -3626,64 +3626,29 @@ window.runDevnetMint = async function () {
   console.log("📦 Pinata Metadata URI:", metadataUri);
 
   // ✅ Encode Metaplex metadata instruction
-function encodeString(input, length) {
-  const str = input.slice(0, length);
-  const buffer = Buffer.alloc(length);
-  buffer.write(str);
-  return buffer;
-}
+// ✅ Request clean SDK-based metadata TX from backend
+const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    mint: mint.publicKey.toBase58(),
+    payer: from.toBase58(),
+    updateAuthority: from.toBase58(),
+    uri: metadataUri,
+    name: metadata.name,
+    symbol: metadata.symbol
+  }),
+}).then(res => res.text());
 
-const name = encodeString(metadata.name, 32);
-const symbol = encodeString(metadata.symbol, 10);
-const uri = encodeString(metadataUri, 200);
-const sellerFee = Buffer.alloc(2);
-sellerFee.writeUInt16LE(metadata.seller_fee_basis_points || 0, 0);
+const metadataTx = solanaWeb3.Transaction.from(Buffer.from(metadataTxBase64, "base64"));
+metadataTx.feePayer = from;
 
-// Metaplex expects:
-// [u8 instruction=33][Data][bool isMutable][bool collection=0][bool uses=0]
-const encodedData = Buffer.concat([
-  Buffer.from([33]),   // instruction: createMetadataAccountV3
-  name,                // 32
-  symbol,              // 10
-  uri,                 // 200
-  sellerFee,           // 2
-  Buffer.from([0]),    // no creators
-  Buffer.from([0]),    // primarySaleHappened: false
-  Buffer.from([1]),    // isMutable: true
-  Buffer.from([0]),    // no collection
-  Buffer.from([0])     // no uses
-]);
+const signed2 = await phantom.signTransaction(metadataTx);
+const txid2 = await connection.sendRawTransaction(signed2.serialize(), { skipPreflight: false });
+await connection.confirmTransaction(txid2, "confirmed");
 
-console.log("📏 encodedData.length:", encodedData.length);
-console.log("📦 Instruction buffer (hex):", encodedData.toString("hex"));
-
-  const metadataIx = new solanaWeb3.TransactionInstruction({
-    keys: [
-      { pubkey: metadataPDA, isSigner: false, isWritable: true },
-      { pubkey: mint.publicKey, isSigner: false, isWritable: false },
-      { pubkey: from, isSigner: true, isWritable: false },
-      { pubkey: from, isSigner: true, isWritable: true },
-      { pubkey: from, isSigner: true, isWritable: false },
-      { pubkey: solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false },
-      { pubkey: solanaWeb3.SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false }
-    ],
-    programId: METADATA_PROGRAM_ID,
-    data: encodedData
-  });
-
-  // ❗ Send this as a new transaction after upload
-  const tx2 = new solanaWeb3.Transaction().add(metadataIx);
-  tx2.feePayer = from;
-
-  const { blockhash: bh2, lastValidBlockHeight: lbh2 } = await connection.getLatestBlockhash("finalized");
-  tx2.recentBlockhash = bh2;
-
-  const signed2 = await phantom.signTransaction(tx2);
-  const txid2 = await connection.sendRawTransaction(signed2.serialize(), { skipPreflight: false });
-  await connection.confirmTransaction({ signature: txid2, blockhash: bh2, lastValidBlockHeight: lbh2 }, "confirmed");
-
-  console.log("✅ Metadata set:", metadataUri);
-  console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluster=devnet`);
+console.log("✅ Metadata set:", metadataUri);
+console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluster=devnet`);
 };
 
     console.log("✅ runDevnetMint is ready.");
