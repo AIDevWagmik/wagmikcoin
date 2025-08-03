@@ -3657,6 +3657,24 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
 
   document.body.appendChild(nftScript);
 </script>
+
+<script>
+  const nftScript = document.createElement("script");
+  nftScript.src = "https://unpkg.com/nft.storage/dist/bundle.umd.min.js";
+  nftScript.onload = () => {
+    window.nftStorage = window.nftStorage || window["nftStorage"];
+
+    // ✅ Now define the function on the window
+    window.runDevnetMint = async function () {
+      console.log("✅ runDevnetMint is now a function!");
+      // 👉 your minting logic goes here
+    };
+
+    // ✅ Confirm it's globally defined
+    console.log("✅ runDevnetMint is defined and ready");
+  };
+  document.body.appendChild(nftScript);
+</script>
   
  </body>
 </html>
