@@ -3513,7 +3513,7 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
       if (!canvas) return alert("Meme canvas not found.");
 
       const base64 = canvas.toDataURL("image/png").split(",")[1];
-      const imageUrl = data:image/png;base64,${base64};
+      const imageUrl = `data:image/png;base64,${base64}`;
       if (!imageUrl) return alert("Image upload failed.");
 
       const phantom = window.solana;
