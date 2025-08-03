@@ -3621,23 +3621,23 @@ window.runDevnetMint = async function () {
   console.log("📦 Pinata Metadata URI:", metadataUri);
 
   // ✅ Encode Metaplex metadata instruction
-  const name = metadata.name.slice(0, 32).padEnd(32, "\0");
-  const symbol = metadata.symbol.slice(0, 10).padEnd(10, "\0");
-  const uri = metadataUri.slice(0, 200).padEnd(200, "\0");
-  const sellerFee = Buffer.alloc(2);
-  sellerFee.writeUInt16LE(metadata.seller_fee_basis_points, 0);
+ const name = metadata.name.slice(0, 32).padEnd(32, "\0");
+const symbol = metadata.symbol.slice(0, 10).padEnd(10, "\0");
+const uri = metadataUri.slice(0, 200).padEnd(200, "\0");
+const sellerFee = Buffer.alloc(2);
+sellerFee.writeUInt16LE(metadata.seller_fee_basis_points || 0, 0);
 
-  const encodedData = Buffer.concat([
-    Buffer.from([33]),          // Instruction index
-    Buffer.from(name),
-    Buffer.from(symbol),
-    Buffer.from(uri),
-    sellerFee,
-    Buffer.from([0]),           // creators: None
-    Buffer.from([0]),           // verified: false
-    Buffer.from([0]),           // mutable: false
-    Buffer.from([0])            // primarySaleHappened: false
-  ]);
+const encodedData = Buffer.concat([
+  Buffer.from([33]),              // Instruction index: 33 = CreateMetadataAccountV3
+  Buffer.from(name),
+  Buffer.from(symbol),
+  Buffer.from(uri),
+  sellerFee,
+  Buffer.from([0]),               // creators: none (set to 0 for now)
+  Buffer.from([0]),               // primary_sale_happened: false
+  Buffer.from([0]),               // is_mutable: false
+  Buffer.from([0])                // is_collection: false
+]);
 
   const metadataIx = new solanaWeb3.TransactionInstruction({
     keys: [
