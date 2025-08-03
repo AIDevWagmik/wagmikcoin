@@ -2122,6 +2122,25 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 const canvas = document.getElementById('memeCanvas');
 const ctx = canvas.getContext('2d');
 
+const tiers = [
+  { value: "WAGMIK GOLD", weight: 1 },
+  { value: "Diamond Hands", weight: 4 },
+  { value: "Premium", weight: 10 },
+  { value: "Ultimate", weight: 15 },
+  { value: "Silver", weight: 30 },
+  { value: "Common", weight: 40 }
+];
+
+function getRandomTier() {
+  const total = tiers.reduce((sum, t) => sum + t.weight, 0);
+  const rand = Math.random() * total;
+  let cumulative = 0;
+  for (let t of tiers) {
+    cumulative += t.weight;
+    if (rand < cumulative) return t.value;
+  }
+}
+
 // Only block gestures if touches are inside canvas bounds
 function shouldBlockCanvasGesture(e) {
   const rect = canvas.getBoundingClientRect();
@@ -3498,6 +3517,17 @@ window.runDevnetMint = async function () {
   const canvas = document.getElementById("memeCanvas");
   if (!canvas) return alert("Meme canvas not found.");
 
+  const tier = getRandomTier();
+  const emblem = new Image();
+  emblem.src = `${tier.toLowerCase().replace(/ /g, "-")}.png`;
+
+  await new Promise(resolve => {
+    emblem.onload = () => {
+     ctx.drawImage(emblem, 0, 0, 360, 360);
+     resolve();
+    };
+  });
+
   const base64 = canvas.toDataURL("image/png").split(",")[1];
   const imageUrl = `data:image/png;base64,${base64}`;
   if (!imageUrl) return alert("Image upload failed.");
@@ -3508,14 +3538,15 @@ window.runDevnetMint = async function () {
   const from = phantom.publicKey;
 
   const metadata = {
-    name: `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`,
+    name: name: `${tier} #${Math.floor(Math.random() * 9999)}`,
     symbol: "WAGMIK",
     description: "Forged in hopium. Minted on Solana.",
     seller_fee_basis_points: 0,
     image: imageUrl,
     attributes: [
       { trait_type: "Origin", value: "WAGMIK Generator" },
-      { trait_type: "Chain", value: "Solana" }
+      { trait_type: "Chain", value: "Solana" },
+      { trait_type: "Tier", value: tier }
     ],
     collection: { name: "WAGMIK Memes", family: "WAGMIK" },
     properties: {
