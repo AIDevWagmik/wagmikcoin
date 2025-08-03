@@ -3479,6 +3479,11 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
     <button onclick="document.getElementById('mobileWalletPopup').style.display='none'">Got it!</button>
   </div>
 </div>
+
+<script type="module">
+  import { NFTStorage } from "https://cdn.jsdelivr.net/npm/nft.storage/dist/bundle.esm.min.js";
+  window.NFTStorage = NFTStorage;
+</script>
  
 <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.1/lib/index.iife.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.1.8/lib/index.iife.min.js"></script>
@@ -3525,27 +3530,18 @@ window.runDevnetMint = async function () {
     }
   };
 
-  const form = new FormData();
-  form.append(
-    "file",
-    new Blob([JSON.stringify(metadata)], { type: "application/json" }),
-    "metadata.json"
-  );
-
- const resp = await fetch("https://api.nft.storage/store", {
-  method: "POST", // 🔧 explicit method
-  headers: {
-    Authorization: "Bearer <UCAN_REQUEST_TOKEN>"
-  },
-  body: form
+ const client = new window.NFTStorage({
+  token: "8a85b9e4.18bcc151812a44bf9578a9c80b9225a3" // keep using the short one here
 });
 
-const data = await resp.json();
-if (!data.ok) {
-  throw new Error("Upload failed: " + data.error.message);
-}
+const metadataFile = new File(
+  [JSON.stringify(metadata)],
+  "metadata.json",
+  { type: "application/json" }
+);
 
-const metadataUri = `https://ipfs.io/ipfs/${data.value.cid}`;
+const cid = await client.storeBlob(metadataFile);
+const metadataUri = `https://${cid}.ipfs.nftstorage.link/metadata.json`;
 console.log("📦 Metadata URI:", metadataUri);
 
       const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
