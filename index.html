@@ -3489,7 +3489,7 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
   nftScript.onload = () => {
     window.nftStorage = window.nftStorage || window["nftStorage"];
 
-    // ✅ Define runDevnetMint ONLY after nftStorage is ready
+    // ✅ Define your full minting function safely
     window.runDevnetMint = async function () {
       const client = new window.nftStorage.NFTStorage({
         token: "5a3ed115.8cd08a223a0f45e98e0cce2e14d082fe"
@@ -3651,7 +3651,10 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
       console.log("🧾 TX:", `https://explorer.solana.com/tx/${txid}?cluster=devnet`);
       console.log("🖼 Image:", imageUrl);
     };
+
+    console.log("✅ runDevnetMint is now available.");
   };
+
   document.body.appendChild(nftScript);
 </script>
   
