@@ -3611,9 +3611,9 @@ console.log("📦 Pinata Metadata URI:", metadataUri);
       ];
 
       const encodedData = (() => {
-        const name = metadata.name.padEnd(32, "\0");
-        const symbol = metadata.symbol.padEnd(10, "\0");
-        const uri = metadataUri.padEnd(200, "\0");
+        const name = metadata.name.slice(0, 32).padEnd(32, "\0");
+        const symbol = metadata.symbol.slice(0, 10).padEnd(10, "\0");
+        const uri = metadataUri.slice(0, 200).padEnd(200, "\0");
         const sellerFee = Buffer.alloc(2);
         sellerFee.writeUInt16LE(0, 0);
 
