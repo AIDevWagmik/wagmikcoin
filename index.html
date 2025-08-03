@@ -3489,12 +3489,21 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
 <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.1.8/lib/index.iife.min.js"></script>
 
 <script>
-  const nftScript = document.createElement("script");
-  nftScript.src = "https://cdn.jsdelivr.net/npm/nft.storage/dist/index.min.js";
-  nftScript.onload = () => {
-    window.nftStorage = window.NFTStorage;
+  // Only define the function after everything (including nft.storage) is fully loaded
+  window.addEventListener("DOMContentLoaded", () => {
+    // ✅ Ensure nftStorage library is loaded
+   if (!window.NFTStorage) {
+  console.error("❌ NFTStorage is not loaded.");
+  return;
+}
 
+    // ✅ Define function globally
     window.runDevnetMint = async function () {
+     const client = new window.NFTStorage({
+  token: "4ec75c41.536d7acaf1d749848a0ccf098df69879"
+});
+
+
       const TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
       const ASSOCIATED_TOKEN_PROGRAM_ID = splToken.ASSOCIATED_TOKEN_PROGRAM_ID;
       const METADATA_PROGRAM_ID = new solanaWeb3.PublicKey(
@@ -3505,17 +3514,16 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
       if (!canvas) return alert("Meme canvas not found.");
 
       const base64 = canvas.toDataURL("image/png").split(",")[1];
-      const imageUrl = `data:image/png;base64,${base64}`;
+      const imageUrl = data:image/png;base64,${base64};
       if (!imageUrl) return alert("Image upload failed.");
 
       const phantom = window.solana;
       if (!phantom || !phantom.isPhantom) return alert("Phantom not found.");
       await phantom.connect();
       const from = phantom.publicKey;
-      console.log("✅ Phantom connected:", from.toBase58());
 
       const metadata = {
-        name: `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`,
+        name: WAGMIK Meme #${Math.floor(Math.random() * 9999)},
         symbol: "WAGMIK",
         description: "Forged in hopium. Minted on Solana.",
         seller_fee_basis_points: 0,
@@ -3532,22 +3540,10 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
         }
       };
 
-      const form = new FormData();
-      form.append("file", new Blob([JSON.stringify(metadata)], { type: 'application/json' }), 'metadata.json');
-
-      const resp = await fetch("https://api.nft.storage/upload", {
-        method: "POST",
-        headers: {
-          Authorization: "Bearer 4ec75c41.536d7acaf1d749848a0ccf098df69879"
-        },
-        body: form
-      });
-      const data = await resp.json();
-      if (!data.ok) {
-        throw new Error("Upload failed: " + data.error.message);
-      }
-      const metadataUri = `https://ipfs.io/ipfs/${data.value.cid}`;
-      console.log("📦 Metadata URI:", metadataUri);
+      const blob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
+      const file = new File([blob], "metadata.json", { type: "application/json" });
+      const cid = await client.storeBlob(file);
+      const metadataUri = https://${cid}.ipfs.nftstorage.link/metadata.json;
 
       const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
       const mint = solanaWeb3.Keypair.generate();
@@ -3660,13 +3656,12 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
       );
 
       console.log("✅ Minted token:", mint.publicKey.toBase58());
-      console.log("🧾 TX:", `https://explorer.solana.com/tx/${txid}?cluster=devnet`);
+      console.log("🧾 TX:", https://explorer.solana.com/tx/${txid}?cluster=devnet);
       console.log("🖼 Image:", imageUrl);
     };
 
     console.log("✅ runDevnetMint is ready.");
-  };
-  document.body.appendChild(nftScript);
+  });
 </script>
   
  </body>
