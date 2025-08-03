@@ -3492,16 +3492,16 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
   // Only define the function after everything (including nft.storage) is fully loaded
   window.addEventListener("DOMContentLoaded", () => {
     // ✅ Ensure nftStorage library is loaded
-    if (!window.nftStorage || !window.nftStorage.NFTStorage) {
-      console.error("❌ nftStorage not loaded.");
-      return;
-    }
+    if (!window.NFTStorage) {
+  console.error("❌ NFTStorage is not loaded.");
+  return;
+}
 
     // ✅ Define function globally
     window.runDevnetMint = async function () {
-      const client = new window.nftStorage.NFTStorage({
-        token: "5a3ed115.8cd08a223a0f45e98e0cce2e14d082fe"
-      });
+      const client = new window.NFTStorage({
+  token: "4ec75c41.536d7acaf1d749848a0ccf098df69879"
+});
 
       const TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
       const ASSOCIATED_TOKEN_PROGRAM_ID = splToken.ASSOCIATED_TOKEN_PROGRAM_ID;
@@ -3542,7 +3542,7 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
       const blob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
       const file = new File([blob], "metadata.json", { type: "application/json" });
       const cid = await client.storeBlob(file);
-      const metadataUri = https://${cid}.ipfs.nftstorage.link/metadata.json;
+      const metadataUri = `https://ipfs.io/ipfs/${data.value.cid}`;
 
       const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
       const mint = solanaWeb3.Keypair.generate();
@@ -3655,7 +3655,7 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
       );
 
       console.log("✅ Minted token:", mint.publicKey.toBase58());
-      console.log("🧾 TX:", https://explorer.solana.com/tx/${txid}?cluster=devnet);
+      console.log("🧾 TX:", `https://explorer.solana.com/tx/${txid}?cluster=devnet`);
       console.log("🖼 Image:", imageUrl);
     };
 
