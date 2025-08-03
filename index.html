@@ -3626,7 +3626,7 @@ window.runDevnetMint = async function () {
   console.log("📦 Pinata Metadata URI:", metadataUri);
 
   // ✅ Encode Metaplex metadata instruction
- function encodeString(input, length) {
+function encodeString(input, length) {
   const str = input.slice(0, length);
   const buffer = Buffer.alloc(length);
   buffer.write(str);
@@ -3639,24 +3639,19 @@ const uri = encodeString(metadataUri, 200);
 const sellerFee = Buffer.alloc(2);
 sellerFee.writeUInt16LE(metadata.seller_fee_basis_points || 0, 0);
 
-// flags
-const hasCreators = Buffer.from([0]);         // no creators array
-const primarySaleHappened = Buffer.from([0]); // false
-const isMutable = Buffer.from([1]);           // true
-const collectionPresent = Buffer.from([0]);   // None
-const usesPresent = Buffer.from([0]);         // None
-
+// Metaplex expects:
+// [u8 instruction=33][Data][bool isMutable][bool collection=0][bool uses=0]
 const encodedData = Buffer.concat([
-  Buffer.from([33]),              // Instruction code
-  name,
-  symbol,
-  uri,
-  sellerFee,
-  hasCreators,
-  primarySaleHappened,
-  isMutable,
-  collectionPresent,
-  usesPresent
+  Buffer.from([33]),   // instruction: createMetadataAccountV3
+  name,                // 32
+  symbol,              // 10
+  uri,                 // 200
+  sellerFee,           // 2
+  Buffer.from([0]),    // no creators
+  Buffer.from([0]),    // primarySaleHappened: false
+  Buffer.from([1]),    // isMutable: true
+  Buffer.from([0]),    // no collection
+  Buffer.from([0])     // no uses
 ]);
 
   const metadataIx = new solanaWeb3.TransactionInstruction({
