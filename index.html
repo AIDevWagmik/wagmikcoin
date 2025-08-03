@@ -3479,11 +3479,6 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
     <button onclick="document.getElementById('mobileWalletPopup').style.display='none'">Got it!</button>
   </div>
 </div>
-
-<script type="module">
-  import { NFTStorage } from "https://cdn.jsdelivr.net/npm/nft.storage/dist/bundle.esm.min.js";
-  window.NFTStorage = NFTStorage;
-</script>
  
 <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.1/lib/index.iife.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.1.8/lib/index.iife.min.js"></script>
@@ -3498,51 +3493,65 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
 }
 
     // ✅ Define function globally
-    window.runDevnetMint = async function () {
-      const client = new window.NFTStorage({
-  token: "4ec75c41.536d7acaf1d749848a0ccf098df69879"
-});
+window.runDevnetMint = async function () {
+  const TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
+  const ASSOCIATED_TOKEN_PROGRAM_ID = splToken.ASSOCIATED_TOKEN_PROGRAM_ID;
+  const METADATA_PROGRAM_ID = new solanaWeb3.PublicKey(
+    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+  );
 
-      const TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
-      const ASSOCIATED_TOKEN_PROGRAM_ID = splToken.ASSOCIATED_TOKEN_PROGRAM_ID;
-      const METADATA_PROGRAM_ID = new solanaWeb3.PublicKey(
-        "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
-      );
+  const canvas = document.getElementById("memeCanvas");
+  if (!canvas) return alert("Meme canvas not found.");
 
-      const canvas = document.getElementById("memeCanvas");
-      if (!canvas) return alert("Meme canvas not found.");
+  const base64 = canvas.toDataURL("image/png").split(",")[1];
+  const imageUrl = `data:image/png;base64,${base64}`;
+  if (!imageUrl) return alert("Image upload failed.");
 
-      const base64 = canvas.toDataURL("image/png").split(",")[1];
-      const imageUrl = `data:image/png;base64,${base64}`;
-      if (!imageUrl) return alert("Image upload failed.");
+  const phantom = window.solana;
+  if (!phantom || !phantom.isPhantom) return alert("Phantom not found.");
+  await phantom.connect();
+  const from = phantom.publicKey;
 
-      const phantom = window.solana;
-      if (!phantom || !phantom.isPhantom) return alert("Phantom not found.");
-      await phantom.connect();
-      const from = phantom.publicKey;
+  const metadata = {
+    name: `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`,
+    symbol: "WAGMIK",
+    description: "Forged in hopium. Minted on Solana.",
+    seller_fee_basis_points: 0,
+    image: imageUrl,
+    attributes: [
+      { trait_type: "Origin", value: "WAGMIK Generator" },
+      { trait_type: "Chain", value: "Solana" }
+    ],
+    collection: { name: "WAGMIK Memes", family: "WAGMIK" },
+    properties: {
+      files: [{ uri: imageUrl, type: "image/png" }],
+      category: "image",
+      creators: [{ address: from.toBase58(), share: 100 }]
+    }
+  };
 
-      const metadata = {
-        name: `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`,
-        symbol: "WAGMIK",
-        description: "Forged in hopium. Minted on Solana.",
-        seller_fee_basis_points: 0,
-        image: imageUrl,
-        attributes: [
-          { trait_type: "Origin", value: "WAGMIK Generator" },
-          { trait_type: "Chain", value: "Solana" }
-        ],
-        collection: { name: "WAGMIK Memes", family: "WAGMIK" },
-        properties: {
-          files: [{ uri: imageUrl, type: "image/png" }],
-          category: "image",
-          creators: [{ address: from.toBase58(), share: 100 }]
-        }
-      };
+  const form = new FormData();
+  form.append(
+    "file",
+    new Blob([JSON.stringify(metadata)], { type: "application/json" }),
+    "metadata.json"
+  );
 
-      const blob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
-      const file = new File([blob], "metadata.json", { type: "application/json" });
-      const cid = await client.storeBlob(file);
-      const metadataUri = `https://ipfs.io/ipfs/${data.value.cid}`;
+  const resp = await fetch("https://api.nft.storage/upload", {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer 4ec75c41.536d7acaf1d749848a0ccf098df69879"
+    },
+    body: form
+  });
+
+  const data = await resp.json();
+  if (!data.ok) {
+    throw new Error("Upload failed: " + data.error.message);
+  }
+
+  const metadataUri = `https://ipfs.io/ipfs/${data.value.cid}`;
+  console.log("📦 Metadata URI:", metadataUri);
 
       const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
       const mint = solanaWeb3.Keypair.generate();
