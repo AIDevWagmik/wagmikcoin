@@ -3480,7 +3480,10 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
   </div>
 </div>
 
-<script src="https://unpkg.com/nft.storage/dist/bundle.umd.min.js"></script>
+<script type="module">
+  import { NFTStorage } from "https://cdn.jsdelivr.net/npm/nft.storage/dist/bundle.esm.min.js";
+  window.NFTStorage = NFTStorage;
+</script>
  
 <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.1/lib/index.iife.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.1.8/lib/index.iife.min.js"></script>
