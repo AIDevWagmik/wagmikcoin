@@ -3528,9 +3528,27 @@ window.runDevnetMint = async function () {
     };
   });
 
-  const base64 = canvas.toDataURL("image/png").split(",")[1];
-  const imageUrl = `data:image/png;base64,${base64}`;
-  if (!imageUrl) return alert("Image upload failed.");
+ const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+
+const formData = new FormData();
+formData.append("file", blob, "wagmik-image.png");
+
+const imageRes = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${jwt}`  // <-- use your actual JWT here
+  },
+  body: formData
+});
+
+if (!imageRes.ok) return alert("Image upload to IPFS failed.");
+
+const imageResult = await imageRes.json();
+const imageUrl = `ipfs://${imageResult.IpfsHash}`;
+metadata.image = imageUrl;
+metadata.properties.files = [{ uri: imageUrl, type: "image/png" }];
+
+console.log("✅ Uploaded image to IPFS:", imageUrl);
 
   const phantom = window.solana;
   if (!phantom || !phantom.isPhantom) return alert("Phantom not found.");
@@ -3541,23 +3559,21 @@ window.runDevnetMint = async function () {
   const safeName = rawName.slice(0, 32); 
 
   const metadata = {
-    name: safeName,
-    symbol: "WAGMIK",
-    description: "Forged in hopium. Minted on Solana.",
-    seller_fee_basis_points: 0,
-    image: imageUrl,
-    attributes: [
-      { trait_type: "Origin", value: "WAGMIK Generator" },
-      { trait_type: "Chain", value: "Solana" },
-      { trait_type: "Tier", value: tier }
-    ],
-    collection: { name: "WAGMIK Memes", family: "WAGMIK" },
-    properties: {
-      files: [{ uri: imageUrl, type: "image/png" }],
-      category: "image",
-      creators: [{ address: from.toBase58(), share: 100 }]
-    }
-  };
+  name: safeName,
+  symbol: "WAGMIK",
+  description: "Forged in hopium. Minted on Solana.",
+  seller_fee_basis_points: 0,
+  attributes: [
+    { trait_type: "Origin", value: "WAGMIK Generator" },
+    { trait_type: "Chain", value: "Solana" },
+    { trait_type: "Tier", value: tier }
+  ],
+  collection: { name: "WAGMIK Memes", family: "WAGMIK" },
+  properties: {
+    category: "image",
+    creators: [{ address: from.toBase58(), share: 100 }]
+  }
+};
 
   const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
   const mint = solanaWeb3.Keypair.generate();
