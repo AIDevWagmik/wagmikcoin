@@ -3494,7 +3494,6 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
   nftScript.onload = () => {
     window.nftStorage = window.NFTStorage;
 
-    window.addEventListener("DOMContentLoaded", () => {
     window.runDevnetMint = async function () {
       const TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
       const ASSOCIATED_TOKEN_PROGRAM_ID = splToken.ASSOCIATED_TOKEN_PROGRAM_ID;
@@ -3666,7 +3665,6 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
     };
 
     console.log("✅ runDevnetMint is ready.");
-    });
   };
   document.body.appendChild(nftScript);
 </script>
