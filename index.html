@@ -3547,8 +3547,6 @@ if (!imageRes.ok) return alert("Image upload to IPFS failed.");
 
 const imageResult = await imageRes.json();
 const imageUrl = `ipfs://${imageResult.IpfsHash}`;
-metadata.image = imageUrl;
-metadata.properties.files = [{ uri: imageUrl, type: "image/png" }];
 
 console.log("✅ Uploaded image to IPFS:", imageUrl);
 
@@ -3576,6 +3574,9 @@ console.log("✅ Uploaded image to IPFS:", imageUrl);
     creators: [{ address: from.toBase58(), share: 100 }]
   }
 };
+
+ metadata.image = imageUrl;
+ metadata.properties.files = [{ uri: imageUrl, type: "image/png" }];
 
   const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
   const mint = solanaWeb3.Keypair.generate();
