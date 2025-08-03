@@ -3479,17 +3479,22 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
     <button onclick="document.getElementById('mobileWalletPopup').style.display='none'">Got it!</button>
   </div>
 </div>
+
+<script src="https://unpkg.com/nft.storage/dist/bundle.umd.min.js"></script>
  
 <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.95.1/lib/index.iife.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@solana/spl-token@0.1.8/lib/index.iife.min.js"></script>
 
 <script>
-  const nftLoader = document.createElement("script");
-  nftLoader.src = "https://unpkg.com/nft.storage/dist/bundle.umd.min.js";
+  // Only define the function after everything (including nft.storage) is fully loaded
+  window.addEventListener("DOMContentLoaded", () => {
+    // ✅ Ensure nftStorage library is loaded
+    if (!window.nftStorage || !window.nftStorage.NFTStorage) {
+      console.error("❌ nftStorage not loaded.");
+      return;
+    }
 
-  nftLoader.onload = () => {
-    window.nftStorage = window.nftStorage || window["nftStorage"];
-
+    // ✅ Define function globally
     window.runDevnetMint = async function () {
       const client = new window.nftStorage.NFTStorage({
         token: "5a3ed115.8cd08a223a0f45e98e0cce2e14d082fe"
@@ -3535,7 +3540,6 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
       const file = new File([blob], "metadata.json", { type: "application/json" });
       const cid = await client.storeBlob(file);
       const metadataUri = `https://${cid}.ipfs.nftstorage.link/metadata.json`;
-      console.log("📦 Metadata URI:", metadataUri);
 
       const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
       const mint = solanaWeb3.Keypair.generate();
@@ -3636,8 +3640,6 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
 
       tx.partialSign(mint);
       const signed = await phantom.signTransaction(tx);
-
-      // 🛠 Fix for simulation issues
       signed.verifySignatures = false;
 
       const txid = await connection.sendRawTransaction(signed.serialize(), {
@@ -3654,10 +3656,8 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
       console.log("🖼 Image:", imageUrl);
     };
 
-    console.log("✅ runDevnetMint is now available.");
-  };
-
-  document.body.appendChild(nftLoader);
+    console.log("✅ runDevnetMint is ready.");
+  });
 </script>
   
  </body>
