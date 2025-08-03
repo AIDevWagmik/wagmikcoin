@@ -3639,16 +3639,19 @@ const uri = encodeString(metadataUri, 200);
 const sellerFee = Buffer.alloc(2);
 sellerFee.writeUInt16LE(metadata.seller_fee_basis_points || 0, 0);
 
-// Instruction 0 = CreateMetadataAccount (V1)
+// Metaplex expects:
+// [u8 instruction=33][Data][bool isMutable][bool collection=0][bool uses=0]
 const encodedData = Buffer.concat([
-  Buffer.from([0]),      // instruction = 0
-  name,                  // 32 bytes
-  symbol,                // 10 bytes
-  uri,                   // 200 bytes
-  sellerFee,             // 2 bytes
-  Buffer.from([0]),      // no creators array
-  Buffer.from([0]),      // primarySaleHappened = false
-  Buffer.from([1])       // isMutable = true
+  Buffer.from([33]),   // instruction: createMetadataAccountV3
+  name,                // 32
+  symbol,              // 10
+  uri,                 // 200
+  sellerFee,           // 2
+  Buffer.from([0]),    // no creators
+  Buffer.from([0]),    // primarySaleHappened: false
+  Buffer.from([1]),    // isMutable: true
+  Buffer.from([0]),    // no collection
+  Buffer.from([0])     // no uses
 ]);
 
 console.log("📏 encodedData.length:", encodedData.length);
