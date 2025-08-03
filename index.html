@@ -3525,140 +3525,148 @@ window.runDevnetMint = async function () {
     }
   };
 
- const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJjYWZkMTliZC04YTc3LTRiM2MtOGE1Zi00YWM4N2I0YjgxMmMiLCJlbWFpbCI6ImJ1c2NoZXJ0b205MkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJGUkExIn0seyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJOWUMxIn1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiNTRkMTFjZGZlNzc2MzkyN2MzN2MiLCJzY29wZWRLZXlTZWNyZXQiOiJlMDA2YWNjZGVjODFmZWI4YmQ2NjFhMTQ3N2NjYmE4N2ZmNTc2MzVmOTY2ZGVjOGFmZDlhNjc5ZDZiODRkMTA0IiwiZXhwIjoxNzg1NzcxNTA4fQ._-B0ktHsg3mTToG2JnJTvS52f0x-n5BDvnSA6jBn7Aw"; // ⬅️ Replace with your actual JWT token
+  const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
+  const mint = solanaWeb3.Keypair.generate();
+  const lamports = await connection.getMinimumBalanceForRentExemption(82);
 
-const response = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${jwt}`
-  },
-  body: JSON.stringify(metadata)
-});
+  const ata = await splToken.Token.getAssociatedTokenAddress(
+    ASSOCIATED_TOKEN_PROGRAM_ID,
+    TOKEN_PROGRAM_ID,
+    mint.publicKey,
+    from
+  );
 
-if (!response.ok) {
-  throw new Error("❌ Pinata upload failed: " + response.statusText);
-}
+  const tx = new solanaWeb3.Transaction();
 
-const result = await response.json();
-const metadataUri = `https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`;
-console.log("📦 Pinata Metadata URI:", metadataUri);
+  tx.add(
+    solanaWeb3.SystemProgram.createAccount({
+      fromPubkey: from,
+      newAccountPubkey: mint.publicKey,
+      space: 82,
+      lamports,
+      programId: TOKEN_PROGRAM_ID
+    }),
+    splToken.Token.createInitMintInstruction(
+      TOKEN_PROGRAM_ID,
+      mint.publicKey,
+      0,
+      from,
+      from
+    ),
+    splToken.Token.createAssociatedTokenAccountInstruction(
+      ASSOCIATED_TOKEN_PROGRAM_ID,
+      TOKEN_PROGRAM_ID,
+      mint.publicKey,
+      ata,
+      from,
+      from
+    ),
+    splToken.Token.createMintToInstruction(
+      TOKEN_PROGRAM_ID,
+      mint.publicKey,
+      ata,
+      from,
+      [],
+      1
+    )
+  );
 
+  const [metadataPDA] = await solanaWeb3.PublicKey.findProgramAddress(
+    [
+      Buffer.from("metadata"),
+      METADATA_PROGRAM_ID.toBuffer(),
+      mint.publicKey.toBuffer()
+    ],
+    METADATA_PROGRAM_ID
+  );
 
-      const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
-      const mint = solanaWeb3.Keypair.generate();
-      const lamports = await connection.getMinimumBalanceForRentExemption(82);
+  // We’ll upload AFTER the user signs
+  const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
+  tx.recentBlockhash = blockhash;
+  tx.feePayer = from;
 
-      const ata = await splToken.Token.getAssociatedTokenAddress(
-        ASSOCIATED_TOKEN_PROGRAM_ID,
-        TOKEN_PROGRAM_ID,
-        mint.publicKey,
-        from
-      );
+  tx.partialSign(mint);
+  const signed = await phantom.signTransaction(tx);
+  signed.verifySignatures = false;
 
-      const tx = new solanaWeb3.Transaction();
+  const txid = await connection.sendRawTransaction(signed.serialize(), {
+    skipPreflight: false
+  });
 
-      tx.add(
-        solanaWeb3.SystemProgram.createAccount({
-          fromPubkey: from,
-          newAccountPubkey: mint.publicKey,
-          space: 82,
-          lamports,
-          programId: TOKEN_PROGRAM_ID
-        }),
-        splToken.Token.createInitMintInstruction(
-          TOKEN_PROGRAM_ID,
-          mint.publicKey,
-          0,
-          from,
-          from
-        ),
-        splToken.Token.createAssociatedTokenAccountInstruction(
-          ASSOCIATED_TOKEN_PROGRAM_ID,
-          TOKEN_PROGRAM_ID,
-          mint.publicKey,
-          ata,
-          from,
-          from
-        ),
-        splToken.Token.createMintToInstruction(
-          TOKEN_PROGRAM_ID,
-          mint.publicKey,
-          ata,
-          from,
-          [],
-          1
-        )
-      );
+  await connection.confirmTransaction(
+    { signature: txid, blockhash, lastValidBlockHeight },
+    "confirmed"
+  );
 
-      const [metadataPDA] = await solanaWeb3.PublicKey.findProgramAddress(
-        [
-          Buffer.from("metadata"),
-          METADATA_PROGRAM_ID.toBuffer(),
-          mint.publicKey.toBuffer()
-        ],
-        METADATA_PROGRAM_ID
-      );
+  console.log("✅ Mint TX confirmed:", txid);
 
-      const keys = [
-        { pubkey: metadataPDA, isSigner: false, isWritable: true },
-        { pubkey: mint.publicKey, isSigner: false, isWritable: false },
-        { pubkey: from, isSigner: true, isWritable: false },
-        { pubkey: from, isSigner: true, isWritable: true },
-        { pubkey: from, isSigner: true, isWritable: false },
-        { pubkey: solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false },
-        { pubkey: solanaWeb3.SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false }
-      ];
+  // ✅ Upload metadata to Pinata now (after confirmation)
+  const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJjYWZkMTliZC04YTc3LTRiM2MtOGE1Zi00YWM4N2I0YjgxMmMiLCJlbWFpbCI6ImJ1c2NoZXJ0b205MkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJGUkExIn0seyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJOWUMxIn1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiNTRkMTFjZGZlNzc2MzkyN2MzN2MiLCJzY29wZWRLZXlTZWNyZXQiOiJlMDA2YWNjZGVjODFmZWI4YmQ2NjFhMTQ3N2NjYmE4N2ZmNTc2MzVmOTY2ZGVjOGFmZDlhNjc5ZDZiODRkMTA0IiwiZXhwIjoxNzg1NzcxNTA4fQ._-B0ktHsg3mTToG2JnJTvS52f0x-n5BDvnSA6jBn7Aw"; // 🔐 Replace with your full JWT again
 
-      const encodedData = (() => {
-        const name = metadata.name.slice(0, 32).padEnd(32, "\0");
-        const symbol = metadata.symbol.slice(0, 10).padEnd(10, "\0");
-        const uri = metadataUri.slice(0, 200).padEnd(200, "\0");
-        const sellerFee = Buffer.alloc(2);
-        sellerFee.writeUInt16LE(0, 0);
+  const pinataRes = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`
+    },
+    body: JSON.stringify(metadata)
+  });
 
-        return Buffer.concat([
-          Buffer.from([33]),
-          Buffer.from(name),
-          Buffer.from(symbol),
-          Buffer.from(uri),
-          sellerFee,
-          Buffer.from([0]),
-          Buffer.from([0]),
-          Buffer.from([0]),
-          Buffer.from([0])
-        ]);
-      })();
+  if (!pinataRes.ok) {
+    throw new Error("❌ Pinata upload failed: " + pinataRes.statusText);
+  }
 
-      const metadataIx = new solanaWeb3.TransactionInstruction({
-        keys,
-        programId: METADATA_PROGRAM_ID,
-        data: encodedData
-      });
+  const result = await pinataRes.json();
+  const metadataUri = `https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`;
+  console.log("📦 Pinata Metadata URI:", metadataUri);
 
-      tx.add(metadataIx);
+  // ✅ Encode Metaplex metadata instruction
+  const name = metadata.name.slice(0, 32).padEnd(32, "\0");
+  const symbol = metadata.symbol.slice(0, 10).padEnd(10, "\0");
+  const uri = metadataUri.slice(0, 200).padEnd(200, "\0");
+  const sellerFee = Buffer.alloc(2);
+  sellerFee.writeUInt16LE(metadata.seller_fee_basis_points, 0);
 
-      const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
-      tx.recentBlockhash = blockhash;
-      tx.feePayer = from;
+  const encodedData = Buffer.concat([
+    Buffer.from([33]),          // Instruction index
+    Buffer.from(name),
+    Buffer.from(symbol),
+    Buffer.from(uri),
+    sellerFee,
+    Buffer.from([0]),           // creators: None
+    Buffer.from([0]),           // verified: false
+    Buffer.from([0]),           // mutable: false
+    Buffer.from([0])            // primarySaleHappened: false
+  ]);
 
-      tx.partialSign(mint);
-      const signed = await phantom.signTransaction(tx);
-      signed.verifySignatures = false;
+  const metadataIx = new solanaWeb3.TransactionInstruction({
+    keys: [
+      { pubkey: metadataPDA, isSigner: false, isWritable: true },
+      { pubkey: mint.publicKey, isSigner: false, isWritable: false },
+      { pubkey: from, isSigner: true, isWritable: false },
+      { pubkey: from, isSigner: true, isWritable: true },
+      { pubkey: from, isSigner: true, isWritable: false },
+      { pubkey: solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false },
+      { pubkey: solanaWeb3.SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false }
+    ],
+    programId: METADATA_PROGRAM_ID,
+    data: encodedData
+  });
 
-      const txid = await connection.sendRawTransaction(signed.serialize(), {
-        skipPreflight: false
-      });
+  // ❗ Send this as a new transaction after upload
+  const tx2 = new solanaWeb3.Transaction().add(metadataIx);
+  tx2.feePayer = from;
 
-      await connection.confirmTransaction(
-        { signature: txid, blockhash, lastValidBlockHeight },
-        "confirmed"
-      );
+  const { blockhash: bh2, lastValidBlockHeight: lbh2 } = await connection.getLatestBlockhash("finalized");
+  tx2.recentBlockhash = bh2;
 
-      console.log("✅ Minted token:", mint.publicKey.toBase58());
-      console.log("🧾 TX:", `https://explorer.solana.com/tx/${txid}?cluster=devnet`);
-      console.log("🖼 Image:", imageUrl);
-    };
+  const signed2 = await phantom.signTransaction(tx2);
+  const txid2 = await connection.sendRawTransaction(signed2.serialize(), { skipPreflight: false });
+  await connection.confirmTransaction({ signature: txid2, blockhash: bh2, lastValidBlockHeight: lbh2 }, "confirmed");
+
+  console.log("✅ Metadata set:", metadataUri);
+  console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluster=devnet`);
+};
 
     console.log("✅ runDevnetMint is ready.");
   });
