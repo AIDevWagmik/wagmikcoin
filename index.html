@@ -3492,174 +3492,173 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
 <script>
 window.addEventListener("DOMContentLoaded", () => {
   window.runDevnetMint = async function () {
-    // ✅ NFT.storage logic goes first
+    // ✅ Check that nftStorage is ready (but don't block popup with alert)
     if (!window.nftStorage || !window.nftStorage.NFTStorage) {
-      alert("nftStorage not loaded");
+      console.warn("nftStorage not loaded");
       return;
     }
 
     const client = new window.nftStorage.NFTStorage({
       token: "5a3ed115.8cd08a223a0f45e98e0cce2e14d082fe"
     });
-   
-  const TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
-  const ASSOCIATED_TOKEN_PROGRAM_ID = splToken.ASSOCIATED_TOKEN_PROGRAM_ID;
-  const METADATA_PROGRAM_ID = new solanaWeb3.PublicKey(
-    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
-  );
 
-  const canvas = document.getElementById("memeCanvas");
-  if (!canvas) return alert("Meme canvas not found.");
+    const TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
+    const ASSOCIATED_TOKEN_PROGRAM_ID = splToken.ASSOCIATED_TOKEN_PROGRAM_ID;
+    const METADATA_PROGRAM_ID = new solanaWeb3.PublicKey(
+      "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+    );
 
-  const base64 = canvas.toDataURL("image/png").split(",")[1];
-  const imageUrl = `data:image/png;base64,${base64}`;
-  if (!imageUrl) return alert("Image upload failed.");
+    const canvas = document.getElementById("memeCanvas");
+    if (!canvas) return alert("Meme canvas not found.");
 
-  const phantom = window.solana;
-  if (!phantom || !phantom.isPhantom) return alert("Phantom not found.");
-  await phantom.connect();
-  const from = phantom.publicKey;
+    const base64 = canvas.toDataURL("image/png").split(",")[1];
+    const imageUrl = `data:image/png;base64,${base64}`;
+    if (!imageUrl) return alert("Image upload failed.");
 
-   // ✅ 1. Define metadata AFTER imageUrl + from are known
-const metadata = {
-  name: `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`,
-  symbol: "WAGMIK",
-  description: "Forged in hopium. Minted on Solana.",
-  seller_fee_basis_points: 0,
-  image: imageUrl,
-  attributes: [
-    { trait_type: "Origin", value: "WAGMIK Generator" },
-    { trait_type: "Chain", value: "Solana" }
-  ],
-  collection: { name: "WAGMIK Memes", family: "WAGMIK" },
-  properties: {
-    files: [{ uri: imageUrl, type: "image/png" }],
-    category: "image",
-    creators: [{ address: from.toBase58(), share: 100 }]
-  }
-};
+    const phantom = window.solana;
+    if (!phantom || !phantom.isPhantom) return alert("Phantom not found.");
+    await phantom.connect();
+    const from = phantom.publicKey;
+    console.log("✅ Phantom connected:", from.toBase58());
 
-// ✅ 2. Upload metadata after it's fully defined
-const blob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
-const file = new File([blob], "metadata.json", { type: "application/json" });
-const cid = await client.storeBlob(file);
-const metadataUri = `https://${cid}.ipfs.nftstorage.link/metadata.json`;
+    // ✅ Metadata
+    const metadata = {
+      name: `WAGMIK Meme #${Math.floor(Math.random() * 9999)}`,
+      symbol: "WAGMIK",
+      description: "Forged in hopium. Minted on Solana.",
+      seller_fee_basis_points: 0,
+      image: imageUrl,
+      attributes: [
+        { trait_type: "Origin", value: "WAGMIK Generator" },
+        { trait_type: "Chain", value: "Solana" }
+      ],
+      collection: { name: "WAGMIK Memes", family: "WAGMIK" },
+      properties: {
+        files: [{ uri: imageUrl, type: "image/png" }],
+        category: "image",
+        creators: [{ address: from.toBase58(), share: 100 }]
+      }
+    };
 
-console.log("📦 Metadata URI:", metadataUri);
+    const blob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
+    const file = new File([blob], "metadata.json", { type: "application/json" });
+    const cid = await client.storeBlob(file);
+    const metadataUri = `https://${cid}.ipfs.nftstorage.link/metadata.json`;
+    console.log("📦 Metadata URI:", metadataUri);
 
-  const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
-  const mint = solanaWeb3.Keypair.generate();
-  const lamports = await connection.getMinimumBalanceForRentExemption(82);
+    const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
+    const mint = solanaWeb3.Keypair.generate();
+    const lamports = await connection.getMinimumBalanceForRentExemption(82);
 
-  const ata = await splToken.Token.getAssociatedTokenAddress(
-    ASSOCIATED_TOKEN_PROGRAM_ID,
-    TOKEN_PROGRAM_ID,
-    mint.publicKey,
-    from
-  );
-
-  const tx = new solanaWeb3.Transaction();
-
-  tx.add(
-    solanaWeb3.SystemProgram.createAccount({
-      fromPubkey: from,
-      newAccountPubkey: mint.publicKey,
-      space: 82,
-      lamports,
-      programId: TOKEN_PROGRAM_ID
-    }),
-    splToken.Token.createInitMintInstruction(
-      TOKEN_PROGRAM_ID,
-      mint.publicKey,
-      0,
-      from,
-      from
-    ),
-    splToken.Token.createAssociatedTokenAccountInstruction(
+    const ata = await splToken.Token.getAssociatedTokenAddress(
       ASSOCIATED_TOKEN_PROGRAM_ID,
       TOKEN_PROGRAM_ID,
       mint.publicKey,
-      ata,
-      from,
       from
-    ),
-    splToken.Token.createMintToInstruction(
-      TOKEN_PROGRAM_ID,
-      mint.publicKey,
-      ata,
-      from,
-      [],
-      1
-    )
-  );
+    );
 
-  const [metadataPDA] = await solanaWeb3.PublicKey.findProgramAddress(
-    [
-      Buffer.from("metadata"),
-      METADATA_PROGRAM_ID.toBuffer(),
-      mint.publicKey.toBuffer()
-    ],
-    METADATA_PROGRAM_ID
-  );
+    const tx = new solanaWeb3.Transaction();
 
-  const keys = [
-    { pubkey: metadataPDA, isSigner: false, isWritable: true },
-    { pubkey: mint.publicKey, isSigner: false, isWritable: false },
-    { pubkey: from, isSigner: true, isWritable: false },
-    { pubkey: from, isSigner: true, isWritable: true },
-    { pubkey: from, isSigner: true, isWritable: false },
-    { pubkey: solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false },
-    { pubkey: solanaWeb3.SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false }
-  ];
+    tx.add(
+      solanaWeb3.SystemProgram.createAccount({
+        fromPubkey: from,
+        newAccountPubkey: mint.publicKey,
+        space: 82,
+        lamports,
+        programId: TOKEN_PROGRAM_ID
+      }),
+      splToken.Token.createInitMintInstruction(
+        TOKEN_PROGRAM_ID,
+        mint.publicKey,
+        0,
+        from,
+        from
+      ),
+      splToken.Token.createAssociatedTokenAccountInstruction(
+        ASSOCIATED_TOKEN_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        mint.publicKey,
+        ata,
+        from,
+        from
+      ),
+      splToken.Token.createMintToInstruction(
+        TOKEN_PROGRAM_ID,
+        mint.publicKey,
+        ata,
+        from,
+        [],
+        1
+      )
+    );
 
-  const encodedData = (() => {
-    const name = metadata.name.padEnd(32, "\0");
-    const symbol = metadata.symbol.padEnd(10, "\0");
-    const uri = metadataUri.padEnd(200, "\0");
-    const sellerFee = Buffer.alloc(2);
-    sellerFee.writeUInt16LE(0, 0);
+    const [metadataPDA] = await solanaWeb3.PublicKey.findProgramAddress(
+      [
+        Buffer.from("metadata"),
+        METADATA_PROGRAM_ID.toBuffer(),
+        mint.publicKey.toBuffer()
+      ],
+      METADATA_PROGRAM_ID
+    );
 
-    return Buffer.concat([
-      Buffer.from([33]),
-      Buffer.from(name),
-      Buffer.from(symbol),
-      Buffer.from(uri),
-      sellerFee,
-      Buffer.from([0]),
-      Buffer.from([0]),
-      Buffer.from([0]),
-      Buffer.from([0])
-    ]);
-  })();
+    const keys = [
+      { pubkey: metadataPDA, isSigner: false, isWritable: true },
+      { pubkey: mint.publicKey, isSigner: false, isWritable: false },
+      { pubkey: from, isSigner: true, isWritable: false },
+      { pubkey: from, isSigner: true, isWritable: true },
+      { pubkey: from, isSigner: true, isWritable: false },
+      { pubkey: solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false },
+      { pubkey: solanaWeb3.SYSVAR_RENT_PUBKEY, isSigner: false, isWritable: false }
+    ];
 
-  const metadataIx = new solanaWeb3.TransactionInstruction({
-    keys,
-    programId: METADATA_PROGRAM_ID,
-    data: encodedData
-  });
+    const encodedData = (() => {
+      const name = metadata.name.padEnd(32, "\0");
+      const symbol = metadata.symbol.padEnd(10, "\0");
+      const uri = metadataUri.padEnd(200, "\0");
+      const sellerFee = Buffer.alloc(2);
+      sellerFee.writeUInt16LE(0, 0);
 
-  tx.add(metadataIx);
+      return Buffer.concat([
+        Buffer.from([33]),
+        Buffer.from(name),
+        Buffer.from(symbol),
+        Buffer.from(uri),
+        sellerFee,
+        Buffer.from([0]),
+        Buffer.from([0]),
+        Buffer.from([0]),
+        Buffer.from([0])
+      ]);
+    })();
 
-  const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
-  tx.recentBlockhash = blockhash;
-  tx.feePayer = from;
+    const metadataIx = new solanaWeb3.TransactionInstruction({
+      keys,
+      programId: METADATA_PROGRAM_ID,
+      data: encodedData
+    });
 
-  tx.partialSign(mint);
-  const signed = await phantom.signTransaction(tx);
+    tx.add(metadataIx);
 
-  const txid = await connection.sendRawTransaction(signed.serialize(), {
-    skipPreflight: false
-  });
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
+    tx.recentBlockhash = blockhash;
+    tx.feePayer = from;
 
-  await connection.confirmTransaction(
-    { signature: txid, blockhash, lastValidBlockHeight },
-    "confirmed"
-  );
+    tx.partialSign(mint);
+    const signed = await phantom.signTransaction(tx);
 
-  console.log("✅ Minted token:", mint.publicKey.toBase58());
-  console.log("🧾 TX:", `https://explorer.solana.com/tx/${txid}?cluster=devnet`);
-  console.log("🖼 Image:", imageUrl);
- };
+    const txid = await connection.sendRawTransaction(signed.serialize(), {
+      skipPreflight: false
+    });
+
+    await connection.confirmTransaction(
+      { signature: txid, blockhash, lastValidBlockHeight },
+      "confirmed"
+    );
+
+    console.log("✅ Minted token:", mint.publicKey.toBase58());
+    console.log("🧾 TX:", `https://explorer.solana.com/tx/${txid}?cluster=devnet`);
+    console.log("🖼 Image:", imageUrl);
+  };
 });
 </script>
   
