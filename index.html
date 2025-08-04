@@ -1851,6 +1851,7 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   <li style="margin: 0;"><code>spltokens</code> — list SPL token balances</li>
   <li style="margin: 0;"><code>splsend &lt;mint&gt; &lt;recipient&gt; &lt;amount&gt;</code> — send SPL tokens</li>
   <li style="margin: 0;"><code>dappcheck</code> — check Solana dApp readiness</li>
+  <li style="margin: 0;"><code>view nft</code></li>
 </ul>
   </div>
 </div>
@@ -3384,7 +3385,7 @@ else if (cmd.toLowerCase() === "mintnft") {
   }
 }
 
-   else if (command === "view nft") {
+   else if (cmd.toLowerCase() === "view nft") {
       terminalOutput.innerHTML += "<div>📥 Fetching NFTs from wallet...</div>";
       await loadWalletNFTs(); // ⬅ this function you'll define next
       terminalOutput.innerHTML += "<div>🖼 NFT Gallery loaded below.</div>";
