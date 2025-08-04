@@ -3686,6 +3686,8 @@ console.log("✅ Uploaded image to IPFS:", imageUrl);
   symbol: metadata.symbol
 });
 
+ console.log("✅ metadata object before fetch:", JSON.stringify(metadata, null, 2));
+
   // ✅ Encode Metaplex metadata instruction
 // ✅ Request clean SDK-based metadata TX from backend
 const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
@@ -3697,7 +3699,7 @@ const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
     updateAuthority: from.toBase58(),
     uri: metadataUri,
     name: metadata.name,
-    symbol: metadata.symbol
+    symbol: metadata.symbol || "WAGMIK"
   }),
 }).then(res => res.text());
 
