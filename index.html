@@ -3460,38 +3460,39 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
 
     galleryContainer.innerHTML = "🔍 Fetching metadata...";
 
-    const items = await Promise.all(nftMints.map(async (mint) => {
-      try {
-        const [metadataPDA] = await solanaWeb3.PublicKey.findProgramAddress(
-          [
-            Buffer.from("metadata"),
-            new solanaWeb3.PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s").toBuffer(),
-            new solanaWeb3.PublicKey(mint).toBuffer()
-          ],
-          new solanaWeb3.PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s")
-        );
+   const items = await Promise.all(nftMints.map(async (mint) => {
+  try {
+    const [metadataPDA] = await solanaWeb3.PublicKey.findProgramAddress(
+      [
+        Buffer.from("metadata"),
+        new solanaWeb3.PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s").toBuffer(),
+        new solanaWeb3.PublicKey(mint).toBuffer()
+      ],
+      new solanaWeb3.PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s")
+    );
 
-        const accInfo = await connection.getAccountInfo(metadataPDA);
-        if (!accInfo) return null;
+    const accInfo = await connection.getAccountInfo(metadataPDA);
+    if (!accInfo) return null;
 
-        const metadata = decodeMetadata(accInfo.data);
-        const uri = metadata.data.uri.replace(/\0/g, "").trim();
-       if (!uri.startsWith("http") && !uri.startsWith("ipfs://")) {
-  console.warn("⚠️ Skipping invalid URI:", uri);
-  return null;
-}
-        console.log("📡 Attempting to fetch metadata URI:", uri);
-        const res = await fetch(uri);
-        const json = await res.json();
+    // ✅ Replaced decodeMetadata usage
+    const uri = decodeUriSafely(accInfo.data);
+    if (!uri) {
+      console.warn("⚠️ Skipping invalid URI (decode failed)");
+      return null;
+    }
 
-        return {
-          name: json.name,
-          image: json.image.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/")
-        };
-      } catch {
-        return null;
-      }
-    }));
+    const res = await fetch(uri.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/"));
+    const json = await res.json();
+
+    return {
+      name: json.name,
+      image: json.image.replace("ipfs://", "https://gateway.pinata.cloud/ipfs/")
+    };
+
+  } catch {
+    return null;
+  }
+}));
 
     galleryContainer.innerHTML = "";
     items.filter(Boolean).forEach(({ name, image }) => {
@@ -3505,12 +3506,11 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
     });
   }
 
-  function decodeMetadata(buffer) {
-    const name = buffer.slice(1, 33).toString("utf8");
-    const symbol = buffer.slice(33, 43).toString("utf8");
-    const uri = buffer.slice(43, 243).toString("utf8");
-    return { data: { name, symbol, uri } };
-  }
+ function decodeUriSafely(buffer) {
+  const raw = buffer.slice(43, 243).toString("utf8");
+  const match = raw.match(/(ipfs:\/\/[A-Za-z0-9]+)/);
+  return match ? match[1] : null;
+}
  
 </script> 
 
