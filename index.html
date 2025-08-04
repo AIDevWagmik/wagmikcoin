@@ -3431,7 +3431,8 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
       try {
         const name = new TextDecoder().decode(buffer.slice(1 + 32 + 32, 1 + 32 + 32 + 32)).replace(/\0/g, '');
         const symbol = new TextDecoder().decode(buffer.slice(1 + 32 + 32 + 32, 1 + 32 + 32 + 32 + 10)).replace(/\0/g, '');
-        const uri = new TextDecoder().decode(buffer.slice(1 + 32 + 32 + 32 + 10, 1 + 32 + 32 + 32 + 10 + 200)).replace(/\0/g, '');
+        const rawUri = new TextDecoder().decode(buffer.slice(1 + 32 + 32 + 32 + 10, 1 + 32 + 32 + 32 + 10 + 200));
+        const uri = rawUri.replace(/\0/g, '').replace(/[^\x20-\x7E]/g, '').trim();
 
         return {
           data: { name, symbol, uri }
@@ -3483,10 +3484,13 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
         const decoded = window.borshMetadata?.deserialize(metadataAcc.data);
         if (!decoded || !decoded.data || !decoded.data.uri) continue;
 
-        let uri = decoded.data.uri.trim();
-      if (uri.startsWith("ipfs://")) {
-        uri = uri.replace("ipfs://", "https://ipfs.io/ipfs/");
-      }
+       let uri = decoded.data.uri;
+         uri = uri.replace(/\0/g, '').replace(/[^\x20-\x7E]/g, '').trim();
+
+       if (uri.startsWith("ipfs://")) {
+         uri = uri.replace("ipfs://", "https://ipfs.io/ipfs/");
+       }
+
 
       let json;
       try {
@@ -3874,6 +3878,7 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
 
 
 
