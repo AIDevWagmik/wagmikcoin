@@ -2950,7 +2950,7 @@ window.createDevnetMint = async function () {
 
     const mint = mintKeypair.publicKey.toBase58();
     logOutput(`✅ Mint created: ${mint}`);
-    logOutput(`🔗 https://explorer.solana.com/address/${mint}?cluster=devnet`);
+    logOutput(`🔗 <a href="${getExplorerAddressUrl(mint)}" target="_blank" style="color:#00ffa1;">View on Solscan</a>`);
   } catch (err) {
     console.error("❌ Mint creation failed:", err);
     logOutput("❌ Mint creation failed. Check console.");
@@ -3021,7 +3021,9 @@ window.createDevnetMint = async function () {
     await window.solanaConnection.confirmTransaction(sig, 'confirmed');
     logOutput("✅ Airdrop confirmed");
 
-    const explorer = `https://explorer.solana.com/tx/${sig}?cluster=${selectedCluster}`;
+    const explorer = selectedCluster === "mainnet-beta"
+     ? `https://solscan.io/tx/${sig}`
+     : `https://solscan.io/tx/${sig}?cluster=devnet`;
     const linkHTML = `<a href="${explorer}" target="_blank" style="color:#00ffa1;">🔗 View on Solana Explorer</a>`;
     output.innerHTML += `<br>> ${linkHTML}`;
     output.scrollTop = output.scrollHeight;
@@ -3096,7 +3098,12 @@ else if (cmd.toLowerCase() === "spltokenairdrop") {
     });
 
     logOutput("📤 Airdrop TX submitted.");
-    logOutput(`🔗 https://explorer.solana.com/tx/${sig}?cluster=devnet`);
+    const explorerLink = selectedCluster === "mainnet-beta"
+     ? `https://solscan.io/tx/${sig}`
+     : `https://solscan.io/tx/${sig}?cluster=devnet`;
+
+    logOutput(`🔗 ${explorerLink}`);
+
 
     await window.solanaConnection.confirmTransaction(sig, "confirmed");
     logOutput("✅ Token airdrop confirmed.");
@@ -3172,11 +3179,15 @@ else if (cmd.toLowerCase().startsWith("send ")) {
     const signedTx = await window.solana.signTransaction(tx);
     const signature = await window.solanaConnection.sendRawTransaction(signedTx.serialize());
 
-    logOutput(`📤 TX sent: ${signature}`);
-    const explorer = `https://explorer.solana.com/tx/${signature}?cluster=${selectedCluster}`;
-    const linkHTML = `<a href="${explorer}" target="_blank" style="color:#00ffa1;">🔗 View on Solana Explorer</a>`;
-    output.innerHTML += `<br>> ${linkHTML}`;
-    output.scrollTop = output.scrollHeight;
+   logOutput(`📤 TX sent: ${signature}`);
+   const explorer = selectedCluster === "mainnet-beta"
+      ? `https://solscan.io/tx/${signature}`
+      : `https://solscan.io/tx/${signature}?cluster=devnet`;
+
+   const linkHTML = `<a href="${explorer}" target="_blank" style="color:#00ffa1;">🔗 View on Solscan</a>`;
+   output.innerHTML += `<br>> ${linkHTML}`;
+   output.scrollTop = output.scrollHeight;
+
 
     await window.solanaConnection.confirmTransaction(signature, 'confirmed');
     logOutput("✅ Transaction confirmed.");
@@ -3318,8 +3329,11 @@ if (!token.publicKey.equals(mint)) {
     });
 
     logOutput(`📤 SPL Transfer TX: ${sig}`);
-    const explorer = `https://explorer.solana.com/tx/${sig}?cluster=${selectedCluster}`;
+    const explorer = selectedCluster === "mainnet-beta"
+      ? `https://solscan.io/tx/${sig}`
+      : `https://solscan.io/tx/${sig}?cluster=devnet`;
     logOutput(`🔗 View: ${explorer}`);
+
 
     await window.solanaConnection.confirmTransaction(sig, "confirmed");
     logOutput("✅ SPL Token transfer confirmed.");
@@ -3832,7 +3846,12 @@ metadata.properties.files = [{ uri: imageUrl, type: "image/png" }];
     "confirmed"
   );
 
-  console.log("✅ Mint TX confirmed:", txid);
+  const explorerLink = selectedCluster === "mainnet-beta"
+  ? `https://solscan.io/tx/${txid}`
+  : `https://solscan.io/tx/${txid}?cluster=devnet`;
+
+logOutput(`📦 TX Confirmed`);
+logOutput(`🔗 <a href="${explorerLink}" target="_blank" style="color:#00ffa1;">View on Solscan</a>`);
 
   // ✅ Upload metadata to Pinata now (after confirmation)
 
@@ -3926,7 +3945,12 @@ await connection.confirmTransaction(
 );
 
 console.log("✅ Metadata set:", metadataUri);
-console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluster=devnet`);
+const metadataExplorerUrl = selectedCluster === "mainnet-beta"
+  ? `https://solscan.io/tx/${txid2}`
+  : `https://solscan.io/tx/${txid2}?cluster=devnet`;
+
+console.log("🧾 Metadata TX:", metadataExplorerUrl);
+
 };
 
     console.log("✅ runDevnetMint is ready.");
@@ -3935,6 +3959,7 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
 
 
 
