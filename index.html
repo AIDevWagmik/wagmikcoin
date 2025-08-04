@@ -3693,10 +3693,14 @@ console.log("✅ Uploaded image to IPFS:", imageUrl);
   symbol: metadata.symbol
 });
 
- console.log("✅ metadata object before fetch:", JSON.stringify(metadata, null, 2));
+const cleanUri = metadataUri.trim().slice(0, 200);
+const cleanName = metadata.name.trim().slice(0, 32);
+const cleanSymbol = metadata.symbol.trim().slice(0, 10);
 
-  // ✅ Encode Metaplex metadata instruction
-// ✅ Request clean SDK-based metadata TX from backend
+console.log("🧼 Cleaned URI:", cleanUri, cleanUri.length);
+console.log("🧼 Cleaned Name:", cleanName, cleanName.length);
+console.log("🧼 Cleaned Symbol:", cleanSymbol, cleanSymbol.length);
+
 const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
@@ -3704,9 +3708,9 @@ const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
     mint: mint.publicKey.toBase58(),
     payer: from.toBase58(),
     updateAuthority: from.toBase58(),
-    uri: metadataUri,
-    name: metadata.name,
-    symbol: metadata.symbol || "WAGMIK"
+    uri: cleanUri,
+    name: cleanName,
+    symbol: cleanSymbol
   }),
 }).then(res => res.text());
 
@@ -3727,3 +3731,4 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
