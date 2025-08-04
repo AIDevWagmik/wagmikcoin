@@ -3430,6 +3430,8 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
  
 });
 
+ const output = document.getElementById('terminalOutput');
+
   async function loadWalletNFTs() {
     const phantom = window.solana;
     if (!phantom || !phantom.isPhantom) return alert("Phantom not found.");
