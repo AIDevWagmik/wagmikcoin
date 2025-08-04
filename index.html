@@ -3695,9 +3695,9 @@ metadata.properties.files = [{ uri: imageUrl, type: "image/png" }];
   symbol: metadata.symbol
 });
 
-const cleanUri = metadataUri.trim().slice(0, 200);
-const cleanName = metadata.name.trim().slice(0, 32);
-const cleanSymbol = metadata.symbol.trim().slice(0, 10);
+const cleanUri = (metadataUri || "").trim().slice(0, 200).replace(/[^\x20-\x7E]/g, '');
+const cleanName = (metadata.name || "").trim().slice(0, 32).replace(/[^\x20-\x7E]/g, '');
+const cleanSymbol = (metadata.symbol || "").trim().slice(0, 10).replace(/[^\x20-\x7E]/g, '');
 
 console.log("🧼 Cleaned URI:", cleanUri, cleanUri.length);
 console.log("🧼 Cleaned Name:", cleanName, cleanName.length);
@@ -3739,6 +3739,7 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
 
 
 
