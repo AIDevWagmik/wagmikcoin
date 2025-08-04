@@ -1868,6 +1868,14 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
   </div>
 </div>
 
+<div id="nftGalleryPopup" class="popup hidden">
+  <div class="popup-content">
+    <h2>🎨 Your NFTs</h2>
+    <div id="nftGalleryContent" style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;"></div>
+    <button onclick="document.getElementById('nftGalleryPopup').classList.add('hidden')">Close</button>
+  </div>
+</div>
+
   
   <script>
    function createCoin() {
@@ -3369,27 +3377,11 @@ else if (cmd.toLowerCase() === "dappcheck") {
   logOutput(`📦 dApp readiness: ✅ ready`);
 }
 
-else if (cmd.toLowerCase() === "mintnft") {
-  if (typeof window.runDevnetMint !== "function") {
-    logOutput("❌ Mint function not found.");
-    return;
-  }
-
-  try {
-    logOutput("⏳ Uploading and minting...");
-    await window.runDevnetMint();
-    logOutput("✅ Mint complete. See console for image + tx.");
-  } catch (err) {
-    logOutput("❌ Mint failed.");
-    console.error(err);
-  }
+else if (cmd.toLowerCase() === "view nft") {
+  terminalOutput.innerHTML += "\n📥 Fetching NFTs from wallet...";
+  await loadWalletNFTs(); // ⬅ this runs the fetch + popup
+  terminalOutput.innerHTML += "\n🖼 NFT Gallery loaded.";
 }
-
-   else if (cmd.toLowerCase() === "view nft") {
-      terminalOutput.innerHTML += "<div>📥 Fetching NFTs from wallet...</div>";
-      await loadWalletNFTs(); // ⬅ this function you'll define next
-      terminalOutput.innerHTML += "<div>🖼 NFT Gallery loaded below.</div>";
-    }
 
     else {
       logOutput(`❓ Unknown command: ${cmd}`);
@@ -3431,6 +3423,103 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
 });
  
 </script> 
+
+<script>
+  async function loadWalletNFTs() {
+    const connection = window.solanaConnection;
+    const wallet = window.walletPublicKey;
+    const output = document.getElementById("terminalOutput");
+
+    if (!wallet || !connection) {
+      output.innerHTML += "\n❌ Wallet or connection not ready.";
+      return;
+    }
+
+    const nfts = [];
+
+    try {
+      const accounts = await connection.getParsedTokenAccountsByOwner(wallet, {
+        programId: window.splToken.TOKEN_PROGRAM_ID,
+      });
+
+      for (const acc of accounts.value) {
+        const tokenAmount = acc.account.data.parsed.info.tokenAmount;
+        const mint = acc.account.data.parsed.info.mint;
+
+        if (tokenAmount.uiAmount !== 1 || tokenAmount.decimals !== 0) continue;
+
+        // fetch metadata PDA
+        const METADATA_PROGRAM_ID = new solanaWeb3.PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+        const [pda] = await solanaWeb3.PublicKey.findProgramAddress(
+          [
+            Buffer.from("metadata"),
+            METADATA_PROGRAM_ID.toBuffer(),
+            new solanaWeb3.PublicKey(mint).toBuffer()
+          ],
+          METADATA_PROGRAM_ID
+        );
+
+        const metadataAcc = await connection.getAccountInfo(pda);
+        if (!metadataAcc) continue;
+
+        const decoded = window.borshMetadata?.deserialize(metadataAcc.data);
+        if (!decoded || !decoded.data || !decoded.data.uri) continue;
+
+        const json = await fetch(decoded.data.uri.trim()).then(res => res.json());
+        if (!json || !json.name || !json.image) continue;
+
+        nfts.push({
+          name: json.name,
+          image: json.image,
+          mint
+        });
+      }
+
+      // show popup
+      renderNFTGallery(nfts);
+    } catch (err) {
+      console.error("❌ Failed to load NFTs", err);
+      output.innerHTML += "\n❌ Failed to fetch NFTs.";
+    }
+  }
+ 
+  function renderNFTGallery(nfts) {
+    const popup = document.getElementById("nftGalleryPopup");
+    const container = document.getElementById("nftGalleryContent");
+
+    container.innerHTML = "";
+
+    if (!nfts.length) {
+      container.innerHTML = "<p>No NFTs found.</p>";
+    } else {
+      for (const nft of nfts) {
+        const div = document.createElement("div");
+        div.style.textAlign = "center";
+
+        const img = document.createElement("img");
+        img.src = nft.image;
+        img.alt = nft.name;
+        img.style.width = "120px";
+        img.style.borderRadius = "12px";
+
+        const label = document.createElement("div");
+        label.innerText = nft.name;
+        label.style.color = "#fff";
+        label.style.marginTop = "4px";
+        label.style.fontSize = "0.9em";
+
+        div.appendChild(img);
+        div.appendChild(label);
+        container.appendChild(div);
+      }
+    }
+
+    popup.classList.remove("hidden");
+  }
+</script>
+
+
+ 
 
 <style>
 @media screen and (min-width: 769px) {
@@ -3754,3 +3843,4 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
