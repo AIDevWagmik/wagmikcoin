@@ -3756,11 +3756,9 @@ metadata.properties.files = [{ uri: imageUrl, type: "image/png" }];
  const selectedCluster = localStorage.getItem("solanaCluster") || defaultCluster;
 
  const connection = new solanaWeb3.Connection(
-   selectedCluster === "mainnet-beta"
-    ? "https://api.mainnet-beta.solana.com"
-    : "https://api.devnet.solana.com",
-    "confirmed"
- );
+  getClusterUrl(selectedCluster),
+  "confirmed"
+);
 
   const mint = solanaWeb3.Keypair.generate();
   const lamports = await connection.getMinimumBalanceForRentExemption(82);
@@ -3919,6 +3917,7 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
 
 
 
