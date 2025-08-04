@@ -3902,7 +3902,11 @@ for (let i = 0; i < binary.length; i++) {
 const metadataTx = solanaWeb3.Transaction.from(byteArray);
 
 // ✅ Refresh blockhash before signing
-const { blockhash: freshBlockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
+const {
+  blockhash: freshBlockhash,
+  lastValidBlockHeight: freshLastValidBlockHeight
+} = await connection.getLatestBlockhash("finalized");
+
 metadataTx.recentBlockhash = freshBlockhash;
 metadataTx.feePayer = from;
 
@@ -3913,7 +3917,11 @@ const txid2 = await connection.sendRawTransaction(signed2.serialize(), {
 });
 
 await connection.confirmTransaction(
-  { signature: txid2, blockhash: freshBlockhash, lastValidBlockHeight },
+  {
+    signature: txid2,
+    blockhash: freshBlockhash,
+    lastValidBlockHeight: freshLastValidBlockHeight,
+  },
   "confirmed"
 );
 
@@ -3927,6 +3935,7 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
 
 
 
