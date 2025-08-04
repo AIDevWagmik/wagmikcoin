@@ -3431,8 +3431,18 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
       try {
         const name = new TextDecoder().decode(buffer.slice(1 + 32 + 32, 1 + 32 + 32 + 32)).replace(/\0/g, '');
         const symbol = new TextDecoder().decode(buffer.slice(1 + 32 + 32 + 32, 1 + 32 + 32 + 32 + 10)).replace(/\0/g, '');
-        const rawUri = new TextDecoder().decode(buffer.slice(1 + 32 + 32 + 32 + 10, 1 + 32 + 32 + 32 + 10 + 200));
-        const uri = rawUri.replace(/\0/g, '').replace(/[^\x20-\x7E]/g, '').trim();
+        const rawUri = new TextDecoder().decode(
+         buffer.slice(1 + 32 + 32 + 32 + 10, 1 + 32 + 32 + 32 + 10 + 200)
+       );
+
+       // Step 1: Remove null padding and invisible characters
+       let uri = rawUri.replace(/\0/g, '').replace(/[^\x20-\x7E]/g, '').trim();
+
+       // Step 2: If there's junk before "ipfs://", clean it
+       const ipfsIndex = uri.indexOf("ipfs://");
+       if (ipfsIndex > 0) {
+          uri = uri.slice(ipfsIndex);
+       }
 
         return {
           data: { name, symbol, uri }
@@ -3878,6 +3888,7 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
 
 
 
