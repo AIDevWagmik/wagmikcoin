@@ -3574,9 +3574,6 @@ console.log("✅ Uploaded image to IPFS:", imageUrl);
   await phantom.connect();
   const from = phantom.publicKey;
 
- const rawName = `${tier} #${mintNumber}`;
- const safeName = rawName.slice(0, 32);
-
   const metadata = {
   name: safeName,
   symbol: "WAGMIK",
@@ -3757,6 +3754,7 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
 
 
 
