@@ -3519,10 +3519,11 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
        }
 
         nfts.push({
-          name: json.name,
-          image: json.image,
-          mint
-        });
+         name: json.name,
+         image,  // ✅ use the cleaned one
+         mint
+       });
+
       }
 
       // show popup
@@ -3893,6 +3894,7 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
 
 
 
