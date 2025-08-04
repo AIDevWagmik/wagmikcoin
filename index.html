@@ -3901,11 +3901,21 @@ for (let i = 0; i < binary.length; i++) {
 }
 const metadataTx = solanaWeb3.Transaction.from(byteArray);
 
+// ✅ Refresh blockhash before signing
+const { blockhash: freshBlockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
+metadataTx.recentBlockhash = freshBlockhash;
 metadataTx.feePayer = from;
 
 const signed2 = await phantom.signTransaction(metadataTx);
-const txid2 = await connection.sendRawTransaction(signed2.serialize(), { skipPreflight: false });
-await connection.confirmTransaction(txid2, "confirmed");
+
+const txid2 = await connection.sendRawTransaction(signed2.serialize(), {
+  skipPreflight: false,
+});
+
+await connection.confirmTransaction(
+  { signature: txid2, blockhash: freshBlockhash, lastValidBlockHeight },
+  "confirmed"
+);
 
 console.log("✅ Metadata set:", metadataUri);
 console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluster=devnet`);
@@ -3917,6 +3927,7 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
 
 
 
