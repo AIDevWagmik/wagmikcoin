@@ -3377,6 +3377,22 @@ else if (cmd.toLowerCase() === "dappcheck") {
   logOutput(`📦 dApp readiness: ✅ ready`);
 }
 
+else if (cmd.toLowerCase() === "mintnft") {
+  if (typeof window.runDevnetMint !== "function") {
+    logOutput("❌ Mint function not found.");
+    return;
+  }
+
+  try {
+    logOutput("⏳ Uploading and minting...");
+    await window.runDevnetMint();
+    logOutput("✅ Mint complete. See console for image + tx.");
+  } catch (err) {
+    logOutput("❌ Mint failed.");
+    console.error(err);
+  }
+}
+
 else if (cmd.toLowerCase() === "view nft") {
   terminalOutput.innerHTML += "\n📥 Fetching NFTs from wallet...";
   await loadWalletNFTs(); // ⬅ this runs the fetch + popup
@@ -3894,6 +3910,7 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
 
 
 
