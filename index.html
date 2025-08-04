@@ -3425,6 +3425,24 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
 </script> 
 
 <script>
+
+ window.borshMetadata = {
+    deserialize(buffer) {
+      try {
+        const name = new TextDecoder().decode(buffer.slice(1 + 32 + 32, 1 + 32 + 32 + 32)).replace(/\0/g, '');
+        const symbol = new TextDecoder().decode(buffer.slice(1 + 32 + 32 + 32, 1 + 32 + 32 + 32 + 10)).replace(/\0/g, '');
+        const uri = new TextDecoder().decode(buffer.slice(1 + 32 + 32 + 32 + 10, 1 + 32 + 32 + 32 + 10 + 200)).replace(/\0/g, '');
+
+        return {
+          data: { name, symbol, uri }
+        };
+      } catch (e) {
+        console.warn("❌ Failed to decode metadata", e);
+        return null;
+      }
+    }
+  };
+ 
   async function loadWalletNFTs() {
     const connection = window.solanaConnection;
     const wallet = window.walletPublicKey;
@@ -3843,4 +3861,5 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
 
