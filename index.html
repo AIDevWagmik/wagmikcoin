@@ -3513,6 +3513,11 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
 
         if (!json || !json.name || !json.image) continue;
 
+       let image = json.image?.trim() || "";
+       if (image.startsWith("ipfs://")) {
+           image = image.replace("ipfs://", "https://ipfs.io/ipfs/");
+       }
+
         nfts.push({
           name: json.name,
           image: json.image,
@@ -3888,6 +3893,7 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
 
 
 
