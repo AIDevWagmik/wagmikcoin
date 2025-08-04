@@ -3476,6 +3476,11 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
 
         const metadata = decodeMetadata(accInfo.data);
         const uri = metadata.data.uri.replace(/\0/g, "").trim();
+       if (!uri.startsWith("http") && !uri.startsWith("ipfs://")) {
+  console.warn("⚠️ Skipping invalid URI:", uri);
+  return null;
+}
+        console.log("📡 Attempting to fetch metadata URI:", uri);
         const res = await fetch(uri);
         const json = await res.json();
 
