@@ -3714,7 +3714,13 @@ const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
   }),
 }).then(res => res.text());
 
-const metadataTx = solanaWeb3.Transaction.from(Buffer.from(metadataTxBase64, "base64"));
+const binary = atob(metadataTxBase64);
+const byteArray = new Uint8Array(binary.length);
+for (let i = 0; i < binary.length; i++) {
+  byteArray[i] = binary.charCodeAt(i);
+}
+const metadataTx = solanaWeb3.Transaction.from(byteArray);
+
 metadataTx.feePayer = from;
 
 const signed2 = await phantom.signTransaction(metadataTx);
@@ -3731,4 +3737,5 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
 
