@@ -3582,8 +3582,10 @@ console.log("✅ Uploaded image to IPFS:", imageUrl);
   }
 };
 
- metadata.image = imageUrl;
- metadata.properties.files = [{ uri: imageUrl, type: "image/png" }];
+metadata.name = metadata.name.slice(0, 32);
+metadata.symbol = metadata.symbol.slice(0, 10);
+metadata.image = imageUrl;
+metadata.properties.files = [{ uri: imageUrl, type: "image/png" }];
 
   const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
   const mint = solanaWeb3.Keypair.generate();
@@ -3737,5 +3739,6 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
 
 
