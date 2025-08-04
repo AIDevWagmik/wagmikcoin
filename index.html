@@ -3483,7 +3483,20 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
         const decoded = window.borshMetadata?.deserialize(metadataAcc.data);
         if (!decoded || !decoded.data || !decoded.data.uri) continue;
 
-        const json = await fetch(decoded.data.uri.trim()).then(res => res.json());
+        let uri = decoded.data.uri.trim();
+      if (uri.startsWith("ipfs://")) {
+        uri = uri.replace("ipfs://", "https://ipfs.io/ipfs/");
+      }
+
+      let json;
+      try {
+        const res = await fetch(uri);
+        json = await res.json();
+      } catch (e) {
+        console.warn("❌ Failed to fetch metadata JSON:", uri);
+        continue;
+      }
+
         if (!json || !json.name || !json.image) continue;
 
         nfts.push({
@@ -3861,5 +3874,6 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
 
 
