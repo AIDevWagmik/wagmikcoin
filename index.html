@@ -3535,10 +3535,22 @@ window.runDevnetMint = async function () {
     };
   });
 
- const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+const mintNumber = Math.floor(Math.random() * 9999);
+const tierSlug = tier.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, ""); // e.g. "WAGMIK GOLD" → "wagmik-gold"
+const filename = `${tierSlug}-${mintNumber}.png`; // e.g. "wagmik-gold-9471.png"
+
+const rawName = `${tier} #${mintNumber}`;
+const safeName = rawName.slice(0, 32);
+
+const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+
+if (!blob || blob.size < 1000) {
+  alert("⚠️ Meme image is too small or failed to render.");
+  return;
+}
 
 const formData = new FormData();
-formData.append("file", blob, "wagmik-image.png");
+formData.append("file", blob, filename);
 
 const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJjYWZkMTliZC04YTc3LTRiM2MtOGE1Zi00YWM4N2I0YjgxMmMiLCJlbWFpbCI6ImJ1c2NoZXJ0b205MkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJGUkExIn0seyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJOWUMxIn1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiNTRkMTFjZGZlNzc2MzkyN2MzN2MiLCJzY29wZWRLZXlTZWNyZXQiOiJlMDA2YWNjZGVjODFmZWI4YmQ2NjFhMTQ3N2NjYmE4N2ZmNTc2MzVmOTY2ZGVjOGFmZDlhNjc5ZDZiODRkMTA0IiwiZXhwIjoxNzg1NzcxNTA4fQ._-B0ktHsg3mTToG2JnJTvS52f0x-n5BDvnSA6jBn7Aw"; // 🔐 Replace with your full JWT again
 
@@ -3562,8 +3574,8 @@ console.log("✅ Uploaded image to IPFS:", imageUrl);
   await phantom.connect();
   const from = phantom.publicKey;
 
-  const rawName = `${tier} #${Math.floor(Math.random() * 9999)}`;
-  const safeName = rawName.slice(0, 32); 
+ const rawName = `${tier} #${mintNumber}`;
+ const safeName = rawName.slice(0, 32);
 
   const metadata = {
   name: safeName,
@@ -3663,6 +3675,12 @@ metadata.properties.files = [{ uri: imageUrl, type: "image/png" }];
   console.log("✅ Mint TX confirmed:", txid);
 
   // ✅ Upload metadata to Pinata now (after confirmation)
+
+ // ✅ Ensure metadata values are safe for both IPFS + Metaplex
+metadata.name = (metadata.name || "").slice(0, 32).replace(/[^\x20-\x7E]/g, '');
+metadata.symbol = (metadata.symbol || "").slice(0, 10).replace(/[^\x20-\x7E]/g, '');
+metadata.image = imageUrl;
+metadata.properties.files = [{ uri: imageUrl, type: "image/png" }];
  
   const pinataRes = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
   method: "POST",
@@ -3739,6 +3757,7 @@ console.log("🧾 Metadata TX:", `https://explorer.solana.com/tx/${txid2}?cluste
   
  </body>
 </html>
+
 
 
 
