@@ -3413,6 +3413,45 @@ else if (cmd.toLowerCase() === "view nft") {
   terminalOutput.innerHTML += "\n🖼 NFT Gallery loaded.";
 }
 
+else if (cmd.toLowerCase() === "createcollection") {
+  printToTerminal("⏳ Creating collection metadata...");
+
+  try {
+    const pubkey = window.solana.publicKey.toString();
+
+    const res = await fetch("http://localhost:3001/create-metadata", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        mint: "UHNSrjDXnDqDyYH9S1M5SmBhdy4X6vrSKnLbQMrjj8L",
+        payer: pubkey,
+        updateAuthority: pubkey,
+        name: "WAGMIK Meme Collection",
+        symbol: "WAGMIK",
+        uri: "ipfs://QmVFnSKo9hPtWZGPTGgQzxcuBf9HwxhWs5k5ErbXTRy8Zy"
+      })
+    });
+
+    const base64Tx = await res.text();
+
+    if (!base64Tx || base64Tx.includes("already exists")) {
+      printToTerminal("⚠️ Metadata already exists or returned empty.");
+      return;
+    }
+
+    const tx = solanaWeb3.Transaction.from(Buffer.from(base64Tx, "base64"));
+    const sig = await window.solana.signAndSendTransaction(tx);
+
+    const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
+    await connection.confirmTransaction(sig, "confirmed");
+
+    printToTerminal(`✅ Collection created: https://solscan.io/tx/${sig}`);
+  } catch (e) {
+    console.error("❌ Collection TX Error:", e);
+    printToTerminal("❌ Failed to create collection metadata.");
+  }
+}
+
     else {
       logOutput(`❓ Unknown command: ${cmd}`);
     }
@@ -3959,6 +3998,7 @@ console.log("🧾 Metadata TX:", metadataExplorerUrl);
   
  </body>
 </html>
+
 
 
 
