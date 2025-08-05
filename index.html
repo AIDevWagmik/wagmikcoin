@@ -3886,78 +3886,271 @@ window.addEventListener("DOMContentLoaded", () => {
     const collectionMint = localStorage.getItem("wagmikCollectionMint");
     if (!collectionMint) return alert("Collection not created. Please create a collection first.");
 
-     const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    mint: mint.publicKey.toBase58(),
-    payer: from.toBase58(),
-    updateAuthority: from.toBase58(),
-    uri: metadataUri,
-    name: nftMetadata.name,
-    symbol: nftMetadata.symbol,
-    collectionMint,
-  }),
-}).then(res => res.text());
+    window.runDevnetMint = async function () {
+  const TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
+  const ASSOCIATED_TOKEN_PROGRAM_ID = splToken.ASSOCIATED_TOKEN_PROGRAM_ID;
+  const METADATA_PROGRAM_ID = new solanaWeb3.PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
 
-console.log("🧾 Backend responded:", metadataTxBase64);
+  const canvas = document.getElementById("memeCanvas");
+  if (!canvas) return alert("Meme canvas not found.");
 
-if (!/^[A-Za-z0-9+/=]+$/.test(metadataTxBase64.trim())) {
-  logOutput("⚠️ Backend did not return a transaction. It may have skipped (already exists).");
-  return;
-}
+  const tier = getRandomTier();
+  const emblem = new Image();
+  emblem.src = `${tier.toLowerCase().replace(/ /g, "-")}.png`;
 
-const binary = atob(metadataTxBase64);
-const byteArray = new Uint8Array(binary.length);
-for (let i = 0; i < binary.length; i++) {
-  byteArray[i] = binary.charCodeAt(i);
-}
-let metadataTx = solanaWeb3.Transaction.from(byteArray);
+  await new Promise(resolve => {
+    emblem.onload = () => {
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(emblem, 0, 0, 360, 360);
+      resolve();
+    };
+  });
 
-let attempts = 3;
-while (attempts > 0) {
-  try {
-    const { blockhash: freshBlockhash, lastValidBlockHeight: freshLastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
-    metadataTx.recentBlockhash = freshBlockhash;
-    metadataTx.feePayer = from;
+  const mintNumber = Math.floor(Math.random() * 9999);
+  const tierSlug = tier.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+$/, "");
+  const filename = `${tierSlug}-${mintNumber}.png`;
 
-    const signed2 = await phantom.signTransaction(metadataTx);
-    const txid2 = await connection.sendRawTransaction(signed2.serialize(), { skipPreflight: false });
-    await connection.confirmTransaction({ signature: txid2, blockhash: freshBlockhash, lastValidBlockHeight: freshLastValidBlockHeight }, "confirmed");
-    console.log("✅ Metadata set:", metadataUri);
-    const metadataExplorerUrl = selectedCluster === "mainnet-beta"
-      ? `https://solscan.io/tx/${txid2}`
-      : `https://solscan.io/tx/${txid2}?cluster=devnet`;
-    console.log("🧾 Metadata TX:", metadataExplorerUrl);
-    logOutput(`✅ Metadata set: ${metadataUri}`);
-    logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#00ffa1;">View on Solscan</a>`);
-    break; // Exit loop on success
-  } catch (err) {
-    attempts--;
-    if (err instanceof solanaWeb3.SendTransactionError && attempts > 0) {
-      const logs = await connection.getTransaction(err.txid, { commitment: "confirmed" })?.meta?.logMessages || [];
-      console.log(`⚠️ Attempt ${4 - attempts} failed: ${err.message}. Logs: ${logs.join('\n')}`);
-      // Refresh transaction with new blockhash
-      const { blockhash: newBlockhash, lastValidBlockHeight: newLastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
-      metadataTx.recentBlockhash = newBlockhash;
-      continue; // Retry with new blockhash
-    }
-    logOutput(`❌ Metadata TX failed: ${err.message}`);
-    if (err instanceof solanaWeb3.SendTransactionError) {
-      const logs = await connection.getTransaction(err.txid, { commitment: "confirmed" })?.meta?.logMessages || [];
-      logOutput(`Logs: ${logs.join('\n')}`);
-    }
-    console.error(err);
-    return; // Exit on final failure
+  const rawName = `${tier} #${mintNumber}`;
+  const safeName = rawName.slice(0, 32);
+
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+
+  if (!blob || blob.size < 1000) {
+    alert("⚠️ Meme image is too small or failed to render.");
+    return;
   }
-}
 
-console.log("✅ runDevnetMint is ready.");
-});
+  const formData = new FormData();
+  formData.append("file", blob, filename);
+
+  const jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJjYWZkMTliZC04YTc3LTRiM2MtOGE1Zi00YWM4N2I0YjgxMmMiLCJlbWFpbCI6ImJ1c2NoZXJ0b205MkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJGUkExIn0seyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJOWUMxIn1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiNTRkMTFjZGZlNzc2MzkyN2MzN2MiLCJzY29wZWRLZXlTZWNyZXQiOiJlMDA2YWNjZGVjODFmZWI4YmQ2NjFhMTQ3N2NjYmE4N2ZmNTc2MzVmOTY2ZGVjOGFmZDlhNjc5ZDZiODRkMTA0IiwiZXhwIjoxNzg1NzcxNTA4fQ._-B0ktHsg3mTToG2JnJTvS52f0x-n5BDvnSA6jBn7Aw";
+
+  const imageRes = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${jwt}` },
+    body: formData
+  });
+
+  if (!imageRes.ok) return alert("Image upload to IPFS failed.");
+
+  const imageResult = await imageRes.json();
+  const imageUrl = `ipfs://${imageResult.IpfsHash}`;
+  console.log("✅ Uploaded image to IPFS:", imageUrl);
+
+  const phantom = window.solana;
+  if (!phantom || !phantom.isPhantom) return alert("Phantom not found.");
+  await phantom.connect();
+  const from = phantom.publicKey;
+
+  const metadata = {
+    name: safeName,
+    symbol: "WAGMIK",
+    description: "Forged in hopium. Minted on Solana.",
+    seller_fee_basis_points: 0,
+    attributes: [
+      { trait_type: "Origin", value: "WAGMIK Generator" },
+      { trait_type: "Chain", value: "Solana" },
+      { trait_type: "Tier", value: tier }
+    ],
+    collection: { name: "WAGMIK", family: "WAGMIK" },
+    properties: {
+      category: "image",
+      creators: [{ address: from.toBase58(), share: 100 }]
+    }
+  };
+
+  metadata.name = metadata.name.slice(0, 32);
+  metadata.symbol = metadata.symbol.slice(0, 10);
+  metadata.image = imageUrl;
+  metadata.properties.files = [{ uri: imageUrl, type: "image/png" }];
+
+  const selectedCluster = localStorage.getItem("solanaCluster") || "mainnet-beta";
+  const connection = new solanaWeb3.Connection(getClusterUrl(selectedCluster), "confirmed");
+
+  const mint = solanaWeb3.Keypair.generate();
+  const lamports = await connection.getMinimumBalanceForRentExemption(82);
+
+  const ata = await splToken.Token.getAssociatedTokenAddress(
+    ASSOCIATED_TOKEN_PROGRAM_ID,
+    TOKEN_PROGRAM_ID,
+    mint.publicKey,
+    from
+  );
+
+  const tx = new solanaWeb3.Transaction();
+  tx.add(
+    solanaWeb3.SystemProgram.createAccount({
+      fromPubkey: from,
+      newAccountPubkey: mint.publicKey,
+      space: 82,
+      lamports,
+      programId: TOKEN_PROGRAM_ID
+    }),
+    splToken.Token.createInitMintInstruction(
+      TOKEN_PROGRAM_ID,
+      mint.publicKey,
+      0,
+      from,
+      from
+    ),
+    splToken.Token.createAssociatedTokenAccountInstruction(
+      ASSOCIATED_TOKEN_PROGRAM_ID,
+      TOKEN_PROGRAM_ID,
+      mint.publicKey,
+      ata,
+      from,
+      from
+    ),
+    splToken.Token.createMintToInstruction(
+      TOKEN_PROGRAM_ID,
+      mint.publicKey,
+      ata,
+      from,
+      [],
+      1
+    )
+  );
+
+  const [metadataPDA] = await solanaWeb3.PublicKey.findProgramAddress(
+    [Buffer.from("metadata"), METADATA_PROGRAM_ID.toBuffer(), mint.publicKey.toBuffer()],
+    METADATA_PROGRAM_ID
+  );
+
+  let blockhash, lastValidBlockHeight;
+  let retries = 3;
+  while (retries > 0) {
+    try {
+      const blockhashData = await connection.getLatestBlockhash("finalized");
+      blockhash = blockhashData.blockhash;
+      lastValidBlockHeight = blockhashData.lastValidBlockHeight;
+      tx.recentBlockhash = blockhash;
+      tx.feePayer = from;
+      tx.partialSign(mint);
+      const signed = await phantom.signTransaction(tx);
+      signed.verifySignatures = false;
+      const txid = await connection.sendRawTransaction(signed.serialize(), { skipPreflight: false });
+      await connection.confirmTransaction({ signature: txid, blockhash, lastValidBlockHeight }, "confirmed");
+      break;
+    } catch (err) {
+      retries--;
+      if (retries === 0) {
+        console.error("❌ Mint TX failed after retries:", err);
+        logOutput("❌ Mint TX failed after retries.");
+        return;
+      }
+      console.log(`⏳ Retrying mint TX (${retries} attempts left)...`);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+
+  const explorerLink = selectedCluster === "mainnet-beta"
+    ? `https://solscan.io/tx/${txid}`
+    : `https://solscan.io/tx/${txid}?cluster=devnet`;
+  logOutput(`📦 TX Confirmed`);
+  logOutput(`🔗 <a href="${explorerLink}" target="_blank" style="color:#00ffa1;">View on Solscan</a>`);
+
+  const pinataRes = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${jwt}`
+    },
+    body: JSON.stringify({
+      pinataMetadata: { name: metadata.name },
+      pinataContent: metadata
+    })
+  });
+
+  if (!pinataRes.ok) throw new Error("❌ Pinata upload failed: " + pinataRes.statusText);
+
+  const result = await pinataRes.json();
+  const metadataUri = `ipfs://${result.IpfsHash}`;
+  console.log("📦 Pinata Metadata URI:", metadataUri);
+
+  const cleanUri = (metadataUri || "").trim().slice(0, 200).replace(/[^\x20-\x7E]/g, '');
+  const cleanName = (metadata.name || "").trim().slice(0, 32).replace(/[^\x20-\x7E]/g, '');
+  const cleanSymbol = (metadata.symbol || "").trim().slice(0, 10).replace(/[^\x20-\x7E]/g, '');
+
+  const collectionMint = localStorage.getItem("wagmikCollectionMint");
+  if (!collectionMint) return alert("Collection not created. Please create a collection first.");
+
+  let metadataTxBase64;
+  retries = 3;
+  while (retries > 0) {
+    try {
+      metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mint: mint.publicKey.toBase58(),
+          payer: from.toBase58(),
+          updateAuthority: from.toBase58(),
+          uri: metadataUri,
+          name: metadata.name,
+          symbol: metadata.symbol,
+          collectionMint,
+        }),
+      }).then(res => res.text());
+      break;
+    } catch (err) {
+      retries--;
+      if (retries === 0) {
+        console.error("❌ Metadata TX fetch failed after retries:", err);
+        logOutput("❌ Metadata TX fetch failed after retries.");
+        return;
+      }
+      console.log(`⏳ Retrying metadata TX fetch (${retries} attempts left)...`);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+
+  if (!/^[A-Za-z0-9+/=]+$/.test(metadataTxBase64.trim())) {
+    logOutput("⚠️ Backend did not return a transaction. It may have skipped (already exists).");
+    return;
+  }
+
+  const binary = atob(metadataTxBase64);
+  const byteArray = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    byteArray[i] = binary.charCodeAt(i);
+  }
+  const metadataTx = solanaWeb3.Transaction.from(byteArray);
+
+  retries = 3;
+  while (retries > 0) {
+    try {
+      const { blockhash: freshBlockhash, lastValidBlockHeight: freshLastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
+      metadataTx.recentBlockhash = freshBlockhash;
+      metadataTx.feePayer = from;
+      const signed2 = await phantom.signTransaction(metadataTx);
+      const txid2 = await connection.sendRawTransaction(signed2.serialize(), { skipPreflight: false });
+      await connection.confirmTransaction({ signature: txid2, blockhash: freshBlockhash, lastValidBlockHeight: freshLastValidBlockHeight }, "confirmed");
+      console.log("✅ Metadata set:", metadataUri);
+      const metadataExplorerUrl = selectedCluster === "mainnet-beta"
+        ? `https://solscan.io/tx/${txid2}`
+        : `https://solscan.io/tx/${txid2}?cluster=devnet`;
+      console.log("🧾 Metadata TX:", metadataExplorerUrl);
+      logOutput(`✅ Metadata set: ${metadataUri}`);
+      logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#00ffa1;">View Metadata on Solscan</a>`);
+      break;
+    } catch (err) {
+      retries--;
+      if (retries === 0) {
+        console.error("❌ Metadata TX failed after retries:", err);
+        logOutput("❌ Metadata TX failed after retries.");
+        return;
+      }
+      console.log(`⏳ Retrying metadata TX (${retries} attempts left)...`);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+};
+
 </script>
   
  </body>
 </html>
+
 
 
 
