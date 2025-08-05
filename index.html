@@ -3966,6 +3966,13 @@ const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
   }),
 }).then(res => res.text());
 
+console.log("🧾 Backend responded:", metadataTxBase64);
+
+if (!/^[A-Za-z0-9+/=]+$/.test(metadataTxBase64.trim())) {
+  logOutput("⚠️ Backend did not return a transaction. It may have skipped (already exists).");
+  return;
+}
+
 const binary = atob(metadataTxBase64);
 const byteArray = new Uint8Array(binary.length);
 for (let i = 0; i < binary.length; i++) {
@@ -4012,3 +4019,4 @@ console.log("🧾 Metadata TX:", metadataExplorerUrl);
   
  </body>
 </html>
+
