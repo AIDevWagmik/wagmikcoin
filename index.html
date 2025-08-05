@@ -3610,7 +3610,7 @@ window.addEventListener("DOMContentLoaded", () => {
     await phantom.connect();
     const from = phantom.publicKey;
 
-    const connection = new solanaWeb3.Connection("https://api.devnet.solana.com");
+    const connection = new solanaWeb3.Connection("https://mainnet.helius-rpc.com/?api-key=ab50cc7f-3c60-42b0-a3b4-4944c5263912");
     const mint = solanaWeb3.Keypair.generate();
     const lamports = await connection.getMinimumBalanceForRentExemption(82);
 
@@ -3988,5 +3988,6 @@ window.addEventListener("DOMContentLoaded", () => {
   
  </body>
 </html>
+
 
 
