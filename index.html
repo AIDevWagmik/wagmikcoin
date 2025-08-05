@@ -2840,6 +2840,13 @@ document.addEventListener('DOMContentLoaded', () => {
       .trim();
   }
 
+  function logOutput(msg) {
+  const output = document.getElementById("terminalOutput");
+  if (!output) return;
+  output.innerHTML += `\n> ${msg}`;
+  output.scrollTop = output.scrollHeight;
+}
+
   const walletDisplay = document.getElementById('walletAddressDisplay');
   const connectBtn = document.getElementById('connectWalletBtn');
   const disconnectBtn = document.getElementById('disconnectWalletBtn');
@@ -2891,11 +2898,6 @@ if (clusterSelect) {
     }
   });
 }
- 
-  function logOutput(msg) {
-    output.innerHTML += `\n> ${msg}`;
-    output.scrollTop = output.scrollHeight;
-  }
 
   connectBtn?.addEventListener('click', async () => {
     try {
@@ -3999,6 +4001,7 @@ console.log("🧾 Metadata TX:", metadataExplorerUrl);
   
  </body>
 </html>
+
 
 
 
