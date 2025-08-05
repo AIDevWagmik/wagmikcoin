@@ -3885,54 +3885,71 @@ window.addEventListener("DOMContentLoaded", () => {
     console.log("🧼 Cleaned Symbol:", cleanSymbol, cleanSymbol.length);
     const collectionMint = localStorage.getItem("wagmikCollectionMint");
     if (!collectionMint) return alert("Collection not created. Please create a collection first.");
-    const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        mint: mint.publicKey.toBase58(),
-        payer: from.toBase58(),
-        updateAuthority: from.toBase58(),
-        uri: metadataUri,
-        name: nftMetadata.name,
-        symbol: nftMetadata.symbol,
-        collectionMint,
-      }),
-    }).then(res => res.text());
-    console.log("🧾 Backend responded:", metadataTxBase64);
-    if (!/^[A-Za-z0-9+/=]+$/.test(metadataTxBase64.trim())) {
-      logOutput("⚠️ Backend did not return a transaction. It may have skipped (already exists).");
-      return;
-    }
-    const binary = atob(metadataTxBase64);
-    const byteArray = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      byteArray[i] = binary.charCodeAt(i);
-    }
-    const metadataTx = solanaWeb3.Transaction.from(byteArray);
+   const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    mint: mint.publicKey.toBase58(),
+    payer: from.toBase58(),
+    updateAuthority: from.toBase58(),
+    uri: metadataUri,
+    name: nftMetadata.name,
+    symbol: nftMetadata.symbol,
+    collectionMint,
+  }),
+}).then(res => res.text());
+
+console.log("🧾 Backend responded:", metadataTxBase64);
+
+if (!/^[A-Za-z0-9+/=]+$/.test(metadataTxBase64.trim())) {
+  logOutput("⚠️ Backend did not return a transaction. It may have skipped (already exists).");
+  return;
+}
+
+const binary = atob(metadataTxBase64);
+const byteArray = new Uint8Array(binary.length);
+for (let i = 0; i < binary.length; i++) {
+  byteArray[i] = binary.charCodeAt(i);
+}
+let metadataTx = solanaWeb3.Transaction.from(byteArray);
+
+let attempts = 3;
+while (attempts > 0) {
+  try {
     const { blockhash: freshBlockhash, lastValidBlockHeight: freshLastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
     metadataTx.recentBlockhash = freshBlockhash;
     metadataTx.feePayer = from;
-    try {
-      const signed2 = await phantom.signTransaction(metadataTx);
-      const txid2 = await connection.sendRawTransaction(signed2.serialize(), { skipPreflight: false });
-      await connection.confirmTransaction({ signature: txid2, blockhash: freshBlockhash, lastValidBlockHeight: freshLastValidBlockHeight }, "confirmed");
-      console.log("✅ Metadata set:", metadataUri);
-      const metadataExplorerUrl = selectedCluster === "mainnet-beta"
-        ? `https://solscan.io/tx/${txid2}`
-        : `https://solscan.io/tx/${txid2}?cluster=devnet`;
-      console.log("🧾 Metadata TX:", metadataExplorerUrl);
-      logOutput(`✅ Metadata set: ${metadataUri}`);
-      logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#00ffa1;">View on Solscan</a>`);
-    } catch (err) {
-      if (err instanceof solanaWeb3.SendTransactionError) {
-        const logs = await connection.getTransaction(err.txid, { commitment: "confirmed" })?.meta?.logMessages || [];
-        logOutput(`❌ Metadata TX failed: ${err.message}. Logs: ${logs.join('\n')}`);
-      } else {
-        logOutput(`❌ Metadata TX failed: ${err.message}`);
-      }
-      console.error(err);
+
+    const signed2 = await phantom.signTransaction(metadataTx);
+    const txid2 = await connection.sendRawTransaction(signed2.serialize(), { skipPreflight: false });
+    await connection.confirmTransaction({ signature: txid2, blockhash: freshBlockhash, lastValidBlockHeight: freshLastValidBlockHeight }, "confirmed");
+    console.log("✅ Metadata set:", metadataUri);
+    const metadataExplorerUrl = selectedCluster === "mainnet-beta"
+      ? `https://solscan.io/tx/${txid2}`
+      : `https://solscan.io/tx/${txid2}?cluster=devnet`;
+    console.log("🧾 Metadata TX:", metadataExplorerUrl);
+    logOutput(`✅ Metadata set: ${metadataUri}`);
+    logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#00ffa1;">View on Solscan</a>`);
+    break; // Exit loop on success
+  } catch (err) {
+    attempts--;
+    if (err instanceof solanaWeb3.SendTransactionError && attempts > 0) {
+      const logs = await connection.getTransaction(err.txid, { commitment: "confirmed" })?.meta?.logMessages || [];
+      console.log(`⚠️ Attempt ${4 - attempts} failed: ${err.message}. Logs: ${logs.join('\n')}`);
+      // Refresh transaction with new blockhash
+      const { blockhash: newBlockhash, lastValidBlockHeight: newLastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
+      metadataTx.recentBlockhash = newBlockhash;
+      continue; // Retry with new blockhash
     }
-  };
+    logOutput(`❌ Metadata TX failed: ${err.message}`);
+    if (err instanceof solanaWeb3.SendTransactionError) {
+      const logs = await connection.getTransaction(err.txid, { commitment: "confirmed" })?.meta?.logMessages || [];
+      logOutput(`Logs: ${logs.join('\n')}`);
+    }
+    console.error(err);
+    return; // Exit on final failure
+  }
+}
 
   console.log("✅ runDevnetMint is ready.");
 });
@@ -3940,6 +3957,7 @@ window.addEventListener("DOMContentLoaded", () => {
   
  </body>
 </html>
+
 
 
 
