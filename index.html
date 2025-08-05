@@ -3943,23 +3943,32 @@ window.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-       const binary = atob(metadataTxBase64);
+    const binary = atob(metadataTxBase64);
     const byteArray = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) {
       byteArray[i] = binary.charCodeAt(i);
     }
     const metadataTx = solanaWeb3.Transaction.from(byteArray);
 
-    let retries = 3;
+    let retries = 5;
     async function sendMetadataTx() {
       while (retries > 0) {
         try {
+          // Fetch blockhash right before signing to minimize delay
           const { blockhash: freshBlockhash, lastValidBlockHeight: freshLastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
           metadataTx.recentBlockhash = freshBlockhash;
           metadataTx.feePayer = from;
           const signed2 = await window.solana.signTransaction(metadataTx);
-          const txid2 = await connection.sendRawTransaction(signed2.serialize(), { skipPreflight: false });
-          await connection.confirmTransaction({ signature: txid2, blockhash: freshBlockhash, lastValidBlockHeight: freshLastValidBlockHeight }, "confirmed");
+          const txid2 = await connection.sendRawTransaction(signed2.serialize(), { 
+            skipPreflight: false, 
+            maxRetries: 3, 
+            preflightCommitment: "finalized" 
+          });
+          await connection.confirmTransaction({ 
+            signature: txid2, 
+            blockhash: freshBlockhash, 
+            lastValidBlockHeight: freshLastValidBlockHeight 
+          }, "finalized");
           console.log("✅ Metadata set:", metadataUri);
           const metadataExplorerUrl = selectedCluster === "mainnet-beta"
             ? `https://solscan.io/tx/${txid2}`
@@ -3969,13 +3978,20 @@ window.addEventListener("DOMContentLoaded", () => {
           return;
         } catch (err) {
           retries--;
+          if (err instanceof solanaWeb3.SendTransactionError) {
+            const logs = await err.getLogs(connection);
+            console.error("❌ SendTransactionError logs:", logs);
+            logOutput(`❌ SendTransactionError: ${err.message}\nLogs: ${logs.join("\n")}`);
+          } else {
+            console.error("❌ Metadata TX error:", err);
+            logOutput(`❌ Metadata TX error: ${err.message}`);
+          }
           if (retries === 0) {
-            console.error("❌ Metadata TX failed after retries:", err);
             logOutput("❌ Metadata TX failed after retries.");
             return;
           }
           console.log(`⏳ Retrying metadata TX (${retries} attempts left)...`);
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise(resolve => setTimeout(resolve, 2000));
         }
       }
     }
@@ -3987,3 +4003,4 @@ window.addEventListener("DOMContentLoaded", () => {
   
  </body>
 </html>
+
