@@ -3178,7 +3178,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const mint = new solanaWeb3.PublicKey(mintStr);
         const recipient = new solanaWeb3.PublicKey(recipientStr);
         const amount = parseFloat(amountStr);
-        if (isNaN(amount) || amount <= 0) throw new Error("Invalid amount");
+        if (isNaN(amount) || amount = 0) throw new Error("Invalid amount");
 
         const token = new splToken.Token(
           window.solanaConnection,
@@ -3356,7 +3356,8 @@ document.addEventListener('DOMContentLoaded', () => {
     runBtn.click();
   }
 
- document.getElementById("downloadOrMintBtn")?.addEventListener("click", showMemePopup);
+// ✅ NOW attach listeners AFTER functions are defined:
+document.getElementById("downloadOrMintBtn")?.addEventListener("click", showMemePopup);
 document.getElementById("popupDownloadBtn")?.addEventListener("click", handleDownload);
 document.getElementById("popupMintBtn")?.addEventListener("click", handleMint);
 document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup);
@@ -3968,6 +3969,7 @@ window.addEventListener("DOMContentLoaded", () => {
   
  </body>
 </html>
+
 
 
 
