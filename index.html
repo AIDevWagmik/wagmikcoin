@@ -3414,7 +3414,7 @@ else if (cmd.toLowerCase() === "view nft") {
 }
 
 else if (cmd.toLowerCase() === "createcollection") {
-  printToTerminal("⏳ Creating collection metadata...");
+  document.getElementById("terminalOutput").innerHTML += "⏳ Creating collection metadata...<br>";
 
   try {
     const pubkey = window.solana.publicKey.toString();
@@ -3435,7 +3435,7 @@ else if (cmd.toLowerCase() === "createcollection") {
     const base64Tx = await res.text();
 
     if (!base64Tx || base64Tx.includes("already exists")) {
-      printToTerminal("⚠️ Metadata already exists or returned empty.");
+      document.getElementById("terminalOutput").innerHTML += "⚠️ Metadata already exists or returned empty.<br>";
       return;
     }
 
@@ -3445,10 +3445,10 @@ else if (cmd.toLowerCase() === "createcollection") {
     const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
     await connection.confirmTransaction(sig, "confirmed");
 
-    printToTerminal(`✅ Collection created: https://solscan.io/tx/${sig}`);
+    document.getElementById("terminalOutput").innerHTML += `✅ Collection created: <a href="https://solscan.io/tx/${sig}" target="_blank">${sig}</a><br>`;
   } catch (e) {
     console.error("❌ Collection TX Error:", e);
-    printToTerminal("❌ Failed to create collection metadata.");
+    document.getElementById("terminalOutput").innerHTML += "❌ Failed to create collection metadata.<br>";
   }
 }
 
@@ -3998,6 +3998,7 @@ console.log("🧾 Metadata TX:", metadataExplorerUrl);
   
  </body>
 </html>
+
 
 
 
