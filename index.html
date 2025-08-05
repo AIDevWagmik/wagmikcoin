@@ -3442,8 +3442,9 @@ else if (cmd.toLowerCase() === "createcollection") {
     const tx = solanaWeb3.Transaction.from(Buffer.from(base64Tx, "base64"));
     const sig = await window.solana.signAndSendTransaction(tx);
 
-    const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
+    const connection = new solanaWeb3.Connection("https://mainnet.helius-rpc.com/?api-key=ab50cc7f-3c60-42b0-a3b4-4944c5263912");
     await connection.confirmTransaction(sig, "confirmed");
+
 
     document.getElementById("terminalOutput").innerHTML += `✅ Collection created: <a href="https://solscan.io/tx/${sig}" target="_blank">${sig}</a><br>`;
   } catch (e) {
@@ -3998,6 +3999,7 @@ console.log("🧾 Metadata TX:", metadataExplorerUrl);
   
  </body>
 </html>
+
 
 
 
