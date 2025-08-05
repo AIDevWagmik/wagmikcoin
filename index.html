@@ -3885,7 +3885,8 @@ window.addEventListener("DOMContentLoaded", () => {
     console.log("🧼 Cleaned Symbol:", cleanSymbol, cleanSymbol.length);
     const collectionMint = localStorage.getItem("wagmikCollectionMint");
     if (!collectionMint) return alert("Collection not created. Please create a collection first.");
-   const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
+
+     const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
@@ -3949,14 +3950,15 @@ while (attempts > 0) {
     console.error(err);
     return; // Exit on final failure
   }
-};
+}
 
-  console.log("✅ runDevnetMint is ready.");
+console.log("✅ runDevnetMint is ready.");
 });
 </script>
   
  </body>
 </html>
+
 
 
 
