@@ -3416,7 +3416,7 @@ else if (cmd.toLowerCase() === "view nft") {
 }
 
 else if (cmd.toLowerCase() === "createcollection") {
-  document.getElementById("terminalOutput").innerHTML += "⏳ Creating collection metadata...<br>";
+  logOutput("terminalOutput").innerHTML += "⏳ Creating collection metadata...<br>";
 
   try {
     const pubkey = window.solana.publicKey.toString();
@@ -3437,7 +3437,7 @@ else if (cmd.toLowerCase() === "createcollection") {
     const base64Tx = await res.text();
 
     if (!base64Tx || base64Tx.includes("already exists")) {
-      document.getElementById("terminalOutput").innerHTML += "⚠️ Metadata already exists or returned empty.<br>";
+      logOutput("terminalOutput").innerHTML += "⚠️ Metadata already exists or returned empty.<br>";
       return;
     }
 
@@ -3448,10 +3448,10 @@ else if (cmd.toLowerCase() === "createcollection") {
     await connection.confirmTransaction(sig, "confirmed");
 
 
-    document.getElementById("terminalOutput").innerHTML += `✅ Collection created: <a href="https://solscan.io/tx/${sig}" target="_blank">${sig}</a><br>`;
+    logOutput("terminalOutput").innerHTML += `✅ Collection created: <a href="https://solscan.io/tx/${sig}" target="_blank">${sig}</a><br>`;
   } catch (e) {
     console.error("❌ Collection TX Error:", e);
-    document.getElementById("terminalOutput").innerHTML += "❌ Failed to create collection metadata.<br>";
+    logOutput("terminalOutput").innerHTML += "❌ Failed to create collection metadata.<br>";
   }
 }
 
@@ -3724,6 +3724,17 @@ document.getElementById("popupCloseBtn")?.addEventListener("click", dismissPopup
 <script>
   // Only define the function after everything (including nft.storage) is fully loaded
   window.addEventListener("DOMContentLoaded", () => {
+
+  // ✅ Add this at the top
+  function logOutput(msg) {
+    const output = document.getElementById("terminalOutput");
+    if (output) {
+      output.innerHTML += `\n> ${msg}`;
+      output.scrollTop = output.scrollHeight;
+    } else {
+      console.log("[logOutput fallback]", msg); // ✅ just in case
+    }
+  }
 
     // ✅ Define function globally
 window.runDevnetMint = async function () {
@@ -4001,20 +4012,3 @@ console.log("🧾 Metadata TX:", metadataExplorerUrl);
   
  </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
