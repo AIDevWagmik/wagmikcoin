@@ -3953,6 +3953,8 @@ console.log("🧼 Cleaned URI:", cleanUri, cleanUri.length);
 console.log("🧼 Cleaned Name:", cleanName, cleanName.length);
 console.log("🧼 Cleaned Symbol:", cleanSymbol, cleanSymbol.length);
 
+const collectionMint = 'UHNSrjDXnDqDyYH9S1M5SmBhdy4X6vrSKnLbQMrjj8L'
+
 const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
@@ -4019,5 +4021,6 @@ console.log("🧾 Metadata TX:", metadataExplorerUrl);
   
  </body>
 </html>
+
 
 
