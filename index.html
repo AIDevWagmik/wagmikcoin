@@ -3954,7 +3954,7 @@ const ix = new solanaWeb3.TransactionInstruction({
 
 ({ blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized"));
 
-const tx = new solanaWeb3.Transaction({
+tx = new solanaWeb3.Transaction();
   feePayer: new solanaWeb3.PublicKey(feePayer),
   recentBlockhash: blockhash,
 }).add(ix);
@@ -3979,6 +3979,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
