@@ -3708,7 +3708,7 @@ window.addEventListener("DOMContentLoaded", () => {
         symbol: metadata.symbol,
         collectionMint: null, // Indicates this is the collection
       }),
-    }).then(res => res.text());
+    }).then(res => res.json());
 
     const binary = atob(metadataTxBase64);
     const byteArray = new Uint8Array(binary.length);
@@ -3979,6 +3979,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
