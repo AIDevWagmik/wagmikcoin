@@ -3718,12 +3718,17 @@ window.addEventListener("DOMContentLoaded", () => {
   })),
   programId: new solanaWeb3.PublicKey(instruction.programId),
   data: (() => {
-    if (!/^[A-Za-z0-9+/=]+$/.test(instruction.data.trim())) {
+    const base64 = typeof instruction.data === "string"
+      ? instruction.data.trim()
+      : "";
+
+    if (!/^[A-Za-z0-9+/=]+$/.test(base64)) {
       throw new Error("❌ Invalid base64 in instruction.data");
     }
-    return Uint8Array.from(atob(instruction.data), c => c.charCodeAt(0));
+
+    return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
   })(),
-}); // ✅ <--- closes TransactionInstruction
+});
 
    ({ blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized"));
    
@@ -3964,10 +3969,15 @@ const ix = new solanaWeb3.TransactionInstruction({
   })),
   programId: new solanaWeb3.PublicKey(instruction.programId),
   data: (() => {
-    if (!/^[A-Za-z0-9+/=]+$/.test(instruction.data.trim())) {
+    const base64 = typeof instruction.data === "string"
+      ? instruction.data.trim()
+      : "";
+
+    if (!/^[A-Za-z0-9+/=]+$/.test(base64)) {
       throw new Error("❌ Invalid base64 in instruction.data");
     }
-    return Uint8Array.from(atob(instruction.data), c => c.charCodeAt(0));
+
+    return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
   })(),
 });
 
@@ -3998,6 +4008,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
