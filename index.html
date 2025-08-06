@@ -3807,7 +3807,7 @@ const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
     uri: cleanUri,
     name: cleanName,
     symbol: cleanSymbol,
-    collectionMint: collectionMint || null,
+    collectionMint: collectionMint?.toBase58() || null,
   }),
 }).then(res => res.text());
 
@@ -3890,6 +3890,7 @@ logOutput(`🔗 <a href="${selectedCluster === "mainnet-beta"
   
  </body>
 </html>
+
 
 
 
