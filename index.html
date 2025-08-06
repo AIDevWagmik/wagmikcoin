@@ -1841,8 +1841,6 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
    <button id="disconnectWalletBtn" style="margin-top: 8px;">🚪 Disconnect</button>
 
-   <button onclick="createCollection()">Create WAGMIK Meme Collection</button>
-
 <div id="terminalOutput" class="terminal-box" style="white-space: pre-wrap;">
   <p style="margin: 0 0 4px;">Welcome to the $WAGMIK Solana Console 💀</p>
   <div style="margin: 0 0 2px; font-size: 0.95em;">
@@ -3665,6 +3663,13 @@ window.addEventListener("DOMContentLoaded", () => {
     await connection.confirmTransaction({ signature: txid, blockhash, lastValidBlockHeight }, "confirmed");
 
     console.log("✅ Collection Mint TX:", txid);
+    console.log("✅ Metadata transaction confirmed.");
+    console.log("🧾 Metadata TX ID:", txid2);
+    console.log("🔗 Metadata TX Link:", `${selectedCluster === "mainnet-beta"
+      ? `https://solscan.io/tx/${txid2}`
+      : `https://solscan.io/tx/${txid2}?cluster=devnet`}`);
+    console.log("📦 Metadata URI:", metadataUri);
+
 
     const metadata = {
       name: "WAGMIK Meme Collection",
@@ -3751,6 +3756,12 @@ await connection.confirmTransaction(
 
     const canvas = document.getElementById("memeCanvas");
     if (!canvas) return alert("Meme canvas not found.");
+
+    localStorage.setItem("collectionMint", "A6WWQFrLYtoUFzWEfX11w9MXzxbxU1tcuCsUPTZDq5pP");
+
+    const collectionMintStr = localStorage.getItem("collectionMint");
+    if (!collectionMintStr) return alert("❌ Collection mint not found in localStorage.");
+    const collectionMint = new solanaWeb3.PublicKey(collectionMintStr);
 
     const tier = getRandomTier();
     const emblem = new Image();
@@ -3969,6 +3980,13 @@ await connection.confirmTransaction(
   { signature: txid2, blockhash: metadataTx.recentBlockhash },
   "finalized"
 );
+
+console.log("✅ Metadata transaction confirmed.");
+console.log("🧾 Metadata TX ID:", txid2);
+console.log("🔗 Metadata TX Link:", `${selectedCluster === "mainnet-beta"
+  ? `https://solscan.io/tx/${txid2}`
+  : `https://solscan.io/tx/${txid2}?cluster=devnet`}`);
+console.log("📦 Metadata URI:", metadataUri);
    
 const metadataExplorerUrl = selectedCluster === "mainnet-beta"
   ? `https://solscan.io/tx/${txid2}`
@@ -3976,11 +3994,59 @@ const metadataExplorerUrl = selectedCluster === "mainnet-beta"
 
 logOutput(`✅ Metadata set: ${metadataUri}`);
 logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#00ffa1;">View Metadata on Solscan</a>`);
+
+// ✅ === Step: Verify Collection ===
+const [metadataPDA] = await solanaWeb3.PublicKey.findProgramAddress(
+  [
+    Buffer.from("metadata"),
+    METADATA_PROGRAM_ID.toBuffer(),
+    mint.publicKey.toBuffer()
+  ],
+  METADATA_PROGRAM_ID
+);
+
+const [collectionPDA] = await solanaWeb3.PublicKey.findProgramAddress(
+  [
+    Buffer.from("metadata"),
+    METADATA_PROGRAM_ID.toBuffer(),
+    collectionMint.toBuffer()
+  ],
+  METADATA_PROGRAM_ID
+);
+
+const verifyIx = {
+  keys: [
+    { pubkey: metadataPDA, isSigner: false, isWritable: true },
+    { pubkey: collectionMint, isSigner: false, isWritable: false },
+    { pubkey: mint.publicKey, isSigner: false, isWritable: false },
+    { pubkey: from, isSigner: true, isWritable: true }
+  ],
+  programId: METADATA_PROGRAM_ID,
+  data: Buffer.from([1]) // 1 = VerifyCollection
+};
+
+const verifyTx = new solanaWeb3.Transaction().add(new solanaWeb3.TransactionInstruction(verifyIx));
+verifyTx.feePayer = from;
+
+const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
+verifyTx.recentBlockhash = blockhash;
+
+const signedVerify = await phantom.signTransaction(verifyTx);
+const verifySig = await connection.sendRawTransaction(signedVerify.serialize());
+await connection.confirmTransaction({ signature: verifySig, blockhash, lastValidBlockHeight }, "confirmed");
+
+console.log("✅ Collection verified. TX:", verifySig);
+logOutput(`✅ Collection verified.`);
+logOutput(`🔗 <a href="${selectedCluster === "mainnet-beta"
+  ? `https://solscan.io/tx/${verifySig}`
+  : `https://solscan.io/tx/${verifySig}?cluster=devnet`}" target="_blank" style="color:#00ffa1;">View Collection Verification</a>`);
   };
+ 
   console.log("✅ runDevnetMint is ready.");
 });
 </script>
   
  </body>
 </html>
+
 
