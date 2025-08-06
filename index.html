@@ -3696,7 +3696,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const metadataUri = `ipfs://${result.IpfsHash}`;
     console.log("📦 Collection Metadata URI:", metadataUri);
 
-  const response = await fetch("http://localhost:3001/create-metadata", {
+const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
@@ -3706,43 +3706,30 @@ window.addEventListener("DOMContentLoaded", () => {
     uri: metadataUri,
     name: metadata.name,
     symbol: metadata.symbol,
-    collectionMint: null,
+    collectionMint: null, // if you're creating a collection here
   }),
-});
+}).then(res => res.text());
 
-if (!response.ok) {
-  const text = await response.text(); // safely parse even if not JSON
-  throw new Error(`❌ Backend error: ${text}`);
+if (!/^[A-Za-z0-9+/=]+$/.test(metadataTxBase64.trim())) {
+  throw new Error("❌ Backend did not return a valid base64 transaction.");
 }
 
-const { instruction, feePayer } = await response.json();
+const binary = atob(metadataTxBase64);
+const byteArray = new Uint8Array(binary.length);
+for (let i = 0; i < binary.length; i++) {
+  byteArray[i] = binary.charCodeAt(i);
+}
+const metadataTx = solanaWeb3.Transaction.from(byteArray);
 
-
-console.log("🧪 Instruction data type:", typeof instruction.data);
-console.log("🧪 Instruction data (raw):", instruction.data);
-
-   const ix = new solanaWeb3.TransactionInstruction({
-  keys: instruction.keys.map(k => ({
-    pubkey: new solanaWeb3.PublicKey(k.pubkey),
-    isSigner: k.isSigner,
-    isWritable: k.isWritable,
-  })),
-  programId: new solanaWeb3.PublicKey(instruction.programId),
-  data: instruction.data instanceof Uint8Array
-    ? instruction.data
-    : Uint8Array.from(instruction.data),
+const signed2 = await phantom.signTransaction(metadataTx);
+const txid2 = await connection.sendRawTransaction(signed2.serialize(), {
+  skipPreflight: true,
+  maxRetries: 5,
 });
-
-   const freshBlock = await connection.getLatestBlockhash("finalized");
-   
-    const metadataTx = new solanaWeb3.Transaction({
-      feePayer: new solanaWeb3.PublicKey(feePayer),
-      recentBlockhash: freshBlock.blockhash,
-    }).add(ix);
-
-    const signed2 = await phantom.signTransaction(metadataTx);
-    const txid2 = await connection.sendRawTransaction(signed2.serialize(), { skipPreflight: false });
-    await connection.confirmTransaction({ signature: txid2, blockhash: freshBlock.blockhash, lastValidBlockHeight: freshBlock.lastValidBlockHeight }, "confirmed");
+await connection.confirmTransaction(
+  { signature: txid2, blockhash: metadataTx.recentBlockhash },
+  "finalized"
+);
 
     console.log("✅ Collection Metadata TX:", `https://solscan.io/tx/${txid2}${selectedCluster === "mainnet-beta" ? "" : "?cluster=devnet"}`);
 
@@ -3948,58 +3935,41 @@ console.log("🧪 Instruction data (raw):", instruction.data);
     if (!collectionMint) return alert("Collection not created. Please create a collection first.");
 
    // Fetch metadata instruction and feePayer from backend
-const response = await fetch("http://localhost:3001/create-metadata", {
+const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     mint: mint.publicKey.toBase58(),
     payer: from.toBase58(),
     updateAuthority: from.toBase58(),
-    uri: metadataUri,
-    name: metadata.name,
-    symbol: metadata.symbol,
-    collectionMint: null,
+    uri: cleanUri,
+    name: cleanName,
+    symbol: cleanSymbol,
+    collectionMint: collectionMint || null,
   }),
-});
+}).then(res => res.text());
 
-if (!response.ok) {
-  const text = await response.text();
-  throw new Error(`❌ runDevnetMint metadata error: ${text}`);
+if (!/^[A-Za-z0-9+/=]+$/.test(metadataTxBase64.trim())) {
+  throw new Error("❌ Backend did not return a valid base64 transaction.");
 }
 
-const { instruction, feePayer } = await response.json();
-
-console.log("🧾 Received metadata instruction:", instruction);
-
-console.log("🧪 Received instruction in runDevnetMint:", instruction);
-console.log("🧪 Type of instruction.data:", typeof instruction.data);
-
-const ix = new solanaWeb3.TransactionInstruction({
-  keys: instruction.keys.map(k => ({
-    pubkey: new solanaWeb3.PublicKey(k.pubkey),
-    isSigner: k.isSigner,
-    isWritable: k.isWritable,
-  })),
-  programId: new solanaWeb3.PublicKey(instruction.programId),
-  data: instruction.data instanceof Uint8Array
-    ? instruction.data
-    : Uint8Array.from(instruction.data),
-});
-
-const freshBlock = await connection.getLatestBlockhash("finalized");
-
-const metadataTx = new solanaWeb3.Transaction({
-  feePayer: new solanaWeb3.PublicKey(feePayer),
-  recentBlockhash: freshBlock.blockhash,
-}).add(ix);
+const binary = atob(metadataTxBase64);
+const byteArray = new Uint8Array(binary.length);
+for (let i = 0; i < binary.length; i++) {
+  byteArray[i] = binary.charCodeAt(i);
+}
+const metadataTx = solanaWeb3.Transaction.from(byteArray);
 
 const signedTx = await window.solana.signTransaction(metadataTx);
 const txid2 = await connection.sendRawTransaction(signedTx.serialize(), {
   skipPreflight: true,
   maxRetries: 5,
 });
-await connection.confirmTransaction({ signature: txid2, blockhash: freshBlock.blockhash, lastValidBlockHeight: freshBlock.lastValidBlockHeight }, "finalized");
-
+await connection.confirmTransaction(
+  { signature: txid2, blockhash: metadataTx.recentBlockhash },
+  "finalized"
+);
+   
 const metadataExplorerUrl = selectedCluster === "mainnet-beta"
   ? `https://solscan.io/tx/${txid2}`
   : `https://solscan.io/tx/${txid2}?cluster=devnet`;
@@ -4013,6 +3983,4 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
-
-
 
