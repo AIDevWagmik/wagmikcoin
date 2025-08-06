@@ -3696,19 +3696,27 @@ window.addEventListener("DOMContentLoaded", () => {
     const metadataUri = `ipfs://${result.IpfsHash}`;
     console.log("📦 Collection Metadata URI:", metadataUri);
 
-    const { instruction, feePayer } = await fetch("http://localhost:3001/create-metadata", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        mint: mint.publicKey.toBase58(),
-        payer: from.toBase58(),
-        updateAuthority: from.toBase58(),
-        uri: metadataUri,
-        name: metadata.name,
-        symbol: metadata.symbol,
-        collectionMint: null,
-      }),
-    }).then(res => res.json());
+   const response = await fetch("/create-metadata", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    mint: mint.publicKey.toBase58(),
+    payer: from.toBase58(),
+    updateAuthority: from.toBase58(),
+    uri: metadataUri,
+    name: metadata.name,
+    symbol: metadata.symbol,
+    collectionMint,
+  }),
+});
+
+if (!response.ok) {
+  const text = await response.text(); // safely parse even if not JSON
+  throw new Error(`❌ Backend error: ${text}`);
+}
+
+const { instruction, feePayer } = await response.json();
+
 
 console.log("🧪 Instruction data type:", typeof instruction.data);
 console.log("🧪 Instruction data (raw):", instruction.data);
@@ -3940,7 +3948,7 @@ console.log("🧪 Instruction data (raw):", instruction.data);
     if (!collectionMint) return alert("Collection not created. Please create a collection first.");
 
    // Fetch metadata instruction and feePayer from backend
-const { instruction, feePayer } = await fetch("http://localhost:3001/create-metadata", {
+const response = await fetch("http://localhost:3001/create-metadata", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
@@ -3952,7 +3960,14 @@ const { instruction, feePayer } = await fetch("http://localhost:3001/create-meta
     symbol: metadata.symbol,
     collectionMint,
   }),
-}).then(res => res.json());
+});
+
+if (!response.ok) {
+  const text = await response.text();
+  throw new Error(`❌ runDevnetMint metadata error: ${text}`);
+}
+
+const { instruction, feePayer } = await response.json();
 
 console.log("🧾 Received metadata instruction:", instruction);
 
@@ -3998,3 +4013,4 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
