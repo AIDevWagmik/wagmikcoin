@@ -3696,7 +3696,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const metadataUri = `ipfs://${result.IpfsHash}`;
     console.log("📦 Collection Metadata URI:", metadataUri);
 
-   const response = await fetch("/create-metadata", {
+  const response = await fetch("http://localhost:3001/create-metadata", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
@@ -4013,5 +4013,6 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
