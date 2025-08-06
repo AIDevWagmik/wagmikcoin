@@ -3601,153 +3601,6 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // New createCollection function
-  window.createCollection = async function () {
-    const phantom = window.solana;
-    if (!phantom || !phantom.isPhantom) return alert("Phantom not found.");
-    await phantom.connect();
-    const from = phantom.publicKey;
-
-    const connection = new solanaWeb3.Connection("https://mainnet.helius-rpc.com/?api-key=ab50cc7f-3c60-42b0-a3b4-4944c5263912");
-    const mint = solanaWeb3.Keypair.generate();
-    const lamports = await connection.getMinimumBalanceForRentExemption(82);
-
-    const ata = await splToken.Token.getAssociatedTokenAddress(
-      splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
-      splToken.TOKEN_PROGRAM_ID,
-      mint.publicKey,
-      from
-    );
-
-    const tx = new solanaWeb3.Transaction();
-    tx.add(
-      solanaWeb3.SystemProgram.createAccount({
-        fromPubkey: from,
-        newAccountPubkey: mint.publicKey,
-        space: 82,
-        lamports,
-        programId: splToken.TOKEN_PROGRAM_ID,
-      }),
-      splToken.Token.createInitMintInstruction(
-        splToken.TOKEN_PROGRAM_ID,
-        mint.publicKey,
-        0,
-        from,
-        from
-      ),
-      splToken.Token.createAssociatedTokenAccountInstruction(
-        splToken.ASSOCIATED_TOKEN_PROGRAM_ID,
-        splToken.TOKEN_PROGRAM_ID,
-        mint.publicKey,
-        ata,
-        from,
-        from
-      ),
-      splToken.Token.createMintToInstruction(
-        splToken.TOKEN_PROGRAM_ID,
-        mint.publicKey,
-        ata,
-        from,
-        [],
-        1
-      )
-    );
-
-    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
-    tx.recentBlockhash = blockhash;
-    tx.feePayer = from;
-
-    tx.partialSign(mint);
-    const signed = await phantom.signTransaction(tx); 
-    const txid = await connection.sendRawTransaction(signed.serialize(), { skipPreflight: false });
-    await connection.confirmTransaction({ signature: txid, blockhash, lastValidBlockHeight }, "confirmed");
-
-    console.log("✅ Collection Mint TX:", txid);
-    console.log("✅ Metadata transaction confirmed.");
-    console.log("🧾 Metadata TX ID:", txid2);
-    console.log("🔗 Metadata TX Link:", `${selectedCluster === "mainnet-beta"
-      ? `https://solscan.io/tx/${txid2}`
-      : `https://solscan.io/tx/${txid2}?cluster=devnet`}`);
-    console.log("📦 Metadata URI:", metadataUri);
-
-
-    const metadata = {
-      name: "WAGMIK Meme Collection",
-      symbol: "WAGMIK",
-      description: "A collection of memes forged in hopium. Minted on Solana.",
-      image: "ipfs://QmbpEHy6METd6Ys2VAQ7MCRdG8v4W3UbEE7TozkVQdwTFb",
-      seller_fee_basis_points: 0,
-      external_url: "https://wagmik.xyz",
-      collection: { name: "WAGMIK", family: "WAGMIK" },
-      properties: {
-        category: "image",
-        creators: [{ address: from.toBase58(), share: 100 }],
-        files: [{ uri: "ipfs://QmVFnSKo9hPtWZGPTGgQzxcuBf9HwxhWs5k5ErbXTRy8Zy", type: "image/png" }],
-      },
-    };
-
-    const pinataRes = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJjYWZkMTliZC04YTc3LTRiM2MtOGE1Zi00YWM4N2I0YjgxMmMiLCJlbWFpbCI6ImJ1c2NoZXJ0b205MkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJGUkExIn0seyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJOWUMxIn1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiNTRkMTFjZGZlNzc2MzkyN2MzN2MiLCJzY29wZWRLZXlTZWNyZXQiOiJlMDA2YWNjZGVjODFmZWI4YmQ2NjFhMTQ3N2NjYmE4N2ZmNTc2MzVmOTY2ZGVjOGFmZDlhNjc5ZDZiODRkMTA0IiwiZXhwIjoxNzg1NzcxNTA4fQ._-B0ktHsg3mTToG2JnJTvS52f0x-n5BDvnSA6jBn7Aw`,
-      },
-      body: JSON.stringify({ pinataMetadata: { name: metadata.name }, pinataContent: metadata }),
-    });
-
-    if (!pinataRes.ok) throw new Error("❌ Pinata upload failed: " + pinataRes.statusText);
-
-    const result = await pinataRes.json();
-    const metadataUri = `ipfs://${result.IpfsHash}`;
-    console.log("📦 Collection Metadata URI:", metadataUri);
-
-const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    mint: mint.publicKey.toBase58(),
-    payer: from.toBase58(),
-    updateAuthority: from.toBase58(),
-    uri: metadataUri,
-    name: metadata.name,
-    symbol: metadata.symbol,
-    collectionMint: null, // if you're creating a collection here
-  }),
-}).then(res => res.text());
-
-if (!/^[A-Za-z0-9+/=]+$/.test(metadataTxBase64.trim())) {
-  throw new Error("❌ Backend did not return a valid base64 transaction.");
-}
-
-const binary = atob(metadataTxBase64);
-const byteArray = new Uint8Array(binary.length);
-for (let i = 0; i < binary.length; i++) {
-  byteArray[i] = binary.charCodeAt(i);
-}
-const metadataTx = solanaWeb3.Transaction.from(byteArray);
-
-const signed2 = await phantom.signTransaction(metadataTx);
-const txid2 = await connection.sendRawTransaction(signed2.serialize(), {
-  skipPreflight: true,
-  maxRetries: 5,
-});
-await connection.confirmTransaction(
-  { signature: txid2, blockhash: metadataTx.recentBlockhash },
-  "finalized"
-);
-
-    console.log("✅ Collection Metadata TX:", `https://solscan.io/tx/${txid2}${selectedCluster === "mainnet-beta" ? "" : "?cluster=devnet"}`);
-
-    localStorage.setItem("wagmikCollectionMint", mint.publicKey.toBase58());
-
-    logOutput(`✅ Collection Mint: ${mint.publicKey.toBase58()}`);
-    logOutput(`🔗 https://solscan.io/address/${mint.publicKey.toBase58()}${selectedCluster === "mainnet-beta" ? "" : "?cluster=devnet"}`);
-
-    logOutput(`✅ Metadata set: ${metadataUri}`);
-    logOutput(`🔗 https://solscan.io/tx/${txid2}${selectedCluster === "mainnet-beta" ? "" : "?cluster=devnet"}`);
-
-  };
-
   // Updated runDevnetMint
   window.runDevnetMint = async function () {
     const TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
@@ -3942,8 +3795,6 @@ await connection.confirmTransaction(
     console.log("🧼 Cleaned Name:", cleanName, cleanName.length);
     console.log("🧼 Cleaned Symbol:", cleanSymbol, cleanSymbol.length);
 
-    const collectionMint = localStorage.getItem("wagmikCollectionMint");
-    if (!collectionMint) return alert("Collection not created. Please create a collection first.");
 
    // Fetch metadata instruction and feePayer from backend
 const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
@@ -4048,5 +3899,6 @@ logOutput(`🔗 <a href="${selectedCluster === "mainnet-beta"
   
  </body>
 </html>
+
 
 
