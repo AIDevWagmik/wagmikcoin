@@ -3846,58 +3846,6 @@ const metadataExplorerUrl = selectedCluster === "mainnet-beta"
 logOutput(`✅ Metadata set: ${metadataUri}`);
 logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#00ffa1;">View Metadata on Solscan</a>`);
 
-   // ✅ === Step: Set and Verify Collection ===
-
-const [collectionMetadataPDA] = await solanaWeb3.PublicKey.findProgramAddress(
-  [
-    Buffer.from("metadata"),
-    METADATA_PROGRAM_ID.toBuffer(),
-    collectionMint.toBuffer()
-  ],
-  METADATA_PROGRAM_ID
-);
-
-const [collectionMasterEditionPDA] = await solanaWeb3.PublicKey.findProgramAddress(
-  [
-    Buffer.from("metadata"),
-    METADATA_PROGRAM_ID.toBuffer(),
-    collectionMint.toBuffer(),
-    Buffer.from("edition")
-  ],
-  METADATA_PROGRAM_ID
-);
-
-const verifyIx = new solanaWeb3.TransactionInstruction({
-  programId: METADATA_PROGRAM_ID,
-  keys: [
-    { pubkey: metadataPDA, isSigner: false, isWritable: true },
-    { pubkey: from, isSigner: true, isWritable: false }, // collection authority
-    { pubkey: from, isSigner: true, isWritable: false }, // payer
-    { pubkey: mint.publicKey, isSigner: false, isWritable: false },
-    { pubkey: collectionMint, isSigner: false, isWritable: false },
-    { pubkey: collectionMetadataPDA, isSigner: false, isWritable: false },
-    { pubkey: collectionMasterEditionPDA, isSigner: false, isWritable: false },
-    { pubkey: solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false },
-  ],
-  data: Buffer.from([25]) // 22 = SetAndVerifyCollection instruction
-});
-
-const verifyTx = new solanaWeb3.Transaction().add(verifyIx);
-verifyTx.feePayer = from;
-
-const { blockhash: verifyBlockhash, lastValidBlockHeight: verifyBlockHeight } = await connection.getLatestBlockhash("finalized");
-verifyTx.recentBlockhash = verifyBlockhash;
-
-const signedVerify = await phantom.signTransaction(verifyTx);
-const verifySig = await connection.sendRawTransaction(signedVerify.serialize());
-await connection.confirmTransaction({ signature: verifySig, blockhash: verifyBlockhash, lastValidBlockHeight: verifyBlockHeight }, "confirmed");
-
-console.log("✅ Collection verified. TX:", verifySig);
-logOutput(`✅ Collection verified.`);
-logOutput(`🔗 <a href="${selectedCluster === "mainnet-beta"
-  ? `https://solscan.io/tx/${verifySig}`
-  : `https://solscan.io/tx/${verifySig}?cluster=devnet`}" target="_blank" style="color:#00ffa1;">View Collection Verification</a>`);
-
   };
  
   console.log("✅ runDevnetMint is ready.");
@@ -3906,6 +3854,7 @@ logOutput(`🔗 <a href="${selectedCluster === "mainnet-beta"
   
  </body>
 </html>
+
 
 
 
