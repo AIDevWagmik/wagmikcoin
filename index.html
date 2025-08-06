@@ -3710,6 +3710,9 @@ window.addEventListener("DOMContentLoaded", () => {
       }),
     }).then(res => res.json());
 
+console.log("🧪 Instruction data type:", typeof instruction.data);
+console.log("🧪 Instruction data (raw):", instruction.data);
+
     const ix = new solanaWeb3.TransactionInstruction({
   keys: instruction.keys.map(k => ({
     pubkey: new solanaWeb3.PublicKey(k.pubkey),
@@ -3722,9 +3725,9 @@ window.addEventListener("DOMContentLoaded", () => {
       ? instruction.data.trim()
       : "";
 
-    if (!/^[A-Za-z0-9+/=]+$/.test(base64)) {
-      throw new Error("❌ Invalid base64 in instruction.data");
-    }
+    //if (!/^[A-Za-z0-9+/=]+$/.test(base64)) {
+      //throw new Error("❌ Invalid base64 in instruction.data");
+   // }
 
     return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
   })(),
@@ -3961,6 +3964,9 @@ const { instruction, feePayer } = await fetch("http://localhost:3001/create-meta
 
 console.log("🧾 Received metadata instruction:", instruction);
 
+console.log("🧪 Received instruction in runDevnetMint:", instruction);
+console.log("🧪 Type of instruction.data:", typeof instruction.data);
+
 const ix = new solanaWeb3.TransactionInstruction({
   keys: instruction.keys.map(k => ({
     pubkey: new solanaWeb3.PublicKey(k.pubkey),
@@ -3973,9 +3979,9 @@ const ix = new solanaWeb3.TransactionInstruction({
       ? instruction.data.trim()
       : "";
 
-    if (!/^[A-Za-z0-9+/=]+$/.test(base64)) {
-      throw new Error("❌ Invalid base64 in instruction.data");
-    }
+   // if (!/^[A-Za-z0-9+/=]+$/.test(base64)) {
+   //  throw new Error("❌ Invalid base64 in instruction.data");
+   // }
 
     return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
   })(),
@@ -4008,6 +4014,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
