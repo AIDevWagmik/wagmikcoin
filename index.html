@@ -3725,8 +3725,8 @@ window.addEventListener("DOMContentLoaded", () => {
   })(),
 }); // ✅ <--- closes TransactionInstruction
 
-    { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
-
+    ({ blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized"));
+   
     const metadataTx = new solanaWeb3.Transaction({
       feePayer: new solanaWeb3.PublicKey(feePayer),
       recentBlockhash: blockhash,
@@ -3998,6 +3998,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
