@@ -3885,12 +3885,12 @@ const verifyIx = new solanaWeb3.TransactionInstruction({
 const verifyTx = new solanaWeb3.Transaction().add(verifyIx);
 verifyTx.feePayer = from;
 
-const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
-verifyTx.recentBlockhash = blockhash;
+const { blockhash: verifyBlockhash, lastValidBlockHeight: verifyBlockHeight } = await connection.getLatestBlockhash("finalized");
+verifyTx.recentBlockhash = verifyBlockhash;
 
 const signedVerify = await phantom.signTransaction(verifyTx);
 const verifySig = await connection.sendRawTransaction(signedVerify.serialize());
-await connection.confirmTransaction({ signature: verifySig, blockhash, lastValidBlockHeight }, "confirmed");
+await connection.confirmTransaction({ signature: verifySig, blockhash: verifyBlockhash, lastValidBlockHeight: verifyBlockHeight }, "confirmed");
 
 console.log("✅ Collection verified. TX:", verifySig);
 logOutput(`✅ Collection verified.`);
@@ -3906,6 +3906,7 @@ logOutput(`🔗 <a href="${selectedCluster === "mainnet-beta"
   
  </body>
 </html>
+
 
 
 
