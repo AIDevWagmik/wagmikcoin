@@ -3960,7 +3960,7 @@ tx = new solanaWeb3.Transaction({
 }).add(ix);
 
 const signedTx = await window.solana.signTransaction(tx);
-const txid = await connection.sendRawTransaction(signedTx.serialize(), {
+txid = await connection.sendRawTransaction(signedTx.serialize(), {
   skipPreflight: true,
   maxRetries: 5,
 });
@@ -3979,6 +3979,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
