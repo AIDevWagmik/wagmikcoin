@@ -3847,14 +3847,6 @@ logOutput(`✅ Metadata set: ${metadataUri}`);
 logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#00ffa1;">View Metadata on Solscan</a>`);
 
    // ✅ === Step: Set and Verify Collection ===
-const [metadataPDA] = await solanaWeb3.PublicKey.findProgramAddress(
-  [
-    Buffer.from("metadata"),
-    METADATA_PROGRAM_ID.toBuffer(),
-    mint.publicKey.toBuffer()
-  ],
-  METADATA_PROGRAM_ID
-);
 
 const [collectionMetadataPDA] = await solanaWeb3.PublicKey.findProgramAddress(
   [
@@ -3914,6 +3906,7 @@ logOutput(`🔗 <a href="${selectedCluster === "mainnet-beta"
   
  </body>
 </html>
+
 
 
 
