@@ -3725,16 +3725,16 @@ console.log("🧪 Instruction data (raw):", instruction.data);
     : Uint8Array.from(instruction.data),
 });
 
-   ({ blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized"));
+   const freshBlock = await connection.getLatestBlockhash("finalized");
    
     const metadataTx = new solanaWeb3.Transaction({
       feePayer: new solanaWeb3.PublicKey(feePayer),
-      recentBlockhash: blockhash,
+      recentBlockhash: freshBlock.blockhash,
     }).add(ix);
 
     const signed2 = await phantom.signTransaction(metadataTx);
     const txid2 = await connection.sendRawTransaction(signed2.serialize(), { skipPreflight: false });
-    await connection.confirmTransaction({ signature: txid2, blockhash, lastValidBlockHeight }, "confirmed");
+    await connection.confirmTransaction({ signature: txid2, blockhash: freshBlock.blockhash, lastValidBlockHeight: freshBlock.lastValidBlockHeight }, "confirmed");
 
     console.log("✅ Collection Metadata TX:", `https://solscan.io/tx/${txid2}${selectedCluster === "mainnet-beta" ? "" : "?cluster=devnet"}`);
 
@@ -3998,19 +3998,3 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
