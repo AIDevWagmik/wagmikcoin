@@ -3879,7 +3879,7 @@ const verifyIx = new solanaWeb3.TransactionInstruction({
     { pubkey: collectionMasterEditionPDA, isSigner: false, isWritable: false },
     { pubkey: solanaWeb3.SystemProgram.programId, isSigner: false, isWritable: false },
   ],
-  data: Buffer.from([22]) // 22 = SetAndVerifyCollection instruction
+  data: Buffer.from([25]) // 22 = SetAndVerifyCollection instruction
 });
 
 const verifyTx = new solanaWeb3.Transaction().add(verifyIx);
@@ -3906,6 +3906,7 @@ logOutput(`🔗 <a href="${selectedCluster === "mainnet-beta"
   
  </body>
 </html>
+
 
 
 
