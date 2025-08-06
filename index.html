@@ -3713,24 +3713,16 @@ window.addEventListener("DOMContentLoaded", () => {
 console.log("🧪 Instruction data type:", typeof instruction.data);
 console.log("🧪 Instruction data (raw):", instruction.data);
 
-    const ix = new solanaWeb3.TransactionInstruction({
+   const ix = new solanaWeb3.TransactionInstruction({
   keys: instruction.keys.map(k => ({
     pubkey: new solanaWeb3.PublicKey(k.pubkey),
     isSigner: k.isSigner,
     isWritable: k.isWritable,
   })),
   programId: new solanaWeb3.PublicKey(instruction.programId),
-  data: (() => {
-    const base64 = typeof instruction.data === "string"
-      ? instruction.data.trim()
-      : "";
-
-    //if (!/^[A-Za-z0-9+/=]+$/.test(base64)) {
-      //throw new Error("❌ Invalid base64 in instruction.data");
-   // }
-
-    return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-  })(),
+  data: instruction.data instanceof Uint8Array
+    ? instruction.data
+    : Uint8Array.from(instruction.data),
 });
 
    ({ blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized"));
@@ -3974,17 +3966,9 @@ const ix = new solanaWeb3.TransactionInstruction({
     isWritable: k.isWritable,
   })),
   programId: new solanaWeb3.PublicKey(instruction.programId),
-  data: (() => {
-    const base64 = typeof instruction.data === "string"
-      ? instruction.data.trim()
-      : "";
-
-   // if (!/^[A-Za-z0-9+/=]+$/.test(base64)) {
-   //  throw new Error("❌ Invalid base64 in instruction.data");
-   // }
-
-    return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-  })(),
+  data: instruction.data instanceof Uint8Array
+    ? instruction.data
+    : Uint8Array.from(instruction.data),
 });
 
 const freshBlock = await connection.getLatestBlockhash("finalized");
@@ -4014,6 +3998,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
