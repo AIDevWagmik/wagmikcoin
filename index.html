@@ -3696,7 +3696,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const metadataUri = `ipfs://${result.IpfsHash}`;
     console.log("📦 Collection Metadata URI:", metadataUri);
 
-    const metadataTxBase64 = await fetch("http://localhost:3001/create-metadata", {
+    const { instruction, feePayer } = await fetch("http://localhost:3001/create-metadata", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -3706,21 +3706,35 @@ window.addEventListener("DOMContentLoaded", () => {
         uri: metadataUri,
         name: metadata.name,
         symbol: metadata.symbol,
-        collectionMint: null, // Indicates this is the collection
+        collectionMint: null,
       }),
     }).then(res => res.json());
 
-    const binary = atob(metadataTxBase64);
-    const byteArray = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      byteArray[i] = binary.charCodeAt(i);
+    const ix = new solanaWeb3.TransactionInstruction({
+  keys: instruction.keys.map(k => ({
+    pubkey: new solanaWeb3.PublicKey(k.pubkey),
+    isSigner: k.isSigner,
+    isWritable: k.isWritable,
+  })),
+  programId: new solanaWeb3.PublicKey(instruction.programId),
+  data: (() => {
+    if (!/^[A-Za-z0-9+/=]+$/.test(instruction.data.trim())) {
+      throw new Error("❌ Invalid base64 in instruction.data");
     }
-    const metadataTx = solanaWeb3.Transaction.from(byteArray);
+    return Uint8Array.from(atob(instruction.data), c => c.charCodeAt(0));
+  })(),
+}); // ✅ <--- closes TransactionInstruction
 
-    metadataTx.feePayer = from;
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
+
+    const metadataTx = new solanaWeb3.Transaction({
+      feePayer: new solanaWeb3.PublicKey(feePayer),
+      recentBlockhash: blockhash,
+    }).add(ix);
+
     const signed2 = await phantom.signTransaction(metadataTx);
     const txid2 = await connection.sendRawTransaction(signed2.serialize(), { skipPreflight: false });
-    await connection.confirmTransaction(txid2, "confirmed");
+    await connection.confirmTransaction({ signature: txid2, blockhash, lastValidBlockHeight }, "confirmed");
 
     console.log("✅ Collection Metadata TX:", `https://solscan.io/tx/${txid2}${selectedCluster === "mainnet-beta" ? "" : "?cluster=devnet"}`);
 
@@ -3949,26 +3963,31 @@ const ix = new solanaWeb3.TransactionInstruction({
     isWritable: k.isWritable,
   })),
   programId: new solanaWeb3.PublicKey(instruction.programId),
-  data: Uint8Array.from(atob(instruction.data), c => c.charCodeAt(0)),
+  data: (() => {
+    if (!/^[A-Za-z0-9+/=]+$/.test(instruction.data.trim())) {
+      throw new Error("❌ Invalid base64 in instruction.data");
+    }
+    return Uint8Array.from(atob(instruction.data), c => c.charCodeAt(0));
+  })(),
 });
 
-({ blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized"));
+const freshBlock = await connection.getLatestBlockhash("finalized");
 
-tx = new solanaWeb3.Transaction({
+const metadataTx = new solanaWeb3.Transaction({
   feePayer: new solanaWeb3.PublicKey(feePayer),
-  recentBlockhash: blockhash,
+  recentBlockhash: freshBlock.blockhash,
 }).add(ix);
 
-const signedTx = await window.solana.signTransaction(tx);
-txid = await connection.sendRawTransaction(signedTx.serialize(), {
+const signedTx = await window.solana.signTransaction(metadataTx);
+const txid2 = await connection.sendRawTransaction(signedTx.serialize(), {
   skipPreflight: true,
   maxRetries: 5,
 });
-await connection.confirmTransaction({ signature: txid, blockhash, lastValidBlockHeight }, "finalized");
+await connection.confirmTransaction({ signature: txid2, blockhash: freshBlock.blockhash, lastValidBlockHeight: freshBlock.lastValidBlockHeight }, "finalized");
 
 const metadataExplorerUrl = selectedCluster === "mainnet-beta"
-  ? `https://solscan.io/tx/${txid}`
-  : `https://solscan.io/tx/${txid}?cluster=devnet`;
+  ? `https://solscan.io/tx/${txid2}`
+  : `https://solscan.io/tx/${txid2}?cluster=devnet`;
 
 logOutput(`✅ Metadata set: ${metadataUri}`);
 logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#00ffa1;">View Metadata on Solscan</a>`);
@@ -3979,6 +3998,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
