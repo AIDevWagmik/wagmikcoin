@@ -3647,33 +3647,43 @@ window.addEventListener("DOMContentLoaded", () => {
 
     // ✅ Build and send TX1
 
-   const tx1 = new solanaWeb3.Transaction().add(createAccountIx, initMintIx);
+ const tx1 = new solanaWeb3.Transaction().add(
+  solanaWeb3.SystemProgram.createAccount({
+    fromPubkey: from,
+    newAccountPubkey: mint.publicKey,
+    space: 82,
+    lamports,
+    programId: splToken.TOKEN_PROGRAM_ID,
+  }),
+  splToken.Token.createInitMintInstruction(
+    splToken.TOKEN_PROGRAM_ID,
+    mint.publicKey,
+    0,
+    mint.publicKey, // ✅ mint authority = mint itself
+    mint.publicKey  // ✅ freeze authority = mint itself
+  )
+);
 
-   tx1.feePayer = from;
+tx1.feePayer = from;
 
-  // ✅ SET blockhash after adding instructions
-  const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
-  tx1.recentBlockhash = blockhash;
-  tx1.lastValidBlockHeight = lastValidBlockHeight;
+const { blockhash } = await connection.getLatestBlockhash("finalized");
+tx1.recentBlockhash = blockhash;
 
-tx1.partialSign(mint); // ✅ now safe
+tx1.partialSign(mint);
 const signed1 = await phantom.signTransaction(tx1);
 
+const sig1 = await connection.sendRawTransaction(signed1.serialize(), { skipPreflight: false });
+await connection.confirmTransaction(sig1, "confirmed");
+ );
 
-    console.log("📤 Sending mint account TX1...");
-    const sig1 = await connection.sendRawTransaction(signed1.serialize(), {
-      skipPreflight: false,
-    });
+console.log("✅ Mint TX confirmed:", sig1);
+console.log("🔗 View TX: https://solscan.io/tx/" + sig1);
+console.log("🔗 Mint Address: https://solscan.io/address/" + mint.publicKey.toBase58());
 
-    console.log("⏳ Awaiting confirmation for mint TX1...");
-    await connection.confirmTransaction(
-      { signature: sig1, blockhash, lastValidBlockHeight },
-      "confirmed"
-    );
+// 🧠 Confirm actual mint authority
+const mintInfo = await connection.getParsedAccountInfo(mint.publicKey);
+console.log("🧪 Mint authority on chain:", mintInfo?.value?.data?.parsed?.info?.mintAuthority);
 
-    console.log("✅ Mint TX confirmed:", sig1);
-    console.log("🔗 View TX: https://solscan.io/tx/" + sig1);
-    console.log("🔗 Mint Address: https://solscan.io/address/" + mint.publicKey.toBase58());
 
     // 🧠 Confirm mint exists before proceeding
     let retries = 10;
@@ -4026,6 +4036,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
