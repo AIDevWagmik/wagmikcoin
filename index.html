@@ -3649,6 +3649,9 @@ window.createCollection = async function () {
     const tx1 = new solanaWeb3.Transaction().add(createAccountIx, initMintIx);
     tx1.feePayer = from;
 
+    const { blockhash } = await connection.getLatestBlockhash("finalized");
+    tx1.recentBlockhash = blockhash;
+
     tx1.partialSign(mint); // sign with local mint
     const signed1 = await phantom.signTransaction(tx1);
     const sig1 = await connection.sendRawTransaction(signed1.serialize());
@@ -3972,6 +3975,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
