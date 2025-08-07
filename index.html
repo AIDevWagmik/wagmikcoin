@@ -3624,7 +3624,7 @@ window.createCollection = async function () {
     await phantom.connect();
     const from = phantom.publicKey;
 
-    const connection = new solanaWeb3.Connection("https://mainnet.helius-rpc.com/?api-key=YOUR_API_KEY");
+    const connection = new solanaWeb3.Connection("https://mainnet.helius-rpc.com/?api-key=ab50cc7f-3c60-42b0-a3b4-4944c5263912");
     const mint = solanaWeb3.Keypair.generate();
     const lamports = await connection.getMinimumBalanceForRentExemption(82);
 
@@ -3972,6 +3972,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
