@@ -3674,7 +3674,6 @@ const signed1 = await phantom.signTransaction(tx1);
 
 const sig1 = await connection.sendRawTransaction(signed1.serialize(), { skipPreflight: false });
 await connection.confirmTransaction(sig1, "confirmed");
- );
 
 console.log("✅ Mint TX confirmed:", sig1);
 console.log("🔗 View TX: https://solscan.io/tx/" + sig1);
@@ -4036,6 +4035,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
