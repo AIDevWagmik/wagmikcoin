@@ -3660,13 +3660,18 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const connection = new solanaWeb3.Connection("https://mainnet.helius-rpc.com/?api-key=ab50cc7f-3c60-42b0-a3b4-4944c5263912", "confirmed");
 
-    const sig = await connection.sendRawTransaction(txBytes, {
-      skipPreflight: false,
-    });
+    const tx = solanaWeb3.Transaction.from(txBytes);
+    const signed = await window.solana.signTransaction(tx);
+
+    const sig = await connection.sendRawTransaction(signed.serialize(), {
+     skipPreflight: true,
+     maxRetries: 5,
+   });
     await connection.confirmTransaction(sig, "confirmed");
 
     console.log("✅ Collection Minted TX:", sig);
     alert("✅ Collection NFT minted!\nTX: " + sig);
+
   } catch (err) {
     console.error("❌ createCollection failed:", err);
     alert("❌ Collection minting failed. Check console.");
@@ -3945,18 +3950,3 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
