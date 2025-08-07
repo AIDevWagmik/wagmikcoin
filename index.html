@@ -3646,16 +3646,19 @@ window.addEventListener("DOMContentLoaded", () => {
     );
 
     // ✅ Build and send TX1
-    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
 
-    const tx1 = new solanaWeb3.Transaction({
-      feePayer: from,
-      recentBlockhash: blockhash,
-      lastValidBlockHeight
-    }).add(createAccountIx, initMintIx);
+   const tx1 = new solanaWeb3.Transaction().add(createAccountIx, initMintIx);
 
-    tx1.partialSign(mint);
-    const signed1 = await phantom.signTransaction(tx1);
+   tx1.feePayer = from;
+
+  // ✅ SET blockhash after adding instructions
+  const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
+  tx1.recentBlockhash = blockhash;
+  tx1.lastValidBlockHeight = lastValidBlockHeight;
+
+tx1.partialSign(mint); // ✅ now safe
+const signed1 = await phantom.signTransaction(tx1);
+
 
     console.log("📤 Sending mint account TX1...");
     const sig1 = await connection.sendRawTransaction(signed1.serialize(), {
@@ -4018,6 +4021,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
