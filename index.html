@@ -3729,6 +3729,11 @@ const signed1 = await phantom.signTransaction(tx1);
     tx2.lastValidBlockHeight = newLvb;
 
     tx2.partialSign(mint);
+    console.log("🔍 TX2 expected signer pubkeys:", tx2.signatures.map(s => s.publicKey.toBase58()));
+    console.log("🔍 Mint pubkey:", mint.publicKey.toBase58());
+
+    const mintSigEntry = tx2.signatures.find(sig => sig.publicKey.equals(mint.publicKey));
+    console.log("🧪 Mint signature present?", mintSigEntry?.signature !== null);
     const signed2 = await phantom.signTransaction(tx2);
 
     console.log("📤 Sending metadata TX2...");
@@ -4021,6 +4026,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
