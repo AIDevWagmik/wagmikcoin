@@ -3632,14 +3632,14 @@ window.addEventListener("DOMContentLoaded", () => {
 
 
     const body = {
-      mint: null, // backend will generate it
       payer: from.toBase58(),
       updateAuthority: from.toBase58(),
       name: metadata.name,
       symbol: metadata.symbol,
       uri: metadata.uri,
-      collectionMint: null // ❌ no parent = this is the collection
+      collectionMint: null
     };
+
 
     const res = await fetch("http://localhost:3001/create-metadata", {
       method: "POST",
@@ -3945,6 +3945,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
