@@ -3685,6 +3685,10 @@ window.createCollection = async function () {
     const txBytes = Uint8Array.from(atob(txBase64), c => c.charCodeAt(0));
     const tx2 = solanaWeb3.Transaction.from(txBytes);
 
+    const { blockhash: newBlockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
+    tx2.recentBlockhash = newBlockhash;
+    tx2.lastValidBlockHeight = lastValidBlockHeight;
+
     tx2.partialSign(mint); // ✅ must sign with mint again
     const signed2 = await phantom.signTransaction(tx2);
 
@@ -3975,6 +3979,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
