@@ -3630,16 +3630,17 @@ window.addEventListener("DOMContentLoaded", () => {
     uri: "ipfs://bafkreidg36eqqjummqadjem7wka5vclyrg67k66w2z4btaotk7oploeh2y" // ✅ METADATA JSON hash
 };
 
-
+    const mint = solanaWeb3.Keypair.generate(); // 👈 creates the mint in frontend
+   
     const body = {
-      payer: from.toBase58(),
-      updateAuthority: from.toBase58(),
-      name: metadata.name,
-      symbol: metadata.symbol,
-      uri: metadata.uri,
-      collectionMint: null
-    };
-
+    mint: mint.publicKey.toBase58(), // 👈 use frontend mint
+    payer: from.toBase58(),
+    updateAuthority: from.toBase58(),
+    name: metadata.name,
+    symbol: metadata.symbol,
+    uri: metadata.uri,
+    collectionMint: null, // this is a collection NFT
+  };
 
     const res = await fetch("http://localhost:3001/create-metadata", {
       method: "POST",
@@ -3652,25 +3653,34 @@ window.addEventListener("DOMContentLoaded", () => {
       throw new Error("Invalid base64 returned by backend");
     }
 
-    const binary = atob(txBase64);
-    const txBytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      txBytes[i] = binary.charCodeAt(i);
-    }
+   const binary = atob(txBase64);
+   const txBytes = new Uint8Array(binary.length);
+   for (let i = 0; i < binary.length; i++) {
+     txBytes[i] = binary.charCodeAt(i);
+   }
 
-    const connection = new solanaWeb3.Connection("https://mainnet.helius-rpc.com/?api-key=ab50cc7f-3c60-42b0-a3b4-4944c5263912", "confirmed");
+   const tx = solanaWeb3.Transaction.from(txBytes);
 
-    const tx = solanaWeb3.Transaction.from(txBytes);
-    const signed = await window.solana.signTransaction(tx);
+   // ✅ Sign with frontend mint keypair
+   tx.partialSign(mint); 
 
-    const sig = await connection.sendRawTransaction(signed.serialize(), {
+   // ✅ Let Phantom sign as fee payer & update authority
+   const signed = await window.solana.signTransaction(tx);
+
+   const connection = new solanaWeb3.Connection(
+     "https://mainnet.helius-rpc.com/?api-key=ab50cc7f-3c60-42b0-a3b4-4944c5263912",
+     "confirmed"
+   );
+
+   const sig = await connection.sendRawTransaction(signed.serialize(), {
      skipPreflight: true,
      maxRetries: 5,
    });
-    await connection.confirmTransaction(sig, "confirmed");
+   await connection.confirmTransaction(sig, "confirmed");
 
-    console.log("✅ Collection Minted TX:", sig);
-    alert("✅ Collection NFT minted!\nTX: " + sig);
+   console.log("✅ Collection Minted TX:", sig);
+   alert("✅ Collection NFT minted!\nTX: " + sig);
+
 
   } catch (err) {
     console.error("❌ createCollection failed:", err);
@@ -3950,3 +3960,4 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
