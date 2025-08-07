@@ -1841,6 +1841,10 @@ section:nth-of-type(6) *,     /* Jupiter Buy */
 
    <button id="disconnectWalletBtn" style="margin-top: 8px;">🚪 Disconnect</button>
 
+   <button id="createCollectionBtn" class="floating-button" style="bottom: 200px; background: #00ffa1;">
+  🧾 Create Collection NFT
+</button>
+
 <div id="terminalOutput" class="terminal-box" style="white-space: pre-wrap;">
   <p style="margin: 0 0 4px;">Welcome to the $WAGMIK Solana Console 💀</p>
   <div style="margin: 0 0 2px; font-size: 0.95em;">
@@ -3315,14 +3319,25 @@ document.addEventListener('DOMContentLoaded', () => {
         logOutput("❌ Create collection function not found.");
         return;
       }
-      try {
-        logOutput("⏳ Creating WAGMIK Meme Collection...");
-        await window.createCollection();
-        logOutput("✅ Collection creation complete. Check console and localStorage for mint.");
-      } catch (err) {
-        logOutput("❌ Failed to create collection.");
-        console.error(err);
-      }
+
+    else if (e.target.id === "createCollectionBtn") {
+  if (typeof window.createCollection !== "function") {
+    alert("❌ createCollection function not found.");
+  } else {
+    const confirmMint = confirm("🧾 This will mint a new collection NFT.\nContinue?");
+    if (!confirmMint) return;
+
+    try {
+      logOutput("⏳ Creating WAGMIK Meme Collection...");
+      await window.createCollection();
+      logOutput("✅ Collection creation complete. Check console and localStorage for mint.");
+    } catch (err) {
+      logOutput("❌ Failed to create collection.");
+      console.error(err);
+      alert("❌ Collection minting failed. Check console.");
+    }
+  }
+}
     } else {
       logOutput(`❓ Unknown command: ${cmd}`);
     }
@@ -3601,6 +3616,63 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+ window.createCollection = async function () {
+  const phantom = window.solana;
+  if (!phantom?.isPhantom) return alert("Phantom wallet not found");
+
+  try {
+    await phantom.connect();
+    const from = phantom.publicKey;
+
+    const metadata = {
+    name: "WAGMIK Meme Collection",
+    symbol: "WAGMIK",
+    uri: "ipfs://bafkreidg36eqqjummqadjem7wka5vclyrg67k66w2z4btaotk7oploeh2y" // ✅ METADATA JSON hash
+};
+
+
+    const body = {
+      mint: null, // backend will generate it
+      payer: from.toBase58(),
+      updateAuthority: from.toBase58(),
+      name: metadata.name,
+      symbol: metadata.symbol,
+      uri: metadata.uri,
+      collectionMint: null // ❌ no parent = this is the collection
+    };
+
+    const res = await fetch("http://localhost:3001/create-metadata", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+     });
+
+    const txBase64 = await res.text();
+    if (!/^[A-Za-z0-9+/=]+$/.test(txBase64.trim())) {
+      throw new Error("Invalid base64 returned by backend");
+    }
+
+    const binary = atob(txBase64);
+    const txBytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      txBytes[i] = binary.charCodeAt(i);
+    }
+
+    const tx = solanaWeb3.Transaction.from(txBytes);
+    const signed = await phantom.signTransaction(tx);
+    const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com", "confirmed");
+
+    const sig = await connection.sendRawTransaction(signed.serialize());
+    await connection.confirmTransaction(sig, "confirmed");
+
+    console.log("✅ Collection Minted TX:", sig);
+    alert("✅ Collection NFT minted!\nTX: " + sig);
+  } catch (err) {
+    console.error("❌ createCollection failed:", err);
+    alert("❌ Collection minting failed. Check console.");
+  }
+};
+ 
   // Updated runDevnetMint
   window.runDevnetMint = async function () {
     const TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
@@ -3851,9 +3923,29 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   console.log("✅ runDevnetMint is ready.");
 });
 </script>
+
+<script>
+  document.getElementById("createCollectionBtn")?.addEventListener("click", async () => {
+    if (typeof window.createCollection !== "function") {
+      return alert("❌ createCollection function not found.");
+    }
+
+    const confirmMint = confirm("🧾 This will mint a new collection NFT.\nContinue?");
+    if (!confirmMint) return;
+
+    try {
+      await window.createCollection();
+    } catch (err) {
+      console.error("❌ createCollection failed:", err);
+      alert("❌ Collection minting failed. Check console.");
+    }
+  });
+</script>
+
   
  </body>
 </html>
+
 
 
 
