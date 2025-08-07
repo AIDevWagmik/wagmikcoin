@@ -3616,7 +3616,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
- window.createCollection = async function () {
+window.createCollection = async function () {
   const phantom = window.solana;
   if (!phantom?.isPhantom) return alert("Phantom wallet not found");
 
@@ -3624,55 +3624,75 @@ window.addEventListener("DOMContentLoaded", () => {
     await phantom.connect();
     const from = phantom.publicKey;
 
+    const connection = new solanaWeb3.Connection("https://mainnet.helius-rpc.com/?api-key=YOUR_API_KEY");
+    const mint = solanaWeb3.Keypair.generate();
+    const lamports = await connection.getMinimumBalanceForRentExemption(82);
+
+    // ✅ 1. Create the mint account
+    const createAccountIx = solanaWeb3.SystemProgram.createAccount({
+      fromPubkey: from,
+      newAccountPubkey: mint.publicKey,
+      space: 82,
+      lamports,
+      programId: splToken.TOKEN_PROGRAM_ID,
+    });
+
+    // ✅ 2. Initialize the mint (0 decimals, NFT)
+    const initMintIx = splToken.Token.createInitMintInstruction(
+      splToken.TOKEN_PROGRAM_ID,
+      mint.publicKey,
+      0,
+      from,
+      from
+    );
+
+    const tx1 = new solanaWeb3.Transaction().add(createAccountIx, initMintIx);
+    tx1.feePayer = from;
+
+    tx1.partialSign(mint); // sign with local mint
+    const signed1 = await phantom.signTransaction(tx1);
+    const sig1 = await connection.sendRawTransaction(signed1.serialize());
+    await connection.confirmTransaction(sig1, "confirmed");
+    console.log("✅ Mint account created:", sig1);
+
+    // ✅ 3. Now send metadata request to backend
     const metadata = {
-    name: "WAGMIK Meme Collection",
-    symbol: "WAGMIK",
-    uri: "ipfs://bafkreidg36eqqjummqadjem7wka5vclyrg67k66w2z4btaotk7oploeh2y" // ✅ METADATA JSON hash
-};
+      name: "WAGMIK Meme Collection",
+      symbol: "WAGMIK",
+      uri: "ipfs://bafkreidg36eqqjummqadjem7wka5vclyrg67k66w2z4btaotk7oploeh2y"
+    };
 
-// ✅ Step-by-step implementation for verified collection minting via Phantom
+    const body = {
+      mint: mint.publicKey.toBase58(),
+      payer: from.toBase58(),
+      updateAuthority: from.toBase58(),
+      name: metadata.name,
+      symbol: metadata.symbol,
+      uri: metadata.uri,
+      collectionMint: null
+    };
 
-const mint = solanaWeb3.Keypair.generate();
+    const res = await fetch("http://localhost:3001/create-metadata", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
 
-const collectionMetadata = {
-  name: "WAGMIK Meme Collection",
-  symbol: "WAGMIK",
-  uri: "ipfs://bafkreidg36eqqjummqadjem7wka5vclyrg67k66w2z4btaotk7oploeh2y"
-};
+    const txBase64 = await res.text();
+    const txBytes = Uint8Array.from(atob(txBase64), c => c.charCodeAt(0));
+    const tx2 = solanaWeb3.Transaction.from(txBytes);
 
-const body = {
-  mint: mint.publicKey.toBase58(),
-  payer: phantom.publicKey.toBase58(),
-  updateAuthority: phantom.publicKey.toBase58(),
-  name: collectionMetadata.name,
-  symbol: collectionMetadata.symbol,
-  uri: collectionMetadata.uri,
-  collectionMint: null
-};
+    tx2.partialSign(mint); // ✅ must sign with mint again
+    const signed2 = await phantom.signTransaction(tx2);
 
-const res = await fetch("http://localhost:3001/create-metadata", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(body),
-});
+    const sig2 = await connection.sendRawTransaction(signed2.serialize(), {
+      skipPreflight: false,
+      maxRetries: 5,
+    });
 
-const txBase64 = await res.text();
-const txBytes = Uint8Array.from(atob(txBase64), c => c.charCodeAt(0));
-const tx = solanaWeb3.Transaction.from(txBytes);
-tx.partialSign(mint);
-
-const signed = await phantom.signTransaction(tx);
-const connection = new solanaWeb3.Connection("https://mainnet.helius-rpc.com/?api-key=ab50cc7f-3c60-42b0-a3b4-4944c5263912", "confirmed");
-
-const sig = await connection.sendRawTransaction(signed.serialize(), {
-  skipPreflight: true,
-  maxRetries: 5,
-});
-await connection.confirmTransaction(sig, "confirmed");
-
-   console.log("✅ Collection Minted TX:", sig);
-   alert("✅ Collection NFT minted!\nTX: " + sig);
-
+    await connection.confirmTransaction(sig2, "confirmed");
+    console.log("✅ Collection Minted TX:", sig2);
+    alert("✅ Collection NFT minted!\nTX: " + sig2);
 
   } catch (err) {
     console.error("❌ createCollection failed:", err);
@@ -3952,6 +3972,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
