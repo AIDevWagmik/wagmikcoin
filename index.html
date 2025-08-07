@@ -3630,53 +3630,45 @@ window.addEventListener("DOMContentLoaded", () => {
     uri: "ipfs://bafkreidg36eqqjummqadjem7wka5vclyrg67k66w2z4btaotk7oploeh2y" // ✅ METADATA JSON hash
 };
 
-    const mint = solanaWeb3.Keypair.generate(); // 👈 creates the mint in frontend
-   
-    const body = {
-    mint: mint.publicKey.toBase58(), // 👈 use frontend mint
-    payer: from.toBase58(),
-    updateAuthority: from.toBase58(),
-    name: metadata.name,
-    symbol: metadata.symbol,
-    uri: metadata.uri,
-    collectionMint: null, // this is a collection NFT
-  };
+// ✅ Step-by-step implementation for verified collection minting via Phantom
 
-    const res = await fetch("http://localhost:3001/create-metadata", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-     });
+const mint = solanaWeb3.Keypair.generate();
 
-    const txBase64 = await res.text();
-    if (!/^[A-Za-z0-9+/=]+$/.test(txBase64.trim())) {
-      throw new Error("Invalid base64 returned by backend");
-    }
+const metadata = {
+  name: "WAGMIK Meme Collection",
+  symbol: "WAGMIK",
+  uri: "ipfs://bafkreidg36eqqjummqadjem7wka5vclyrg67k66w2z4btaotk7oploeh2y"
+};
 
-   const binary = atob(txBase64);
-   const txBytes = new Uint8Array(binary.length);
-   for (let i = 0; i < binary.length; i++) {
-     txBytes[i] = binary.charCodeAt(i);
-   }
+const body = {
+  mint: mint.publicKey.toBase58(),
+  payer: phantom.publicKey.toBase58(),
+  updateAuthority: phantom.publicKey.toBase58(),
+  name: metadata.name,
+  symbol: metadata.symbol,
+  uri: metadata.uri,
+  collectionMint: null
+};
 
-   const tx = solanaWeb3.Transaction.from(txBytes);
+const res = await fetch("http://localhost:3001/create-metadata", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(body),
+});
 
-   // ✅ Sign with frontend mint keypair
-   tx.partialSign(mint); 
+const txBase64 = await res.text();
+const txBytes = Uint8Array.from(atob(txBase64), c => c.charCodeAt(0));
+const tx = solanaWeb3.Transaction.from(txBytes);
+tx.partialSign(mint);
 
-   // ✅ Let Phantom sign as fee payer & update authority
-   const signed = await window.solana.signTransaction(tx);
+const signed = await phantom.signTransaction(tx);
+const connection = new solanaWeb3.Connection("https://mainnet.helius-rpc.com/?api-key=ab50cc7f-3c60-42b0-a3b4-4944c5263912", "confirmed");
 
-   const connection = new solanaWeb3.Connection(
-     "https://mainnet.helius-rpc.com/?api-key=ab50cc7f-3c60-42b0-a3b4-4944c5263912",
-     "confirmed"
-   );
-
-   const sig = await connection.sendRawTransaction(signed.serialize(), {
-     skipPreflight: true,
-     maxRetries: 5,
-   });
-   await connection.confirmTransaction(sig, "confirmed");
+const sig = await connection.sendRawTransaction(signed.serialize(), {
+  skipPreflight: true,
+  maxRetries: 5,
+});
+await connection.confirmTransaction(sig, "confirmed");
 
    console.log("✅ Collection Minted TX:", sig);
    alert("✅ Collection NFT minted!\nTX: " + sig);
@@ -3960,4 +3952,5 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
