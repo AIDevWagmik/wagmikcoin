@@ -3658,7 +3658,7 @@ window.addEventListener("DOMContentLoaded", () => {
       txBytes[i] = binary.charCodeAt(i);
     }
 
-    const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com", "confirmed");
+    const connection = new solanaWeb3.Connection("https://mainnet.helius-rpc.com/?api-key=ab50cc7f-3c60-42b0-a3b4-4944c5263912", "confirmed");
 
     const sig = await connection.sendRawTransaction(txBytes, {
       skipPreflight: false,
@@ -3945,6 +3945,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
