@@ -3658,7 +3658,7 @@ window.createCollection = async function () {
     await connection.confirmTransaction(sig1, "confirmed");
 
     // 🧠 Confirm mint exists before continuing
-let retries = 5;
+let retries = 10;
 while (retries-- > 0) {
   const info = await connection.getAccountInfo(mint.publicKey);
   console.log("🧪 Mint account data length:", info?.data?.length || 0);
@@ -3666,6 +3666,12 @@ while (retries-- > 0) {
   console.log("⏳ Waiting for mint account to finalize...");
   await new Promise(res => setTimeout(res, 1000));
 }
+
+    if (info?.data?.length < 82) {
+  alert("❌ Mint account did not initialize in time. Try again.");
+  return;
+}
+
     console.log("✅ Mint account created:", sig1);
 
     // ✅ 3. Now send metadata request to backend
@@ -3989,6 +3995,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
