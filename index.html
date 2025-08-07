@@ -3616,7 +3616,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-window.createCollection = async function () {
+  window.createCollection = async function () {
   const phantom = window.solana;
   if (!phantom?.isPhantom) return alert("Phantom wallet not found");
 
@@ -3628,139 +3628,124 @@ window.createCollection = async function () {
     const mint = solanaWeb3.Keypair.generate();
     const lamports = await connection.getMinimumBalanceForRentExemption(82);
 
-    // ✅ 1. Create the mint account
-   const createAccountIx = solanaWeb3.SystemProgram.createAccount({
-  fromPubkey: from,
-  newAccountPubkey: mint.publicKey,
-  space: 82,
-  lamports,
-  programId: splToken.TOKEN_PROGRAM_ID,
-});
-
-const initMintIx = splToken.Token.createInitMintInstruction(
-  splToken.TOKEN_PROGRAM_ID,
-  mint.publicKey,
-  0,     // NFT = 0 decimals
-  from,  // mint authority
-  from   // freeze authority
-);
-
-   // ✅ 1. Create + Initialize the mint account correctly
-try {
-  const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
-
-  const tx1 = new solanaWeb3.Transaction({
-    feePayer: from,
-    recentBlockhash: blockhash,
-    lastValidBlockHeight
-  }).add(
-    solanaWeb3.SystemProgram.createAccount({
+    // ✅ Create mint instructions
+    const createAccountIx = solanaWeb3.SystemProgram.createAccount({
       fromPubkey: from,
       newAccountPubkey: mint.publicKey,
       space: 82,
       lamports,
       programId: splToken.TOKEN_PROGRAM_ID,
-    }),
-    splToken.Token.createInitMintInstruction(
+    });
+
+    const initMintIx = splToken.Token.createInitMintInstruction(
       splToken.TOKEN_PROGRAM_ID,
       mint.publicKey,
-      0,       // decimals
-      from,    // mint authority
-      from     // freeze authority
-    )
-  );
+      0,
+      from,
+      from
+    );
 
-  tx1.partialSign(mint); // ✅ sign with the generated mint keypair
-  const signed1 = await phantom.signTransaction(tx1);
+    // ✅ Build and send TX1
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("finalized");
 
-  console.log("📤 Sending mint account TX1...");
-  const sig1 = await connection.sendRawTransaction(signed1.serialize(), {
-    skipPreflight: false,
-  });
+    const tx1 = new solanaWeb3.Transaction({
+      feePayer: from,
+      recentBlockhash: blockhash,
+      lastValidBlockHeight
+    }).add(createAccountIx, initMintIx);
 
-  console.log("⏳ Awaiting confirmation for mint TX1...");
-  await connection.confirmTransaction(
-    { signature: sig1, blockhash, lastValidBlockHeight },
-    "confirmed"
-  );
+    tx1.partialSign(mint);
+    const signed1 = await phantom.signTransaction(tx1);
 
-  console.log("✅ Mint TX confirmed: ", sig1);
-  console.log("🔗 View TX: https://solscan.io/tx/" + sig1);
-  console.log("🔗 Mint Address: https://solscan.io/address/" + mint.publicKey.toBase58());
+    console.log("📤 Sending mint account TX1...");
+    const sig1 = await connection.sendRawTransaction(signed1.serialize(), {
+      skipPreflight: false,
+    });
 
-  // 🧠 Confirm mint exists on-chain before proceeding
-  let retries = 10;
-  let info = null;
+    console.log("⏳ Awaiting confirmation for mint TX1...");
+    await connection.confirmTransaction(
+      { signature: sig1, blockhash, lastValidBlockHeight },
+      "confirmed"
+    );
 
-  while (retries-- > 0) {
-    info = await connection.getAccountInfo(mint.publicKey);
-    console.log("🧪 Mint account data length:", info?.data?.length || 0);
-    if (info && info.data.length >= 82) break;
-    console.log("⏳ Waiting for mint account to finalize...");
-    await new Promise(res => setTimeout(res, 1000));
-  }
+    console.log("✅ Mint TX confirmed:", sig1);
+    console.log("🔗 View TX: https://solscan.io/tx/" + sig1);
+    console.log("🔗 Mint Address: https://solscan.io/address/" + mint.publicKey.toBase58());
 
-  if (info?.data?.length < 82) {
-    alert("❌ Mint account did not initialize in time. Try again.");
-    console.warn("❌ Mint account not properly initialized.");
-    return;
-  }
+    // 🧠 Confirm mint exists before proceeding
+    let retries = 10;
+    let info = null;
 
-  console.log("✅ Mint account is ready for metadata.");
+    while (retries-- > 0) {
+      info = await connection.getAccountInfo(mint.publicKey);
+      console.log("🧪 Mint account data length:", info?.data?.length || 0);
+      if (info && info.data.length >= 82) break;
+      console.log("⏳ Waiting for mint account to finalize...");
+      await new Promise(res => setTimeout(res, 1000));
+    }
 
-  // ✅ 2. Now send metadata request to backend
-  const metadata = {
-    name: "WAGMIK Meme Collection",
-    symbol: "WAGMIK",
-    uri: "ipfs://bafkreidg36eqqjummqadjem7wka5vclyrg67k66w2z4btaotk7oploeh2y"
-  };
+    if (info?.data?.length < 82) {
+      alert("❌ Mint account did not initialize in time. Try again.");
+      console.warn("❌ Mint account not properly initialized.");
+      return;
+    }
 
-  const body = {
-    mint: mint.publicKey.toBase58(),
-    payer: from.toBase58(),
-    updateAuthority: from.toBase58(),
-    name: metadata.name,
-    symbol: metadata.symbol,
-    uri: metadata.uri,
-    collectionMint: null
-  };
+    console.log("✅ Mint account is ready for metadata.");
 
-  console.log("📡 Sending metadata request to backend:", body);
-  const res = await fetch("http://localhost:3001/create-metadata", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+    // ✅ Build metadata request to backend
+    const metadata = {
+      name: "WAGMIK Meme Collection",
+      symbol: "WAGMIK",
+      uri: "ipfs://bafkreidg36eqqjummqadjem7wka5vclyrg67k66w2z4btaotk7oploeh2y"
+    };
 
-  const txBase64 = await res.text();
-  const txBytes = Uint8Array.from(atob(txBase64), c => c.charCodeAt(0));
-  const tx2 = solanaWeb3.Transaction.from(txBytes);
+    const body = {
+      mint: mint.publicKey.toBase58(),
+      payer: from.toBase58(),
+      updateAuthority: from.toBase58(),
+      name: metadata.name,
+      symbol: metadata.symbol,
+      uri: metadata.uri,
+      collectionMint: null
+    };
 
-  // ✅ Refresh blockhash for TX2
-  const { blockhash: newBlockhash, lastValidBlockHeight: newLvb } = await connection.getLatestBlockhash("finalized");
-  tx2.recentBlockhash = newBlockhash;
-  tx2.lastValidBlockHeight = newLvb;
+    console.log("📡 Sending metadata request to backend:", body);
+    const res = await fetch("http://localhost:3001/create-metadata", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
 
-  tx2.partialSign(mint); // Sign again with mint
-  const signed2 = await phantom.signTransaction(tx2);
+    const txBase64 = await res.text();
+    const txBytes = Uint8Array.from(atob(txBase64), c => c.charCodeAt(0));
+    const tx2 = solanaWeb3.Transaction.from(txBytes);
 
-  console.log("📤 Sending metadata TX2...");
-  const sig2 = await connection.sendRawTransaction(signed2.serialize(), {
-    skipPreflight: false,
-    maxRetries: 5,
-  });
+    // ✅ Refresh blockhash for TX2
+    const { blockhash: newBlockhash, lastValidBlockHeight: newLvb } = await connection.getLatestBlockhash("finalized");
+    tx2.recentBlockhash = newBlockhash;
+    tx2.lastValidBlockHeight = newLvb;
 
-  await connection.confirmTransaction({ signature: sig2, blockhash: newBlockhash, lastValidBlockHeight: newLvb }, "confirmed");
+    tx2.partialSign(mint);
+    const signed2 = await phantom.signTransaction(tx2);
 
-  console.log("✅ Metadata TX confirmed:", sig2);
-  console.log("🔗 View Metadata TX: https://solscan.io/tx/" + sig2);
-  alert("✅ Collection NFT minted!\nTX: " + sig2);
-} catch (err) {
-  console.error("❌ createCollection failed:", err);
-  alert("❌ Collection minting failed. Check console.");
+    console.log("📤 Sending metadata TX2...");
+    const sig2 = await connection.sendRawTransaction(signed2.serialize(), {
+      skipPreflight: false,
+      maxRetries: 5,
+    });
+
+    await connection.confirmTransaction({ signature: sig2, blockhash: newBlockhash, lastValidBlockHeight: newLvb }, "confirmed");
+
+    console.log("✅ Metadata TX confirmed:", sig2);
+    console.log("🔗 View Metadata TX: https://solscan.io/tx/" + sig2);
+    alert("✅ Collection NFT minted!\nTX: " + sig2);
+
+  } catch (err) {
+    console.error("❌ createCollection failed:", err);
+    alert("❌ Collection minting failed. Check console.");
   }
 };
- 
+
   // Updated runDevnetMint
   window.runDevnetMint = async function () {
     const TOKEN_PROGRAM_ID = splToken.TOKEN_PROGRAM_ID;
@@ -4033,6 +4018,7 @@ logOutput(`🔗 <a href="${metadataExplorerUrl}" target="_blank" style="color:#0
   
  </body>
 </html>
+
 
 
 
